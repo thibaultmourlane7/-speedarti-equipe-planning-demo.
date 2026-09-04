@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#1167ff" />
-  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.4" />
-  <title>SpeedArti — Équipe & Planning v1.4</title>
+  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.5" />
+  <title>SpeedArti — Équipe & Planning v1.5</title>
   <style>:root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #13213a;
@@ -273,7 +273,7 @@ legend { padding: 0 .4rem; font-weight: 700; color: var(--navy); }
 .planning-card.unassigned { border-style:dashed; background:#fffdfa; }
 @media (max-width:760px){ .calendar-source-banner{align-items:flex-start;flex-direction:column;} }
 
-/* Version 1.2 — disponibilités, Expert, Ultra et traçabilité */
+/* Version 1.5 — UX mobile + niveaux Standard / Expert / Ultra */
 .member-meta { display:grid; gap:.25rem; margin-top:.65rem; color:var(--muted); font-size:.74rem; }
 .member-actions { display:flex; flex-direction:column; gap:.35rem; }
 .capacity-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.75rem; }
@@ -479,6 +479,49 @@ button { min-height: 44px; position: relative; z-index: 1; }
   .feed-heading { flex-direction:column; }
   .feed-heading > .badge, .feed-heading > .chips { align-self:flex-start; }
 }
+
+
+/* v1.5 — comparaison Standard / Expert / Ultra pour la démo uniquement */
+.demo-plan-bar {
+  margin: 0; padding: .65rem 1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  background:#f8fbff; border-bottom:1px solid #d9e7fb;
+}
+.demo-plan-copy { min-width:0; display:grid; gap:.08rem; }
+.demo-plan-copy strong { color:var(--navy); font-size:.82rem; }
+.demo-plan-copy span { color:var(--muted); font-size:.74rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.demo-edition-switcher { display:flex; align-items:center; gap:.3rem; padding:.25rem; border-radius:12px; background:#e7edf6; flex-shrink:0; }
+.demo-edition-button { border:0; background:transparent; color:#5d6c83; padding:.48rem .72rem; border-radius:9px; font-weight:800; font-size:.78rem; min-height:36px; }
+.demo-edition-button:hover { background:rgba(255,255,255,.65); color:var(--navy); }
+.demo-edition-button.selected { background:white; color:var(--blue); box-shadow:0 3px 10px rgba(30,55,95,.1); }
+.demo-edition-button small { display:none; }
+.edition-overview { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:center; padding:1rem 1.1rem; margin-bottom:1rem; border-radius:15px; border:1px solid #cfe0fa; background:linear-gradient(135deg,#f5f9ff,#fff); }
+.edition-overview h2 { margin:.15rem 0 .2rem; }
+.edition-overview p { margin:0; color:var(--muted); }
+.edition-price { text-align:right; white-space:nowrap; }
+.edition-price strong { display:block; color:var(--blue); font-size:1.1rem; }
+.edition-price span { color:var(--muted); font-size:.72rem; }
+.edition-matrix-wrap { overflow:auto; border:1px solid var(--border); border-radius:14px; }
+.edition-matrix { width:100%; border-collapse:collapse; min-width:720px; }
+.edition-matrix th, .edition-matrix td { padding:.7rem .75rem; border-bottom:1px solid var(--border); text-align:center; font-size:.78rem; }
+.edition-matrix th:first-child, .edition-matrix td:first-child { text-align:left; min-width:270px; }
+.edition-matrix thead th { background:#f6f9fd; color:var(--navy); position:sticky; top:0; }
+.edition-matrix tbody tr:last-child td { border-bottom:0; }
+.edition-current { background:#f0f6ff !important; }
+.matrix-yes { color:#118257; font-weight:900; }
+.matrix-no { color:#a1adbd; }
+.level-note { display:flex; align-items:center; gap:.55rem; padding:.65rem .75rem; margin-top:.75rem; border-radius:10px; background:#f6f8fb; color:#596a82; font-size:.78rem; }
+.expert-panel { border-color:#c9dcff; background:linear-gradient(145deg,#fff,#f5f9ff); }
+.plan-lock-preview { border-style:dashed; }
+
+@media (max-width:780px) {
+  .demo-plan-bar { padding:.5rem .7rem; align-items:stretch; flex-direction:column; gap:.4rem; }
+  .demo-plan-copy span { white-space:normal; }
+  .demo-edition-switcher { width:100%; display:grid; grid-template-columns:repeat(3,1fr); }
+  .demo-edition-button { padding:.5rem .25rem; }
+  .edition-overview { grid-template-columns:1fr; padding:.85rem; }
+  .edition-price { text-align:left; }
+}
+
 </style>
 </head>
 <body>
@@ -495,6 +538,21 @@ const EDITION_LABELS = Object.freeze({
   standard: 'Standard',
   expert: 'Expert',
   ultra: 'Ultra',
+});
+
+const EDITION_CONFIG = Object.freeze({
+  standard: {
+    label: 'Standard', price: '4,90 € / mois', extra: '+ 1 € / collaborateur',
+    summary: 'Équipe, affectations, terrain, rapports, demandes et communication interne.',
+  },
+  expert: {
+    label: 'Expert', price: '14,90 € / mois', extra: '+ 1,50 € / collaborateur',
+    summary: 'Standard + analyses automatiques, détection des problèmes et actions proposées.',
+  },
+  ultra: {
+    label: 'Ultra', price: '29,90 € / mois', extra: '+ 2 € / collaborateur',
+    summary: 'Expert + charge prévisionnelle, optimisation et réorganisation intelligente.',
+  },
 });
 
 const ROLES = Object.freeze({
@@ -715,7 +773,7 @@ function createSeedState() {
     session: { activeMemberId: 'member_owner' },
     integration: { identitySyncedAt: null, entitlementsSyncedAt: null, agendaSyncedAt: null, rhSyncedAt: null },
     settings: {
-      edition: 'ultra',
+      edition: 'standard',
       rolePermissions: structuredClone(DEFAULT_ROLE_PERMISSIONS),
       externalAiEnabled: false,
       integrationMode: 'standalone',
@@ -1205,7 +1263,7 @@ async function importAttachments(records = []) {
 
 
 // ---- src/store.js ----
-const STORAGE_KEY = 'speedarti.team-planning.agenda-demo.v2';
+const STORAGE_KEY = 'speedarti.team-planning.agenda-demo.v3';
 
 function deepClone(value) {
   return structuredClone(value);
@@ -2176,7 +2234,7 @@ function installIntegrationBridge(store, providedHub = null) {
   };
 
   const bridge = {
-    version: '1.4.0',
+    version: '1.5.0',
     getSnapshot: () => store.getState(),
     exportJson: () => store.exportJson(),
     importJson: (raw) => store.importJson(raw),
@@ -2483,17 +2541,50 @@ class TeamPlanningUI {
                 <label><span>Rechercher</span><input name="query" value="${escapeHtml(this.searchQuery)}" placeholder="Chantier, collaborateur, message…" autocomplete="off"/></label>
                 <button class="search-submit" type="submit" aria-label="Lancer la recherche">⌕</button>
               </form>
-              ${badge(EDITION_LABELS[state.settings.edition], state.settings.edition === 'ultra' ? 'purple' : state.settings.edition === 'expert' ? 'info' : 'neutral')}
               <button class="more-button" data-action="open-more-menu" aria-label="Plus d’options">⋯</button>
               <label class="user-switcher"><span>Utilisateur</span><select data-control="active-member">${state.members.filter((item) => item.status === 'active').map((item) => `<option value="${item.id}" ${item.id === member.id ? 'selected' : ''}>${escapeHtml(item.name)} — ${escapeHtml(ROLES[item.role])}</option>`).join('')}</select></label>
             </div>
           </header>
+          ${this.renderEditionBar(state)}
           <main class="content">${this.renderSearchResults(state)}${this.renderView(state)}</main>
         </section>
       </div>
       ${this.modal ? `<div class="modal-backdrop" data-modal-backdrop><section class="modal" role="dialog" aria-modal="true"><button class="modal-close" data-action="close-modal" aria-label="Fermer">×</button>${this.modal}</section></div>` : ''}
       ${this.toast ? `<div class="toast toast-${this.toast.type}" role="status">${escapeHtml(this.toast.message)}</div>` : ''}
     `;
+  }
+
+  renderEditionSwitcher(state) {
+    return `<div class="demo-edition-switcher" role="group" aria-label="Version simulée du module">${Object.entries(EDITION_CONFIG).map(([value, config]) => `<button class="demo-edition-button ${state.settings.edition === value ? 'selected' : ''}" data-action="set-edition" data-value="${value}" aria-pressed="${state.settings.edition === value ? 'true' : 'false'}">${escapeHtml(config.label)}</button>`).join('')}</div>`;
+  }
+
+  renderEditionBar(state) {
+    const config = EDITION_CONFIG[state.settings.edition];
+    return `<section class="demo-plan-bar" aria-label="Sélecteur de version de démonstration"><div class="demo-plan-copy"><strong>Version de démonstration : ${escapeHtml(config.label)}</strong><span>${escapeHtml(config.summary)}</span></div>${this.renderEditionSwitcher(state)}</section>`;
+  }
+
+  renderEditionOverview(state) {
+    const config = EDITION_CONFIG[state.settings.edition];
+    return `<section class="edition-overview"><div><span class="eyebrow">Niveau ${escapeHtml(config.label)}</span><h2>Fonctions affichées selon l’abonnement</h2><p>${escapeHtml(config.summary)}</p></div><div class="edition-price"><strong>${escapeHtml(config.price)}</strong><span>Artisan + 2 collaborateurs inclus · ${escapeHtml(config.extra)}</span></div></section>`;
+  }
+
+  renderEditionMatrix(state) {
+    const rows = [
+      ['Profils, rôles et permissions', true, true, true],
+      ['Affectations reliées à l’Agenda Chantier', true, true, true],
+      ['Messagerie interne, photos et documents', true, true, true],
+      ['Rapports journaliers et demandes terrain', true, true, true],
+      ['Détection / analyse automatique des rapports', false, true, true],
+      ['Détection des problèmes et du matériel manquant', false, true, true],
+      ['Actions proposées automatiquement', false, true, true],
+      ['Connexion au bouton Ángel global de SpeedArti', false, true, true],
+      ['Charge prévisionnelle et capacité', false, false, true],
+      ['Suggestions intelligentes d’affectation', false, false, true],
+      ['Réorganisation absence / retard / urgence', false, false, true],
+      ['Prévision retard, renfort, embauche, sous-traitance', false, false, true],
+    ];
+    const keys = ['standard', 'expert', 'ultra'];
+    return `<div class="edition-matrix-wrap"><table class="edition-matrix"><thead><tr><th>Fonction</th>${keys.map((key) => `<th class="${state.settings.edition === key ? 'edition-current' : ''}">${escapeHtml(EDITION_LABELS[key])}</th>`).join('')}</tr></thead><tbody>${rows.map(([label, standard, expert, ultra]) => { const values = { standard, expert, ultra }; return `<tr><td>${escapeHtml(label)}</td>${keys.map((key) => `<td class="${state.settings.edition === key ? 'edition-current' : ''}">${values[key] ? '<span class="matrix-yes">✓</span>' : '<span class="matrix-no">—</span>'}</td>`).join('')}</tr>`; }).join('')}</tbody></table></div>`;
   }
 
   pageTitle() {
@@ -2555,6 +2646,7 @@ class TeamPlanningUI {
     ];
 
     return `
+      ${this.renderEditionOverview(state)}
       <section class="welcome-strip"><div><span class="eyebrow">Aujourd’hui</span><h2>Ce qui demande votre attention</h2><p>Les informations essentielles, sans chercher dans plusieurs menus.</p></div><span class="today-date">${formatDate(nowIso())}</span></section>
       <section class="attention-grid">${attention.map((item) => `<button class="attention-card attention-${item.tone}" data-view="${item.view}"><strong>${item.count}</strong><span>${escapeHtml(item.title)}</span><small>${escapeHtml(item.detail)}</small><b>Voir →</b></button>`).join('')}</section>
       <section class="two-columns home-columns">
@@ -2612,7 +2704,7 @@ class TeamPlanningUI {
           </article>`;
         }).join('')}</div>` : this.empty('Aucune intervention reçue de l’Agenda Chantier.')}
       </article>
-      ${can(state, PERMISSIONS.VIEW_CAPACITY) ? `<article class="panel capacity-panel"><div class="panel-header"><div><h2>Charge prévisionnelle des collaborateurs</h2><p>Calculée uniquement à partir des interventions planifiées sur 4 semaines. Ce n’est pas du pointage.</p></div>${badge('Prévisionnel', 'purple')}</div><div class="capacity-grid">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct} %</b> · ${item.plannedHours} h planifiées / ${item.capacityHours} h disponibles</p><small>${item.assignmentCount} intervention(s)</small></article>`).join('')}</div></article>` : ''}
+      ${hasEdition(state, 'ultra') && can(state, PERMISSIONS.VIEW_CAPACITY) ? `<article class="panel capacity-panel"><div class="panel-header"><div><h2>Charge prévisionnelle des collaborateurs</h2><p>Calculée uniquement à partir des interventions planifiées sur 4 semaines. Ce n’est pas du pointage.</p></div>${badge('Prévisionnel', 'purple')}</div><div class="capacity-grid">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct} %</b> · ${item.plannedHours} h planifiées / ${item.capacityHours} h disponibles</p><small>${item.assignmentCount} intervention(s)</small></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'L’analyse de charge prévisionnelle et de capacité est réservée au niveau Ultra.')}
       ${hasEdition(state, 'ultra') ? `<article class="panel ultra-panel">
         <div class="panel-header"><div><span class="eyebrow">Mode Ultra</span><h2>Affectations et réorganisations proposées</h2><p>Le moteur Ultra recherche les interventions sans équipe et les indisponibilités déclarées. Validation humaine obligatoire.</p></div><button class="secondary" data-action="generate-suggestions">Analyser le planning</button></div>
         ${suggestions.length ? `<div class="suggestion-grid">${suggestions.map((suggestion) => `<article class="suggestion"><div class="row-between"><strong>${escapeHtml(suggestion.assignmentTitle || projectName(state, suggestion.projectId))}</strong>${badge(suggestion.type === 'reorganization' ? 'Réorganisation' : `Score ${suggestion.score}`, suggestion.type === 'reorganization' ? 'warning' : 'purple')}</div><p>${suggestion.reasons.map(escapeHtml).join('<br>')}</p><div class="chips">${(suggestion.candidateMemberIds ?? suggestion.memberIds).map((id) => badge(memberName(state, id), 'person')).join('')}</div><div class="button-row"><button class="primary" data-action="approve-suggestion" data-id="${suggestion.id}">Valider la proposition</button><button class="ghost" data-action="reject-suggestion" data-id="${suggestion.id}">Refuser</button></div></article>`).join('')}</div>` : this.empty('Aucune suggestion en attente. Lancez l’analyse.')}
@@ -2691,13 +2783,14 @@ class TeamPlanningUI {
       <section class="pilotage-kpis">
         ${this.kpi('Sans équipe', unassigned.length, 'Interventions à affecter')}
         ${this.kpi('Rapports manquants', missing.length, 'À relancer')}
-        ${this.kpi('Surcharges', overloads.length, 'Charge prévisionnelle')}
+        ${hasEdition(state, 'ultra') ? this.kpi('Surcharges', overloads.length, 'Charge prévisionnelle') : this.kpi('Surcharges', '—', 'Disponible en Ultra')}
         ${this.kpi('Alertes', unread.length, 'Notifications non lues')}
       </section>
       <section class="two-columns pilotage-grid">
-        <article class="panel"><div class="panel-header"><div><h2>Charge de l’équipe</h2><p>Prévision sur les interventions de l’Agenda Chantier.</p></div>${badge('Prévisionnel', 'purple')}</div><div class="capacity-grid compact-capacity">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct}%</b> · ${item.plannedHours} h / ${item.capacityHours} h</p></article>`).join('')}</div></article>
+        ${hasEdition(state, 'ultra') ? `<article class="panel"><div class="panel-header"><div><h2>Charge de l’équipe</h2><p>Prévision sur les interventions de l’Agenda Chantier.</p></div>${badge('Ultra · Prévisionnel', 'purple')}</div><div class="capacity-grid compact-capacity">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct}%</b> · ${item.plannedHours} h / ${item.capacityHours} h</p></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'Charge, capacité, surcharge, sous-charge et besoins de renfort sont réservés au niveau Ultra.')}
         <article class="panel"><div class="panel-header"><div><h2>À contrôler</h2><p>Points nécessitant une décision humaine.</p></div></div><div class="pilotage-alert-list">${unassigned.map((assignment) => `<button data-view="planning"><strong>Équipe à affecter</strong><span>${escapeHtml(assignment.title)} · ${escapeHtml(projectName(state, assignment.projectId))}</span></button>`).join('')}${missing.map((item) => `<button data-action="remind-missing-report" data-assignment-id="${item.assignmentId}" data-member-id="${item.memberId}"><strong>Rapport manquant</strong><span>${escapeHtml(memberName(state, item.memberId))} · ${escapeHtml(projectName(state, item.projectId))}</span></button>`).join('')}${risks.map((risk) => `<button data-view="planning"><strong>Indisponibilité</strong><span>${escapeHtml(memberName(state, risk.memberId))} · ${escapeHtml(risk.reason)}</span></button>`).join('') || this.empty('Aucun point critique détecté.')}</div></article>
       </section>
+      ${hasEdition(state, 'expert') ? `<article class="panel expert-panel"><div class="panel-header"><div><span class="eyebrow">Mode Expert</span><h2>Intelligence terrain</h2><p>Les rapports et messages peuvent être analysés pour détecter problèmes, matériel manquant et actions à préparer.</p></div>${badge('Connexion Ángel prête', 'info')}</div><div class="button-row"><button class="secondary" data-view="terrain">Voir les analyses terrain</button></div><div class="level-note">Ángel reste accessible depuis le bouton global de SpeedArti : aucun bouton Ángel n’est ajouté dans ce module.</div></article>` : this.lockedPanel('Expert', 'Analyse automatique des rapports, messages, problèmes et matériel manquant disponible à partir du niveau Expert.')}
       ${hasEdition(state, 'ultra') ? `<article class="panel ultra-panel"><div class="panel-header"><div><span class="eyebrow">Mode Ultra</span><h2>Propositions de réorganisation</h2><p>Le moteur du module prépare des propositions. Aucune modification n’est appliquée sans validation.</p></div><button class="secondary" data-action="generate-suggestions">Analyser les affectations</button></div>${suggestions.length ? `<div class="suggestion-grid">${suggestions.map((suggestion) => `<article class="suggestion"><div class="row-between"><strong>${escapeHtml(suggestion.assignmentTitle || projectName(state, suggestion.projectId))}</strong>${badge(suggestion.type === 'reorganization' ? 'Réorganisation' : `Score ${suggestion.score}`, suggestion.type === 'reorganization' ? 'warning' : 'purple')}</div><p>${suggestion.reasons.map(escapeHtml).join('<br>')}</p><div class="chips">${(suggestion.candidateMemberIds ?? suggestion.memberIds).map((id) => badge(memberName(state, id), 'person')).join('')}</div><div class="button-row"><button class="primary" data-action="approve-suggestion" data-id="${suggestion.id}">Valider</button><button class="ghost" data-action="reject-suggestion" data-id="${suggestion.id}">Refuser</button></div></article>`).join('')}</div>` : this.empty('Aucune proposition en attente.')}</article>` : ''}
       <article class="panel"><div class="panel-header"><div><h2>Notifications</h2><p>Dernières alertes du module.</p></div>${unread.length ? '<button class="secondary" data-action="mark-all-read">Tout marquer lu</button>' : ''}</div><div class="notification-list">${state.notifications.slice(0, 8).map((notification) => `<button class="notification ${notification.read ? '' : 'unread'}" data-action="mark-notification" data-id="${notification.id}"><span class="notification-icon">${notification.priority === 'urgent' ? '!' : notification.type === 'success' ? '✓' : 'i'}</span><span><strong>${escapeHtml(notification.title)}</strong><p>${escapeHtml(notification.body)}</p><small>${formatDateTime(notification.createdAt)}</small></span>${priorityBadge(notification.priority)}</button>`).join('') || this.empty('Aucune notification.')}</div></article>
     `;
@@ -2789,9 +2882,10 @@ class TeamPlanningUI {
     const permissions = Object.values(PERMISSIONS);
     return `
       <section class="two-columns settings-grid">
-        <article class="panel"><h2>Niveau fonctionnel</h2><p>Le niveau peut être simulé ici. Après raccord, SpeedArti le pilotera depuis l’abonnement.</p><div class="edition-cards">${Object.entries(EDITION_LABELS).map(([value, label]) => `<button class="edition-card ${state.settings.edition === value ? 'selected' : ''}" data-action="set-edition" data-value="${value}"><strong>${label}</strong><span>${value === 'standard' ? 'Équipe, affectations, messagerie et rapports' : value === 'expert' ? 'Standard + analyses et actions proposées' : 'Expert + suggestions intelligentes d’affectation'}</span></button>`).join('')}</div></article>
+        <article class="panel"><h2>Niveau fonctionnel</h2><p>Le niveau peut être simulé ici pour la démonstration. En production, SpeedArti le pilotera depuis l’abonnement.</p><div class="edition-cards">${Object.entries(EDITION_CONFIG).map(([value, config]) => `<button class="edition-card ${state.settings.edition === value ? 'selected' : ''}" data-action="set-edition" data-value="${value}"><strong>${escapeHtml(config.label)} · ${escapeHtml(config.price)}</strong><span>${escapeHtml(config.summary)}</span><small>Artisan + 2 collaborateurs · ${escapeHtml(config.extra)}</small></button>`).join('')}</div></article>
         <article class="panel"><h2>Données autonomes</h2><p>Les données sont stockées dans ce navigateur. Exportez-les avant un changement de poste.</p><div class="button-stack"><button class="primary" data-action="export-data">Exporter les données JSON</button><label class="secondary file-button">Importer un fichier JSON<input type="file" data-control="import-data" accept="application/json" hidden></label><button class="ghost danger-text" data-action="reset-data">Réinitialiser la démonstration</button></div></article>
       </section>
+      <article class="panel"><div class="panel-header"><div><h2>Comparatif des trois niveaux</h2><p>Une seule base de code : les fonctions sont activées selon l’abonnement.</p></div></div>${this.renderEditionMatrix(state)}</article>
       <article class="panel"><div class="panel-header"><div><h2>Droits par rôle</h2><p>Personnalisation complète. Les changements sont immédiats.</p></div></div><div class="permissions-table-wrap"><table class="permissions-table"><thead><tr><th>Permission</th>${Object.entries(ROLES).map(([role, label]) => `<th title="${escapeHtml(label)}">${escapeHtml(label.split(' ')[0])}</th>`).join('')}</tr></thead><tbody>${permissions.map((permission) => `<tr><td>${escapeHtml(permission)}</td>${Object.keys(ROLES).map((role) => `<td><input type="checkbox" data-control="role-permission" data-role="${role}" data-permission="${permission}" ${(state.settings.rolePermissions[role] ?? []).includes(permission) ? 'checked' : ''} ${role === 'owner' ? 'disabled' : ''}/></td>`).join('')}</tr>`).join('')}</tbody></table></div></article>
       <article class="panel"><h2>Journal de traçabilité</h2><div class="audit-list">${state.audit.slice(0, 30).map((item) => `<div><strong>${escapeHtml(item.action)}</strong><span>${escapeHtml(memberName(state, item.actorId))} · ${formatDateTime(item.createdAt)}</span><small>${escapeHtml(item.details || '')}</small></div>`).join('')}</div></article>
       <article class="panel scope-panel"><h2>Hors périmètre volontaire</h2><p><strong>Le pointage, la géolocalisation, les heures d’arrivée et de départ ne sont pas dans ce module.</strong> Un connecteur séparé est prévu pour recevoir plus tard les données du module Temps & Présence.</p></article>
@@ -3362,8 +3456,9 @@ class TeamPlanningUI {
 
   setEdition(value) {
     if (!Object.prototype.hasOwnProperty.call(EDITION_LABELS, value)) return;
-    this.store.update((state) => { state.settings.edition = value; }, { action: 'settings.edition.changed', entityType: 'settings', entityId: 'edition', details: value });
-    this.notify(`Niveau ${EDITION_LABELS[value]} activé.`);
+    this.store.update((state) => { state.settings.edition = value; }, { action: 'settings.edition.changed', entityType: 'settings', entityId: 'edition', details: `demo:${value}` });
+    const config = EDITION_CONFIG[value];
+    this.notify(`Démo ${config.label} activée — ${config.price}.`);
   }
 
   async downloadAttachmentFile(id) {
