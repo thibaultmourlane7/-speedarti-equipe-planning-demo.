@@ -1,0 +1,22 @@
+name: Check planning v1.7
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'planning-v17-*.js'
+      - 'sw-planning-v17.js'
+      - '.github/workflows/check-planning-v17.yml'
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check planning-v17-standard.js
+          node --check planning-v17-expert.js
+          node --check planning-v17-ultra.js
+          node --check planning-v17-contracts.js
+          node --check sw-planning-v17.js
