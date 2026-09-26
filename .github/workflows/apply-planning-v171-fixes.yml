@@ -143,7 +143,7 @@ jobs:
           from pathlib import Path
           import re
           s=Path('index.html').read_text(encoding='utf-8')
-          blocks=re.findall(r'<script>(.*?)</script>',s,re.S)
+          blocks=re.findall(r'<script[^>]*>(.*?)</script>',s,re.S)
           if not blocks:
               raise SystemExit('inline script not found')
           Path('/tmp/index-inline.js').write_text(max(blocks,key=len),encoding='utf-8')
