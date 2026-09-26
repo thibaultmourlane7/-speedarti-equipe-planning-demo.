@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#1167ff" />
-  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.6" />
-  <title>SpeedArti — Équipe & Planning v1.6</title>
+  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.7.1" />
+  <title>SpeedArti — Équipe & Planning v1.7.1</title>
   <style>:root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #13213a;
@@ -291,27 +291,14 @@ legend { padding: 0 .4rem; font-weight: 700; color: var(--navy); }
 .permission-overrides label { display:grid; grid-template-columns:minmax(0,1fr) 150px; align-items:center; gap:.55rem; padding:.45rem; border:1px solid var(--border); border-radius:10px; }
 .permission-overrides span { font-size:.72rem; word-break:break-word; }
 .availability-add { margin-top:.8rem; }
-.angel-layout { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:1rem; }
-.angel-chat { display:grid; grid-template-rows:minmax(380px,1fr) auto; min-height:620px; }
-.angel-messages { overflow:auto; display:grid; align-content:start; gap:1rem; padding:.25rem; }
-.angel-turn { display:grid; gap:.55rem; }
-.angel-question, .angel-answer { padding:.8rem; border-radius:14px; }
-.angel-question { margin-left:12%; background:#e9f2ff; }
-.angel-answer { margin-right:8%; border:1px solid var(--border); background:white; }
-.angel-answer h3 { margin:.35rem 0; }
-.angel-answer ul { padding-left:1.15rem; color:#53627a; }
-.angel-composer { border-top:1px solid var(--border); padding-top:1rem; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.65rem; }
-.angel-composer textarea { min-height:76px; }
 .audit-list.expanded > div { grid-template-columns:minmax(210px,.9fr) minmax(240px,1fr) 2fr; }
 .badge-danger { max-width:100%; white-space:normal; }
 
 @media (max-width:900px){
-  .angel-layout { grid-template-columns:1fr; }
   .permission-overrides { grid-template-columns:1fr; }
 }
 @media (max-width:600px){
   .member-actions { grid-column:1/-1; flex-direction:row; justify-content:flex-end; }
-  .angel-composer { grid-template-columns:1fr; }
   .missing-row { align-items:flex-start; flex-direction:column; }
   .permission-overrides label { grid-template-columns:1fr; }
 }
@@ -2439,7 +2426,7 @@ function installIntegrationBridge(store, providedHub = null) {
   };
 
   const bridge = {
-    version: '1.6.0',
+    version: '1.7.1',
     getSnapshot: () => store.getState(),
     exportJson: () => store.exportJson(),
     importJson: (raw) => store.importJson(raw),
@@ -2619,8 +2606,16 @@ function navigationForMember(state, member) {
   const experience = experienceForMember(member);
   const ids = ROLE_NAVIGATION[experience] ?? ROLE_NAVIGATION.support;
   const labels = ROLE_NAV_LABELS[experience] ?? {};
+  const configuredRolePermissions = state.settings.rolePermissions[member?.role] ?? [];
+  const defaultRolePermissions = DEFAULT_ROLE_PERMISSIONS[member?.role] ?? [];
   return NAV_ITEMS
-    .filter(([id, , , permission]) => ids.includes(id) && can(state, permission))
+    .filter(([id, , , permission]) => {
+      if (!can(state, permission)) return false;
+      if (ids.includes(id)) return true;
+      const individualGrant = member?.permissionOverrides?.[permission] === true;
+      const roleGrantBeyondDefault = configuredRolePermissions.includes(permission) && !defaultRolePermissions.includes(permission);
+      return individualGrant || roleGrantBeyondDefault;
+    })
     .map(([id, icon, label, permission]) => [id, icon, labels[id] ?? label, permission]);
 }
 
@@ -2682,6 +2677,16 @@ function toLocalDateTime(iso) {
 
 function visibleProjects(state) {
   return state.projects.filter((project) => isProjectVisibleToMember(state, project));
+}
+
+function visibleMembersForTeamScope(state, member = getActiveMember(state)) {
+  if (!member) return [];
+  if (experienceForMember(member) !== 'team_lead') return state.members;
+  const allowedIds = new Set([member.id]);
+  for (const crew of state.crews.filter((item) => item.memberIds.includes(member.id))) {
+    for (const memberId of crew.memberIds) allowedIds.add(memberId);
+  }
+  return state.members.filter((item) => allowedIds.has(item.id));
 }
 
 function entityProjectId(state, entityType, entityId) {
@@ -2893,7 +2898,7 @@ class TeamPlanningUI {
     if (query.length < 2) return '';
     const results = [];
     const activeMember = getActiveMember(state);
-    const searchableMembers = can(state, PERMISSIONS.VIEW_TEAM) ? state.members : [activeMember].filter(Boolean);
+    const searchableMembers = can(state, PERMISSIONS.VIEW_TEAM) ? visibleMembersForTeamScope(state, activeMember) : [activeMember].filter(Boolean);
     for (const member of searchableMembers) {
       const haystack = [member.name, member.email, ROLES[member.role], ...(member.skills ?? [])].join(' ').toLocaleLowerCase('fr-FR');
       if (haystack.includes(query)) results.push({ kind: 'member', id: member.id, title: member.name, detail: `${ROLES[member.role]} · ${(member.skills ?? []).join(', ') || 'Aucune compétence'}` });
@@ -3116,9 +3121,7 @@ class TeamPlanningUI {
   renderTeam(state) {
     const activeMember = getActiveMember(state);
     const experience = experienceForMember(activeMember);
-    const ownCrewIds = new Set(state.crews.filter((crew) => crew.memberIds.includes(activeMember.id)).flatMap((crew) => crew.memberIds));
-    ownCrewIds.add(activeMember.id);
-    const displayedMembers = experience === 'team_lead' ? state.members.filter((member) => ownCrewIds.has(member.id)) : state.members;
+    const displayedMembers = visibleMembersForTeamScope(state, activeMember);
     const displayedCrews = experience === 'team_lead' ? state.crews.filter((crew) => crew.memberIds.includes(activeMember.id)) : state.crews;
     return `
       <div class="page-actions"><div><p class="lead">Profils, rôles, compétences, accès chantier et disponibilités opérationnelles.</p></div>${can(state, PERMISSIONS.MANAGE_TEAM) ? '<div class="button-row"><button class="secondary" data-action="open-crew">+ Créer une équipe</button><button class="primary" data-action="open-member">+ Ajouter un collaborateur</button></div>' : ''}</div>
@@ -3263,19 +3266,6 @@ class TeamPlanningUI {
     return `<section class="message-analysis"><div class="row-between"><strong>Analyse Expert</strong>${badge(message.analysis.classification, 'info')}</div><small>${escapeHtml(message.analysis.summary)}</small>${message.analysis.actions.length ? `<div class="stack compact">${message.analysis.actions.map((action) => `<div class="action-proposal"><div><strong>${escapeHtml(action.title)}</strong><small>${escapeHtml(action.description)}</small></div>${action.appliedAt ? badge('Appliquée', 'success') : `<button class="secondary small" data-action="apply-message-action" data-message-id="${message.id}" data-action-id="${action.id}">${escapeHtml(ACTION_LABELS[action.type] ?? 'Appliquer')}</button>`}</div>`).join('')}</div>` : ''}</section>`;
   }
 
-
-  renderAngel(state) {
-    if (!hasExpertAccess(state) || !can(state, PERMISSIONS.ASK_ANGEL)) return this.lockedPanel('Expert', 'Ángel Collaborateurs nécessite le niveau Expert/Ultra et un droit explicite.');
-    const conversations = state.angelConversations ?? [];
-    const quickQuestions = ['Quels rapports manquent ?', 'Qui est disponible ?', 'Où sont les problèmes de matériel ?', 'Y a-t-il une surcharge ?'];
-    return `
-      <div class="page-actions"><div><p class="lead">Posez des questions sur les équipes, les rapports, les alertes et la charge prévisionnelle.</p><small>Les réponses sont calculées localement à partir des données du module.</small></div></div>
-      <section class="angel-layout">
-        <article class="panel angel-chat"><div class="angel-messages">${conversations.length ? conversations.map((item) => `<div class="angel-turn"><div class="angel-question"><strong>Vous</strong><p>${escapeHtml(item.question)}</p></div><div class="angel-answer"><strong>Ángel</strong><h3>${escapeHtml(item.response.title)}</h3><p>${escapeHtml(item.response.answer)}</p>${item.response.items?.length ? `<ul>${item.response.items.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>` : ''}<small>${formatDateTime(item.createdAt)}</small></div></div>`).join('') : this.empty('Aucune question posée.')}</div><form data-form="angel-question" class="angel-composer"><textarea name="question" required placeholder="Ex. Quels collaborateurs sont disponibles cette semaine ?"></textarea><button class="primary" type="submit">Demander à Ángel</button></form></article>
-        <aside class="panel"><h2>Questions rapides</h2><div class="button-stack">${quickQuestions.map((question) => `<button class="secondary" data-action="ask-quick-question" data-question="${escapeHtml(question)}">${escapeHtml(question)}</button>`).join('')}</div><div class="callout"><strong>Validation humaine</strong><p>Ángel répond et propose. Il ne modifie jamais une affectation, une demande ou un planning sans validation.</p></div></aside>
-      </section>
-    `;
-  }
 
   renderHistory(state) {
     const entityTypes = [...new Set(state.audit.map((item) => item.entityType))].sort();
@@ -3566,36 +3556,6 @@ class TeamPlanningUI {
     this.notify('Équipe supprimée.');
   }
 
-  openProjectForm(state, id = null) {
-    const project = state.projects.find((item) => item.id === id) ?? { id: '', name: '', client: '', address: '', startDate: nowIso(), endDate: nowIso(), status: 'preparation', priority: 'normal', requiredSkills: [], notes: '' };
-    this.modal = `<form data-form="project"><h2>${id ? 'Modifier le chantier' : 'Ajouter un chantier autonome'}</h2><input type="hidden" name="id" value="${escapeHtml(project.id)}"/><div class="form-grid"><label>Nom du chantier<input name="name" required value="${escapeHtml(project.name)}"/></label><label>Client<input name="client" value="${escapeHtml(project.client || '')}"/></label><label class="full-span">Adresse<input name="address" value="${escapeHtml(project.address || '')}"/></label><label>Début<input type="datetime-local" name="startDate" required value="${toLocalDateTime(project.startDate)}"/></label><label>Fin<input type="datetime-local" name="endDate" required value="${toLocalDateTime(project.endDate)}"/></label><label>Statut<select name="status">${optionList(PROJECT_STATUSES, project.status)}</select></label><label>Priorité<select name="priority">${optionList(PRIORITIES, project.priority)}</select></label><label class="full-span">Compétences nécessaires<input name="requiredSkills" value="${escapeHtml((project.requiredSkills ?? []).join(', '))}" placeholder="Couverture, Charpente"/></label><label class="full-span">Notes<textarea name="notes">${escapeHtml(project.notes || '')}</textarea></label></div><div class="modal-actions"><button type="button" class="ghost" data-action="close-modal">Annuler</button><button class="primary" type="submit">Enregistrer</button></div></form>`;
-    this.render();
-  }
-
-  saveProject(data) {
-    const id = String(data.get('id') || uid('project'));
-    const startDate = new Date(String(data.get('startDate'))).toISOString();
-    const endDate = new Date(String(data.get('endDate'))).toISOString();
-    if (new Date(endDate) <= new Date(startDate)) throw new Error('La date de fin doit être postérieure à la date de début.');
-    const record = { id, name: String(data.get('name')).trim(), client: String(data.get('client')).trim(), address: String(data.get('address')).trim(), startDate, endDate, status: String(data.get('status')), priority: String(data.get('priority')), requiredSkills: String(data.get('requiredSkills')).split(',').map((item) => item.trim()).filter(Boolean), notes: String(data.get('notes')).trim(), source: 'standalone' };
-    this.store.update((state) => {
-      const index = state.projects.findIndex((item) => item.id === id);
-      if (index >= 0) state.projects[index] = { ...state.projects[index], ...record }; else state.projects.push(record);
-    }, { action: 'project.saved', entityType: 'project', entityId: id, details: record.name });
-    this.modal = null; this.notify('Chantier enregistré.');
-  }
-
-  deleteProject(id) {
-    const state = this.store.getState();
-    if (state.assignments.some((assignment) => assignment.projectId === id)) {
-      this.notify('Supprimez d’abord les interventions liées à ce chantier.', 'error');
-      return;
-    }
-    if (!confirm('Supprimer ce chantier autonome ?')) return;
-    this.store.update((next) => { next.projects = next.projects.filter((project) => project.id !== id); }, { action: 'project.deleted', entityType: 'project', entityId: id });
-    this.notify('Chantier supprimé.');
-  }
-
   openAssignmentForm(state, id = null) {
     const candidates = id
       ? state.assignments.filter((item) => item.id === id)
@@ -3822,17 +3782,6 @@ class TeamPlanningUI {
     }, { action: 'message.action.applied', entityType: 'message', entityId: messageId, details: actionId });
     this.notify('Action créée après validation.');
   }
-
-  askAngel(question) {
-    const clean = String(question || '').trim();
-    if (!clean) throw new Error('Écrivez une question.');
-    const state = this.store.getState();
-    if (!hasExpertAccess(state) || !can(state, PERMISSIONS.ASK_ANGEL)) return this.notify('Ángel Collaborateurs n’est pas autorisé pour ce profil.', 'error');
-    const response = answerTeamQuestion(state, clean);
-    this.store.update((next) => { next.angelConversations.unshift({ id: uid('angel'), question: clean, response, createdAt: nowIso(), authorId: next.session.activeMemberId }); }, { action: 'angel.question.asked', entityType: 'angel', entityId: response.title, details: clean });
-    this.notify('Réponse préparée pour Ángel SpeedArti.', 'info');
-  }
-
 
   generateSuggestions() {
     const state = this.store.getState();
