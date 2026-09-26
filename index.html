@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#1167ff" />
-  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.5" />
-  <title>SpeedArti — Équipe & Planning v1.5</title>
+  <meta name="description" content="Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.6" />
+  <title>SpeedArti — Équipe & Planning v1.6</title>
   <style>:root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #13213a;
@@ -413,7 +413,7 @@ button { min-height: 44px; position: relative; z-index: 1; }
     border-top:1px solid rgba(255,255,255,.12); box-shadow:0 -12px 34px rgba(8,20,38,.22);
   }
   .sidebar .brand, .sidebar .scope-note { display:none; }
-  .sidebar nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.1rem; overflow:visible; }
+  .sidebar nav { display:grid; grid-template-columns:repeat(var(--nav-count, 5),minmax(0,1fr)); gap:.1rem; overflow:visible; }
   .nav-item { min-width:0; display:flex; flex-direction:column; justify-content:center; gap:.18rem; padding:.45rem .1rem; text-align:center; border-radius:10px; font-size:.68rem; line-height:1.1; }
   .nav-item .nav-icon { font-size:1rem; }
   .nav-item.active { box-shadow:none; background:rgba(255,255,255,.14); }
@@ -522,6 +522,61 @@ button { min-height: 44px; position: relative; z-index: 1; }
   .edition-price { text-align:left; }
 }
 
+
+/* v1.6 — interfaces collaborateurs + prévision Ultra explicable */
+.role-context { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+.role-context .badge { font-size:.66rem; }
+.employee-plan-note { margin:0; padding:.5rem 1.5rem; background:#fbfcfe; border-bottom:1px solid var(--border); color:var(--muted); font-size:.75rem; display:flex; align-items:center; justify-content:space-between; gap:.7rem; }
+.employee-plan-note strong { color:var(--navy); }
+.field-hero { border:1px solid #c9dcff; background:linear-gradient(135deg,#eef6ff,#fff); border-radius:18px; padding:1.1rem; margin-bottom:1rem; display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:center; }
+.field-hero h2 { font-size:1.4rem; margin:.15rem 0; }
+.field-hero p { margin:0; color:var(--muted); }
+.field-date { font-weight:800; color:var(--blue); white-space:nowrap; }
+.field-actions { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.7rem; margin-bottom:1rem; }
+.field-action { border:1px solid var(--border); background:white; border-radius:16px; padding:.9rem; min-height:112px; text-align:left; display:grid; align-content:start; gap:.35rem; color:var(--navy); box-shadow:0 8px 22px rgba(31,55,95,.05); }
+.field-action:hover { border-color:#a9c9ff; background:#f8fbff; }
+.field-action .field-action-icon { font-size:1.35rem; }
+.field-action strong { font-size:.86rem; }
+.field-action small { font-size:.7rem; }
+.my-work-list { display:grid; gap:.55rem; }
+.my-work-card { border:1px solid var(--border); border-radius:14px; padding:.8rem; background:#fff; display:grid; grid-template-columns:auto 1fr auto; gap:.75rem; align-items:center; }
+.my-work-date { width:52px; min-height:52px; border-radius:13px; background:#edf4ff; color:var(--blue); display:grid; place-items:center; text-align:center; font-size:.72rem; font-weight:800; }
+.my-work-card p { margin:.15rem 0 0; color:var(--muted); font-size:.78rem; }
+.role-dashboard-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem; margin-bottom:1rem; }
+.role-summary-card { border:1px solid var(--border); background:#fff; border-radius:16px; padding:1rem; box-shadow:0 8px 22px rgba(31,55,95,.05); }
+.role-summary-card strong { display:block; font-size:1.6rem; color:var(--navy); }
+.role-summary-card span { font-weight:800; font-size:.82rem; }
+.role-summary-card small { display:block; margin-top:.2rem; }
+.forecast-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:.75rem; }
+.forecast-card { border:1px solid var(--border); background:#fff; border-radius:14px; padding:.9rem; display:grid; gap:.5rem; }
+.forecast-card.forecast-high { border-color:#efb1bb; background:#fffafb; }
+.forecast-card.forecast-warning { border-color:#edd59e; background:#fffdf8; }
+.forecast-card.forecast-info { border-color:#bfd7ff; background:#f9fbff; }
+.forecast-card h3 { margin:0; }
+.forecast-card ul { margin:.1rem 0 0; padding-left:1.1rem; color:#53627a; font-size:.78rem; }
+.forecast-card li + li { margin-top:.2rem; }
+.forecast-rule-note { margin-top:.75rem; padding:.65rem .75rem; border-radius:10px; background:#f6f8fb; color:var(--muted); font-size:.75rem; }
+.forecast-rule-note strong { color:var(--navy); }
+
+@media (max-width:900px) {
+  .field-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .role-dashboard-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:780px) {
+  .employee-plan-note { padding:.45rem .7rem; align-items:flex-start; flex-direction:column; }
+  .field-hero { grid-template-columns:1fr; padding:.9rem; }
+  .field-date { display:none; }
+  .field-actions { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem; }
+  .field-action { min-height:104px; padding:.75rem; }
+  .role-dashboard-grid { grid-template-columns:1fr 1fr; gap:.55rem; }
+  .my-work-card { grid-template-columns:auto minmax(0,1fr); }
+  .my-work-card > .badge { grid-column:2; justify-self:start; }
+}
+@media (max-width:430px) {
+  .field-actions { grid-template-columns:1fr 1fr; }
+  .role-dashboard-grid { grid-template-columns:1fr 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -598,7 +653,7 @@ const P = PERMISSIONS;
 const DEFAULT_ROLE_PERMISSIONS = Object.freeze({
   owner: Object.values(P),
   associate: Object.values(P).filter((permission) => permission !== P.MANAGE_SETTINGS),
-  team_lead: [P.VIEW_DASHBOARD, P.VIEW_TEAM, P.MANAGE_AVAILABILITY, P.VIEW_PLANNING, P.MANAGE_PLANNING, P.VIEW_CAPACITY, P.VIEW_REPORTS, P.CREATE_REPORTS, P.MANAGE_REPORTS, P.VIEW_REQUESTS, P.CREATE_REQUESTS, P.MANAGE_REQUESTS, P.VIEW_MESSAGES, P.SEND_MESSAGES, P.DOWNLOAD_ATTACHMENTS, P.VIEW_ALL_PROJECTS, P.VIEW_AUDIT, P.USE_EXPERT, P.ASK_ANGEL],
+  team_lead: [P.VIEW_DASHBOARD, P.VIEW_TEAM, P.MANAGE_AVAILABILITY, P.VIEW_PLANNING, P.MANAGE_PLANNING, P.VIEW_CAPACITY, P.VIEW_REPORTS, P.CREATE_REPORTS, P.MANAGE_REPORTS, P.VIEW_REQUESTS, P.CREATE_REQUESTS, P.MANAGE_REQUESTS, P.VIEW_MESSAGES, P.SEND_MESSAGES, P.DOWNLOAD_ATTACHMENTS, P.VIEW_AUDIT, P.USE_EXPERT, P.ASK_ANGEL],
   worker: [P.VIEW_DASHBOARD, P.VIEW_PLANNING, P.VIEW_REPORTS, P.CREATE_REPORTS, P.VIEW_REQUESTS, P.CREATE_REQUESTS, P.VIEW_MESSAGES, P.SEND_MESSAGES, P.DOWNLOAD_ATTACHMENTS],
   site_manager: [P.VIEW_DASHBOARD, P.VIEW_TEAM, P.MANAGE_AVAILABILITY, P.VIEW_PLANNING, P.MANAGE_PLANNING, P.VIEW_CAPACITY, P.VIEW_REPORTS, P.CREATE_REPORTS, P.MANAGE_REPORTS, P.VIEW_REQUESTS, P.CREATE_REQUESTS, P.MANAGE_REQUESTS, P.VIEW_MESSAGES, P.SEND_MESSAGES, P.DOWNLOAD_ATTACHMENTS, P.VIEW_ALL_PROJECTS, P.VIEW_AUDIT, P.USE_EXPERT, P.USE_ULTRA, P.ASK_ANGEL],
   sales: [P.VIEW_DASHBOARD, P.VIEW_PLANNING, P.VIEW_MESSAGES, P.SEND_MESSAGES, P.DOWNLOAD_ATTACHMENTS, P.VIEW_ALL_PROJECTS],
@@ -655,6 +710,14 @@ function nowIso() {
 function hasEdition(state, minimum) {
   const rank = { standard: 1, expert: 2, ultra: 3 };
   return rank[state.settings.edition] >= rank[minimum];
+}
+
+function hasExpertAccess(state) {
+  return hasEdition(state, 'expert') && can(state, PERMISSIONS.USE_EXPERT);
+}
+
+function hasUltraAccess(state) {
+  return hasEdition(state, 'ultra') && can(state, PERMISSIONS.USE_ULTRA);
 }
 
 function getActiveMember(state) {
@@ -781,7 +844,9 @@ function createSeedState() {
     members: [
       { id: 'member_owner', name: 'Thibault', email: 'dirigeant@exemple.fr', phone: '06 00 00 00 01', role: 'owner', skills: ['Couverture', 'Charpente', 'Gestion'], status: 'active', color: '#1167ff', permissionOverrides: {}, projectAccessMode: 'all', projectAccessIds: [], availability: availability(42) },
       { id: 'member_lead', name: 'Jean Martin', email: 'jean@exemple.fr', phone: '06 00 00 00 02', role: 'team_lead', skills: ['Couverture', 'Zinguerie'], status: 'active', color: '#16a36a', permissionOverrides: {}, projectAccessMode: 'role', projectAccessIds: [], availability: availability(35) },
+      { id: 'member_manager', name: 'Sophie Bernard', email: 'sophie@exemple.fr', phone: '06 00 00 00 05', role: 'site_manager', skills: ['Coordination', 'Couverture', 'Charpente'], status: 'active', color: '#0ea5e9', permissionOverrides: {}, projectAccessMode: 'all', projectAccessIds: [], availability: availability(39) },
       { id: 'member_worker', name: 'Marc Dubois', email: 'marc@exemple.fr', phone: '06 00 00 00 03', role: 'worker', skills: ['Charpente', 'Isolation'], status: 'active', color: '#f59e0b', permissionOverrides: {}, projectAccessMode: 'assigned', projectAccessIds: [], availability: availability(35, { unavailablePeriods: [{ id: 'unavailable_demo', start: day(2, 0), end: day(3, 23), reason: 'Indisponibilité personnelle déclarée' }] }) },
+      { id: 'member_sales', name: 'Luc Commercial', email: 'luc@exemple.fr', phone: '06 00 00 00 06', role: 'sales', skills: ['Relation client'], status: 'active', color: '#ec4899', permissionOverrides: {}, projectAccessMode: 'all', projectAccessIds: [], availability: availability(35) },
       { id: 'member_sub', name: 'Thomas Sous-traitant', email: 'thomas@exemple.fr', phone: '06 00 00 00 04', role: 'subcontractor', skills: ['Maçonnerie'], status: 'active', color: '#8b5cf6', permissionOverrides: {}, projectAccessMode: 'assigned', projectAccessIds: [], availability: availability(35) },
       { id: 'member_accounting', name: 'Julie Comptabilité', email: 'julie@exemple.fr', phone: '', role: 'accountant_assistant', skills: ['Comptabilité'], status: 'active', color: '#64748b', permissionOverrides: {}, projectAccessMode: 'selected', projectAccessIds: ['project_dupont'], availability: availability(28, { workingDays: [1, 2, 4, 5] }) },
     ],
@@ -1129,6 +1194,146 @@ function buildPlanningSuggestions(state) {
 }
 
 
+
+const ULTRA_FORECAST_RULES = Object.freeze({
+  horizonDays: 28,
+  overloadPct: 110,
+  teamTensionPct: 95,
+  structuralUnassignedCount: 2,
+});
+
+function buildUltraForecast(state) {
+  const now = new Date();
+  const horizonEnd = new Date(now);
+  horizonEnd.setDate(horizonEnd.getDate() + ULTRA_FORECAST_RULES.horizonDays);
+  const capacity = buildCapacityOverview(state, now, ULTRA_FORECAST_RULES.horizonDays);
+  const capacityByMember = new Map(capacity.map((item) => [item.memberId, item]));
+  const availabilityRisks = assignmentAvailabilityRisks(state, now);
+  const insights = [];
+  const futureAssignments = state.assignments.filter((assignment) => new Date(assignment.end) >= now && new Date(assignment.start) <= horizonEnd);
+
+  for (const project of state.projects.filter((item) => !['completed', 'invoiced', 'archived'].includes(item.status))) {
+    const assignments = futureAssignments.filter((assignment) => assignment.projectId === project.id);
+    if (!assignments.length) continue;
+    const unassigned = assignments.filter((assignment) => resolveAssignmentMembers(state, assignment).length === 0);
+    const projectRisks = availabilityRisks.filter((risk) => assignments.some((assignment) => assignment.id === risk.assignmentId));
+    const openRequests = state.requests.filter((request) => request.projectId === project.id && request.status !== 'resolved');
+    const urgentRequests = openRequests.filter((request) => ['high', 'urgent'].includes(request.priority));
+    const latestReport = state.reports.filter((report) => report.projectId === project.id).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    const reasons = [];
+    if (unassigned.length) reasons.push(`${unassigned.length} intervention(s) future(s) sans équipe`);
+    if (projectRisks.length) reasons.push(`${projectRisks.length} indisponibilité(s) détectée(s) sur les affectations`);
+    if (urgentRequests.length) reasons.push(`${urgentRequests.length} demande(s) terrain haute(s) ou urgente(s) non résolue(s)`);
+    if (latestReport && latestReport.progress < 50 && new Date(project.endDate) <= horizonEnd) reasons.push(`Dernier avancement déclaré : ${latestReport.progress} %`);
+    if (reasons.length) {
+      insights.push({
+        id: `delay_${project.id}`,
+        type: 'delay_risk',
+        severity: reasons.length >= 2 ? 'high' : 'warning',
+        projectId: project.id,
+        title: `Risque de retard à surveiller — ${project.name}`,
+        reasons,
+        action: 'Décision humaine requise avant toute réorganisation.',
+      });
+    }
+
+    const overloadedMemberIds = [...new Set(assignments.flatMap((assignment) => resolveAssignmentMembers(state, assignment)))]
+      .filter((memberId) => (capacityByMember.get(memberId)?.loadPct ?? 0) > ULTRA_FORECAST_RULES.overloadPct);
+    if (unassigned.length || overloadedMemberIds.length) {
+      insights.push({
+        id: `reinforcement_${project.id}`,
+        type: 'reinforcement_review',
+        severity: overloadedMemberIds.length ? 'warning' : 'info',
+        projectId: project.id,
+        title: `Renfort à étudier — ${project.name}`,
+        reasons: [
+          ...(unassigned.length ? [`${unassigned.length} intervention(s) sans équipe`] : []),
+          ...(overloadedMemberIds.length ? [`${overloadedMemberIds.length} collaborateur(s) au-dessus de ${ULTRA_FORECAST_RULES.overloadPct} % de charge prévisionnelle`] : []),
+        ],
+        action: 'Comparer d’abord les ressources internes ; sous-traitance seulement après validation.',
+      });
+    }
+
+    const plannedMaterialNeeds = Array.isArray(project.plannedMaterialNeeds) ? project.plannedMaterialNeeds : [];
+    if (plannedMaterialNeeds.length) {
+      insights.push({
+        id: `planned_material_${project.id}`,
+        type: 'material_forecast',
+        severity: 'info',
+        projectId: project.id,
+        title: `Matériel prévisionnel à préparer — ${project.name}`,
+        reasons: plannedMaterialNeeds.map((need) => {
+          const quantity = need.quantity != null ? `${need.quantity}${need.unit ? ` ${need.unit}` : ''}` : 'quantité à confirmer';
+          const neededBy = need.neededBy ? ` · besoin le ${formatDate(need.neededBy)}` : '';
+          return `${need.label ?? need.reference ?? 'Référence à confirmer'} · ${quantity}${neededBy}`;
+        }),
+        action: 'Données reçues d’une source SpeedArti validée : contrôler Stock / Catalogue puis préparer une action à valider.',
+      });
+    }
+
+    const materialRequests = openRequests.filter((request) => request.type === 'material');
+    if (materialRequests.length) {
+      insights.push({
+        id: `material_${project.id}`,
+        type: 'material_security',
+        severity: materialRequests.some((request) => ['high', 'urgent'].includes(request.priority)) ? 'high' : 'warning',
+        projectId: project.id,
+        title: `Besoin matériel à sécuriser — ${project.name}`,
+        reasons: materialRequests.map((request) => `${request.title} : ${request.description}`),
+        action: 'Préparer contrôle Stock / Catalogue / brouillon de commande ; aucune commande automatique.',
+      });
+    }
+  }
+
+  const activeCapacity = capacity.filter((item) => item.capacityHours > 0);
+  const averageLoad = activeCapacity.length ? Math.round(activeCapacity.reduce((sum, item) => sum + item.loadPct, 0) / activeCapacity.length) : 0;
+  const globalUnassigned = futureAssignments.filter((assignment) => resolveAssignmentMembers(state, assignment).length === 0);
+  if (averageLoad >= ULTRA_FORECAST_RULES.teamTensionPct && globalUnassigned.length >= ULTRA_FORECAST_RULES.structuralUnassignedCount) {
+    insights.push({
+      id: 'workforce_review',
+      type: 'workforce_review',
+      severity: 'warning',
+      projectId: null,
+      title: 'Capacité humaine à réévaluer',
+      reasons: [`Charge moyenne prévisionnelle : ${averageLoad} %`, `${globalUnassigned.length} interventions futures sans équipe`],
+      action: 'Étudier renfort ponctuel, sous-traitance ou recrutement. SpeedArti ne décide pas automatiquement.',
+    });
+  }
+
+  for (const assignment of globalUnassigned) {
+    const project = state.projects.find((item) => item.id === assignment.projectId);
+    if (!project) continue;
+    const candidates = rankMembers(state, project, assignment);
+    if (!candidates.length) {
+      insights.push({
+        id: `subcontract_${assignment.id}`,
+        type: 'subcontracting_review',
+        severity: project.priority === 'high' ? 'high' : 'warning',
+        projectId: project.id,
+        title: `Sous-traitance à étudier — ${assignment.title}`,
+        reasons: ['Aucun collaborateur interne compatible et disponible n’est identifié par le moteur local.'],
+        action: 'Préparer une demande de renfort au module Sous-traitance après validation du dirigeant.',
+      });
+    }
+  }
+
+  const hasPlannedMaterialData = state.projects.some((project) => Array.isArray(project.plannedMaterialNeeds) && project.plannedMaterialNeeds.length);
+  if (!hasPlannedMaterialData) {
+    insights.push({
+      id: 'material_data_gap',
+      type: 'data_gap',
+      severity: 'info',
+      projectId: null,
+      title: 'Anticipation matériel : données à raccorder',
+      reasons: ['Aucun besoin matériel prévisionnel validé n’est disponible dans cette démo.'],
+      action: 'Le contrat de raccord devra recevoir des besoins validés depuis les modules SpeedArti concernés ; aucune quantité n’est inventée.',
+    });
+  }
+
+  return insights;
+}
+
+
 // ---- src/attachments.js ----
 const DB_NAME = 'speedarti-team-planning-files';
 const STORE_NAME = 'files';
@@ -1263,7 +1468,7 @@ async function importAttachments(records = []) {
 
 
 // ---- src/store.js ----
-const STORAGE_KEY = 'speedarti.team-planning.agenda-demo.v3';
+const STORAGE_KEY = 'speedarti.team-planning.agenda-demo.v4';
 
 function deepClone(value) {
   return structuredClone(value);
@@ -1418,7 +1623,7 @@ const CONNECTION_CATALOG = Object.freeze({
     label: 'Agenda Chantier',
     direction: 'bidirectionnel',
     sourceOfTruth: 'SpeedArti Agenda pour dates et interventions',
-    purpose: 'Lire chantiers/interventions et renvoyer uniquement les affectations internes.',
+    purpose: 'Lire chantiers/interventions et renvoyer uniquement les affectations internes. Les besoins matériels prévisionnels ne sont utilisés que s’ils sont fournis par SpeedArti comme données validées.',
   },
   [SPEEDARTI_MODULES.RH]: {
     label: 'Ressources humaines',
@@ -2234,7 +2439,7 @@ function installIntegrationBridge(store, providedHub = null) {
   };
 
   const bridge = {
-    version: '1.5.0',
+    version: '1.6.0',
     getSnapshot: () => store.getState(),
     exportJson: () => store.exportJson(),
     importJson: (raw) => store.importJson(raw),
@@ -2377,6 +2582,48 @@ const HIDDEN_VIEWS = {
   settings: PERMISSIONS.MANAGE_SETTINGS,
 };
 
+const ROLE_EXPERIENCE = Object.freeze({
+  owner: 'direction',
+  associate: 'direction',
+  secretary: 'office',
+  team_lead: 'team_lead',
+  site_manager: 'site_manager',
+  worker: 'field',
+  subcontractor: 'field',
+  sales: 'support',
+  accountant: 'support',
+  accountant_assistant: 'support',
+});
+
+const ROLE_NAVIGATION = Object.freeze({
+  direction: ['dashboard', 'team', 'planning', 'terrain', 'pilotage'],
+  office: ['dashboard', 'team', 'planning', 'terrain', 'pilotage'],
+  team_lead: ['dashboard', 'team', 'planning', 'terrain', 'pilotage'],
+  site_manager: ['dashboard', 'team', 'planning', 'terrain', 'pilotage'],
+  field: ['dashboard', 'planning', 'terrain'],
+  support: ['dashboard', 'planning'],
+});
+
+const ROLE_NAV_LABELS = Object.freeze({
+  field: { dashboard: "Aujourd’hui", planning: 'Mon planning', terrain: 'Terrain' },
+  team_lead: { dashboard: "Aujourd’hui", team: 'Mon équipe', planning: 'Planning', terrain: 'Terrain', pilotage: 'Suivi' },
+  site_manager: { dashboard: 'Supervision', team: 'Équipes', planning: 'Planning', terrain: 'Terrain', pilotage: 'Pilotage' },
+  support: { dashboard: 'Accueil', planning: 'Chantiers' },
+});
+
+function experienceForMember(member) {
+  return ROLE_EXPERIENCE[member?.role] ?? 'support';
+}
+
+function navigationForMember(state, member) {
+  const experience = experienceForMember(member);
+  const ids = ROLE_NAVIGATION[experience] ?? ROLE_NAVIGATION.support;
+  const labels = ROLE_NAV_LABELS[experience] ?? {};
+  return NAV_ITEMS
+    .filter(([id, , , permission]) => ids.includes(id) && can(state, permission))
+    .map(([id, icon, label, permission]) => [id, icon, labels[id] ?? label, permission]);
+}
+
 const ACTION_LABELS = {
   create_material_request: 'Créer la demande de matériel',
   notify_manager: 'Notifier le dirigeant',
@@ -2435,6 +2682,28 @@ function toLocalDateTime(iso) {
 
 function visibleProjects(state) {
   return state.projects.filter((project) => isProjectVisibleToMember(state, project));
+}
+
+function entityProjectId(state, entityType, entityId) {
+  if (!entityType || !entityId) return null;
+  if (entityType === 'assignment') return state.assignments.find((item) => item.id === entityId)?.projectId ?? null;
+  if (entityType === 'report') return state.reports.find((item) => item.id === entityId)?.projectId ?? null;
+  if (entityType === 'request') return state.requests.find((item) => item.id === entityId)?.projectId ?? null;
+  if (entityType === 'message') return state.messages.find((item) => item.id === entityId)?.projectId ?? null;
+  if (entityType === 'missing_report') {
+    const assignmentId = String(entityId).split(':')[0];
+    return state.assignments.find((item) => item.id === assignmentId)?.projectId ?? null;
+  }
+  return null;
+}
+
+function visibleNotifications(state) {
+  if (can(state, PERMISSIONS.VIEW_ALL_PROJECTS)) return state.notifications;
+  const allowed = new Set(visibleProjects(state).map((project) => project.id));
+  return state.notifications.filter((notification) => {
+    const projectId = entityProjectId(state, notification.entityType, notification.entityId);
+    return projectId ? allowed.has(projectId) : false;
+  });
 }
 
 class TeamPlanningUI {
@@ -2515,16 +2784,16 @@ class TeamPlanningUI {
       this.root.innerHTML = '<main class="fatal">Aucun utilisateur disponible.</main>';
       return;
     }
-    const allowedViews = NAV_ITEMS.filter(([, , , permission]) => can(state, permission));
+    const allowedViews = navigationForMember(state, member);
     const hiddenAllowed = Object.prototype.hasOwnProperty.call(HIDDEN_VIEWS, this.view) && can(state, HIDDEN_VIEWS[this.view]);
     if (!allowedViews.some(([id]) => id === this.view) && !hiddenAllowed) this.view = allowedViews[0]?.[0] ?? 'dashboard';
     const unread = state.notifications.filter((notification) => !notification.read).length;
 
     this.root.innerHTML = `
-      <div class="app-shell">
+      <div class="app-shell role-${experienceForMember(member)}">
         <aside class="sidebar">
           <div class="brand"><span class="brand-mark">S</span><div><strong>SpeedArti</strong><small>Équipe & Planning</small></div></div>
-          <nav aria-label="Navigation Équipe & Planning">${allowedViews.map(([id, icon, label]) => `
+          <nav aria-label="Navigation Équipe & Planning" style="--nav-count:${Math.max(1, allowedViews.length)}">${allowedViews.map(([id, icon, label]) => `
             <button class="nav-item ${this.view === id ? 'active' : ''}" data-view="${id}" aria-current="${this.view === id ? 'page' : 'false'}">
               <span class="nav-icon">${icon}</span><span>${label}</span>${id === 'pilotage' && unread ? `<em>${unread}</em>` : ''}
             </button>`).join('')}</nav>
@@ -2534,7 +2803,7 @@ class TeamPlanningUI {
           <header class="topbar">
             <div class="topbar-leading">
               ${this.view !== 'dashboard' ? '<button class="back-button" data-action="go-back" aria-label="Revenir en arrière">←</button>' : ''}
-              <div><h1>${this.pageTitle()}</h1><p>${escapeHtml(state.company.name)}</p></div>
+              <div><h1>${this.pageTitle()}</h1><p>${escapeHtml(state.company.name)}</p><div class="role-context">${badge(ROLES[member.role], "neutral")}${badge(EDITION_LABELS[state.settings.edition], state.settings.edition === "ultra" ? "purple" : state.settings.edition === "expert" ? "info" : "neutral")}</div></div>
             </div>
             <div class="topbar-actions">
               <form class="global-search" data-form="global-search" role="search">
@@ -2542,7 +2811,7 @@ class TeamPlanningUI {
                 <button class="search-submit" type="submit" aria-label="Lancer la recherche">⌕</button>
               </form>
               <button class="more-button" data-action="open-more-menu" aria-label="Plus d’options">⋯</button>
-              <label class="user-switcher"><span>Utilisateur</span><select data-control="active-member">${state.members.filter((item) => item.status === 'active').map((item) => `<option value="${item.id}" ${item.id === member.id ? 'selected' : ''}>${escapeHtml(item.name)} — ${escapeHtml(ROLES[item.role])}</option>`).join('')}</select></label>
+              <label class="user-switcher"><span>Profil démo</span><select data-control="active-member">${state.members.filter((item) => item.status === 'active').map((item) => `<option value="${item.id}" ${item.id === member.id ? 'selected' : ''}>${escapeHtml(item.name)} — ${escapeHtml(ROLES[item.role])}</option>`).join('')}</select></label>
             </div>
           </header>
           ${this.renderEditionBar(state)}
@@ -2560,6 +2829,9 @@ class TeamPlanningUI {
 
   renderEditionBar(state) {
     const config = EDITION_CONFIG[state.settings.edition];
+    if (!can(state, PERMISSIONS.MANAGE_SETTINGS)) {
+      return `<section class="employee-plan-note"><span><strong>Interface ${escapeHtml(ROLES[getActiveMember(state)?.role] ?? 'Collaborateur')}</strong> · droits limités au rôle et aux chantiers autorisés</span><span>Abonnement ${escapeHtml(config.label)} · simulation</span></section>`;
+    }
     return `<section class="demo-plan-bar" aria-label="Sélecteur de version de démonstration"><div class="demo-plan-copy"><strong>Version de démonstration : ${escapeHtml(config.label)}</strong><span>${escapeHtml(config.summary)}</span></div>${this.renderEditionSwitcher(state)}</section>`;
   }
 
@@ -2574,8 +2846,9 @@ class TeamPlanningUI {
       ['Affectations reliées à l’Agenda Chantier', true, true, true],
       ['Messagerie interne, photos et documents', true, true, true],
       ['Rapports journaliers et demandes terrain', true, true, true],
+      ['Demande matériel structurée + notification automatique', true, true, true],
       ['Détection / analyse automatique des rapports', false, true, true],
-      ['Détection des problèmes et du matériel manquant', false, true, true],
+      ['Détection automatique depuis rapport / message libre', false, true, true],
       ['Actions proposées automatiquement', false, true, true],
       ['Connexion au bouton Ángel global de SpeedArti', false, true, true],
       ['Charge prévisionnelle et capacité', false, false, true],
@@ -2588,7 +2861,16 @@ class TeamPlanningUI {
   }
 
   pageTitle() {
-    return {
+    const state = this.store?.getState?.();
+    const member = state ? getActiveMember(state) : null;
+    const experience = experienceForMember(member);
+    const roleTitles = {
+      field: { dashboard: "Aujourd’hui", planning: 'Mon planning', terrain: 'Mes chantiers' },
+      team_lead: { dashboard: "Aujourd’hui", team: 'Mon équipe', planning: 'Planning équipe', terrain: 'Terrain', pilotage: 'Suivi' },
+      site_manager: { dashboard: 'Supervision', team: 'Équipes', planning: 'Planning équipes', terrain: 'Terrain', pilotage: 'Pilotage' },
+      support: { dashboard: 'Accueil métier', planning: 'Chantiers autorisés' },
+    };
+    return roleTitles[experience]?.[this.view] ?? {
       dashboard: 'Accueil', planning: 'Affectations Agenda Chantier', team: 'Équipe', terrain: 'Terrain', pilotage: 'Pilotage',
       history: 'Historique et traçabilité', settings: 'Configuration',
     }[this.view] ?? 'Équipe & Planning';
@@ -2610,34 +2892,148 @@ class TeamPlanningUI {
     const query = this.searchQuery.trim().toLocaleLowerCase('fr-FR');
     if (query.length < 2) return '';
     const results = [];
-    for (const member of state.members) {
+    const activeMember = getActiveMember(state);
+    const searchableMembers = can(state, PERMISSIONS.VIEW_TEAM) ? state.members : [activeMember].filter(Boolean);
+    for (const member of searchableMembers) {
       const haystack = [member.name, member.email, ROLES[member.role], ...(member.skills ?? [])].join(' ').toLocaleLowerCase('fr-FR');
       if (haystack.includes(query)) results.push({ kind: 'member', id: member.id, title: member.name, detail: `${ROLES[member.role]} · ${(member.skills ?? []).join(', ') || 'Aucune compétence'}` });
     }
-    for (const project of visibleProjects(state)) {
+    const visibleProjectList = visibleProjects(state);
+    const visibleProjectIds = new Set(visibleProjectList.map((project) => project.id));
+    for (const project of visibleProjectList) {
       const haystack = [project.name, project.client, project.address, project.notes].join(' ').toLocaleLowerCase('fr-FR');
       if (haystack.includes(query)) results.push({ kind: 'project', id: project.id, projectId: project.id, title: project.name, detail: `${project.client || ''} · ${project.address || ''}` });
     }
     for (const assignment of state.assignments) {
-      if (assignment.title.toLocaleLowerCase('fr-FR').includes(query)) results.push({ kind: 'assignment', id: assignment.id, projectId: assignment.projectId, title: assignment.title, detail: `${projectName(state, assignment.projectId)} · ${formatDateTime(assignment.start)}` });
+      const fieldLimited = experienceForMember(activeMember) === 'field' && !resolveAssignmentMembers(state, assignment).includes(activeMember.id);
+      if (!fieldLimited && visibleProjectIds.has(assignment.projectId) && assignment.title.toLocaleLowerCase('fr-FR').includes(query)) results.push({ kind: 'assignment', id: assignment.id, projectId: assignment.projectId, title: assignment.title, detail: `${projectName(state, assignment.projectId)} · ${formatDateTime(assignment.start)}` });
     }
     for (const message of state.messages) {
-      if (message.body.toLocaleLowerCase('fr-FR').includes(query)) results.push({ kind: 'message', id: message.id, projectId: message.projectId, title: `Message de ${memberName(state, message.authorId)}`, detail: message.body });
+      const allowedMessage = visibleProjectIds.has(message.projectId) && (message.authorId === activeMember.id || message.recipientIds.includes(activeMember.id) || can(state, PERMISSIONS.VIEW_ALL_PROJECTS));
+      if (allowedMessage && message.body.toLocaleLowerCase('fr-FR').includes(query)) results.push({ kind: 'message', id: message.id, projectId: message.projectId, title: `Message de ${memberName(state, message.authorId)}`, detail: message.body });
     }
     const limited = results.slice(0, 12);
     return `<section class="search-results panel"><div class="panel-header"><div><h2>Résultats pour « ${escapeHtml(this.searchQuery)} »</h2><p>${limited.length} résultat(s) affiché(s).</p></div><button class="ghost" data-action="clear-search">Fermer</button></div>${limited.length ? `<div class="search-result-list">${limited.map((item) => `<button class="search-result" data-action="open-search-result" data-kind="${item.kind}" data-id="${item.id}" data-project-id="${item.projectId || ''}"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small></button>`).join('')}</div>` : this.empty('Aucun résultat.')}</section>`;
   }
 
+  renderRoleDashboard(state, member) {
+    const experience = experienceForMember(member);
+    if (experience === 'field') return this.renderFieldDashboard(state, member);
+    if (experience === 'team_lead') return this.renderTeamLeadDashboard(state, member);
+    if (experience === 'site_manager') return this.renderSiteManagerDashboard(state, member);
+    if (experience === 'support') return this.renderSupportDashboard(state, member);
+    return null;
+  }
+
+  renderFieldDashboard(state, member) {
+    const now = new Date();
+    const projects = visibleProjects(state);
+    const projectIds = new Set(projects.map((project) => project.id));
+    const myAssignments = state.assignments
+      .filter((assignment) => projectIds.has(assignment.projectId) && resolveAssignmentMembers(state, assignment).includes(member.id) && new Date(assignment.end) >= now)
+      .sort((a, b) => new Date(a.start) - new Date(b.start));
+    const myRequests = state.requests.filter((request) => request.authorId === member.id && request.status !== 'resolved');
+    const myMessages = state.messages.filter((message) => message.authorId === member.id || message.recipientIds.includes(member.id));
+    const unreadMessages = myMessages.filter((message) => !(message.readBy ?? []).includes(member.id)).length;
+    const firstAssignment = myAssignments[0];
+    return `
+      <section class="field-hero"><div><span class="eyebrow">Mon espace terrain</span><h2>Bonjour ${escapeHtml(member.name.split(' ')[0])}</h2><p>${firstAssignment ? `Prochaine intervention : ${escapeHtml(firstAssignment.title)} · ${escapeHtml(projectName(state, firstAssignment.projectId))}` : 'Aucune intervention future affectée.'}</p></div><span class="field-date">${formatDate(nowIso())}</span></section>
+      <section class="field-actions" aria-label="Actions rapides terrain">
+        ${can(state, PERMISSIONS.CREATE_REPORTS) ? '<button class="field-action" data-action="open-report"><span class="field-action-icon">📝</span><strong>Faire un rapport</strong><small>Avancement, problème, photos</small></button>' : ''}
+        ${can(state, PERMISSIONS.CREATE_REQUESTS) ? '<button class="field-action" data-action="open-material-request"><span class="field-action-icon">🧰</span><strong>Demander du matériel</strong><small>Demande structurée + notification</small></button>' : ''}
+        ${can(state, PERMISSIONS.CREATE_REQUESTS) ? '<button class="field-action" data-action="open-problem-request"><span class="field-action-icon">⚠️</span><strong>Signaler un problème</strong><small>Chantier, urgence, pièce jointe</small></button>' : ''}
+        ${can(state, PERMISSIONS.SEND_MESSAGES) ? '<button class="field-action" data-action="open-message"><span class="field-action-icon">💬</span><strong>Messages</strong><small>Échanges internes chantier</small></button>' : ''}
+        ${can(state, PERMISSIONS.CREATE_REPORTS) ? '<button class="field-action" data-action="open-report"><span class="field-action-icon">📷</span><strong>Photos / documents</strong><small>Joindre au rapport terrain</small></button>' : ''}
+        <button class="field-action" data-view="terrain"><span class="field-action-icon">🏗️</span><strong>Mes chantiers</strong><small>${projects.length} chantier(s) autorisé(s)</small></button>
+        <button class="field-action" data-view="planning"><span class="field-action-icon">🗓️</span><strong>Mon planning</strong><small>${myAssignments.length} intervention(s) à venir</small></button>
+      </section>
+      <section class="role-dashboard-grid">
+        <article class="role-summary-card"><strong>${myAssignments.length}</strong><span>Interventions à venir</span><small>Uniquement vos affectations</small></article>
+        <article class="role-summary-card"><strong>${myRequests.length}</strong><span>Demandes ouvertes</span><small>Matériel, problème, document…</small></article>
+        <article class="role-summary-card"><strong>${unreadMessages}</strong><span>Messages non lus</span><small>Messagerie interne uniquement</small></article>
+      </section>
+      <article class="panel"><div class="panel-header"><div><h2>Mes prochaines interventions</h2><p>Dates issues de l’Agenda Chantier SpeedArti ; aucune modification de date depuis ce module.</p></div><button class="secondary" data-view="planning">Voir tout</button></div>
+        ${myAssignments.length ? `<div class="my-work-list">${myAssignments.slice(0, 5).map((assignment) => `<button class="my-work-card" data-view="planning"><span class="my-work-date">${formatDate(assignment.start)}</span><span><strong>${escapeHtml(assignment.title)}</strong><p>${escapeHtml(projectName(state, assignment.projectId))} · ${formatDateTime(assignment.start)}</p></span>${statusBadge(assignment.status)}</button>`).join('')}</div>` : this.empty('Aucune intervention à venir.')}
+      </article>
+      <article class="panel scope-panel"><h2>Ce que cette interface ne fait pas</h2><p>Pas de comptabilité, pas de données RH des autres collaborateurs, pas de pointage et pas de géolocalisation permanente. Les accès dépendent des permissions définies par le dirigeant.</p></article>
+    `;
+  }
+
+  renderTeamLeadDashboard(state, member) {
+    const projects = visibleProjects(state);
+    const projectIds = new Set(projects.map((project) => project.id));
+    const crews = state.crews.filter((crew) => crew.memberIds.includes(member.id));
+    const teamIds = new Set([member.id, ...crews.flatMap((crew) => crew.memberIds)]);
+    const assignments = state.assignments.filter((assignment) => projectIds.has(assignment.projectId) && new Date(assignment.end) >= new Date());
+    const missing = findMissingReports(state).filter((item) => projectIds.has(item.projectId) && teamIds.has(item.memberId));
+    const requests = state.requests.filter((request) => projectIds.has(request.projectId) && request.status !== 'resolved');
+    return `
+      <section class="field-hero"><div><span class="eyebrow">Chef d’équipe</span><h2>${escapeHtml(member.name)} · suivi terrain</h2><p>Vos chantiers, votre équipe et les informations qui demandent une action.</p></div><span class="field-date">${formatDate(nowIso())}</span></section>
+      <section class="role-dashboard-grid">
+        <article class="role-summary-card"><strong>${projects.length}</strong><span>Chantiers accessibles</span><small>Selon affectations et permissions</small></article>
+        <article class="role-summary-card"><strong>${Math.max(0, teamIds.size - 1)}</strong><span>Collaborateurs suivis</span><small>Équipes auxquelles vous appartenez</small></article>
+        <article class="role-summary-card"><strong>${missing.length}</strong><span>Rapports manquants</span><small>Sur votre périmètre</small></article>
+        <article class="role-summary-card"><strong>${requests.length}</strong><span>Demandes ouvertes</span><small>Sur vos chantiers</small></article>
+      </section>
+      <section class="field-actions">
+        <button class="field-action" data-view="team"><span class="field-action-icon">👷</span><strong>Mon équipe</strong><small>Disponibilités et compétences</small></button>
+        <button class="field-action" data-view="planning"><span class="field-action-icon">🗓️</span><strong>Planning</strong><small>${assignments.length} intervention(s)</small></button>
+        ${can(state, PERMISSIONS.CREATE_REPORTS) ? '<button class="field-action" data-action="open-report"><span class="field-action-icon">📝</span><strong>Rapport terrain</strong><small>Écrire, dicter, joindre des photos</small></button>' : ''}
+        <button class="field-action" data-view="terrain"><span class="field-action-icon">⚑</span><strong>Demandes & problèmes</strong><small>Suivi opérationnel</small></button>
+      </section>
+    `;
+  }
+
+  renderSiteManagerDashboard(state, member) {
+    const projects = visibleProjects(state).filter((project) => !['completed', 'invoiced', 'archived'].includes(project.status));
+    const projectIds = new Set(projects.map((project) => project.id));
+    const assignments = state.assignments.filter((assignment) => projectIds.has(assignment.projectId) && new Date(assignment.end) >= new Date());
+    const unassigned = assignments.filter((assignment) => resolveAssignmentMembers(state, assignment).length === 0);
+    const risks = assignmentAvailabilityRisks(state).filter((risk) => projectIds.has(risk.projectId));
+    const missing = findMissingReports(state).filter((item) => projectIds.has(item.projectId));
+    return `
+      <section class="field-hero"><div><span class="eyebrow">Conducteur de travaux</span><h2>Supervision multi-chantiers</h2><p>${escapeHtml(member.name)} voit uniquement les chantiers autorisés par ses permissions.</p></div><span class="field-date">${formatDate(nowIso())}</span></section>
+      <section class="role-dashboard-grid">
+        <article class="role-summary-card"><strong>${projects.length}</strong><span>Chantiers actifs</span><small>Périmètre autorisé</small></article>
+        <article class="role-summary-card"><strong>${unassigned.length}</strong><span>Sans équipe</span><small>Affectations à préparer</small></article>
+        <article class="role-summary-card"><strong>${risks.length}</strong><span>Indisponibilités</span><small>Conflits à contrôler</small></article>
+        <article class="role-summary-card"><strong>${missing.length}</strong><span>Rapports manquants</span><small>Suivi terrain</small></article>
+      </section>
+      <section class="field-actions">
+        <button class="field-action" data-view="planning"><span class="field-action-icon">▦</span><strong>Organiser les équipes</strong><small>Affectations sur l’Agenda existant</small></button>
+        <button class="field-action" data-view="team"><span class="field-action-icon">👥</span><strong>Équipes</strong><small>Compétences et disponibilités</small></button>
+        <button class="field-action" data-view="terrain"><span class="field-action-icon">≣</span><strong>Terrain</strong><small>Rapports, demandes, messages</small></button>
+        <button class="field-action" data-view="pilotage"><span class="field-action-icon">◎</span><strong>Pilotage</strong><small>Alertes et prévisions selon abonnement</small></button>
+      </section>
+    `;
+  }
+
+  renderSupportDashboard(state, member) {
+    const projects = visibleProjects(state);
+    const permissions = memberPermissions(state, member);
+    return `
+      <section class="field-hero"><div><span class="eyebrow">Accès métier</span><h2>${escapeHtml(ROLES[member.role])}</h2><p>Cette démo n’ajoute pas d’écrans qui appartiennent aux autres modules SpeedArti. Elle limite seulement l’accès Équipe & Planning.</p></div></section>
+      <section class="role-dashboard-grid">
+        <article class="role-summary-card"><strong>${projects.length}</strong><span>Chantiers accessibles</span><small>Selon rôle et périmètre</small></article>
+        <article class="role-summary-card"><strong>${permissions.length}</strong><span>Droits actifs</span><small>Personnalisables par le dirigeant</small></article>
+      </section>
+      ${can(state, PERMISSIONS.VIEW_PLANNING) ? '<button class="primary" data-view="planning">Voir les chantiers autorisés</button>' : '<article class="panel"><p>Aucune fonction Équipe & Planning supplémentaire n’est nécessaire pour ce profil avec les droits actuels.</p></article>'}
+    `;
+  }
+
   renderDashboard(state) {
+    const roleDashboard = this.renderRoleDashboard(state, getActiveMember(state));
+    if (roleDashboard) return roleDashboard;
     const activeProjects = visibleProjects(state).filter((project) => !['completed', 'invoiced', 'archived'].includes(project.status));
-    const openRequests = state.requests.filter((request) => request.status !== 'resolved');
+    const dashboardProjectIds = new Set(activeProjects.map((project) => project.id));
+    const openRequests = state.requests.filter((request) => dashboardProjectIds.has(request.projectId) && request.status !== 'resolved');
     const unread = state.notifications.filter((notification) => !notification.read);
     const openTasks = state.tasks.filter((task) => task.status !== 'completed' && (task.assigneeId === state.session.activeMemberId || can(state, PERMISSIONS.VIEW_ALL_PROJECTS)));
-    const missing = findMissingReports(state);
-    const risks = assignmentAvailabilityRisks(state);
-    const unassigned = state.assignments.filter((assignment) => new Date(assignment.end) >= new Date() && resolveAssignmentMembers(state, assignment).length === 0);
+    const missing = findMissingReports(state).filter((item) => dashboardProjectIds.has(item.projectId));
+    const risks = assignmentAvailabilityRisks(state).filter((risk) => dashboardProjectIds.has(risk.projectId));
+    const unassigned = state.assignments.filter((assignment) => dashboardProjectIds.has(assignment.projectId) && new Date(assignment.end) >= new Date() && resolveAssignmentMembers(state, assignment).length === 0);
     const urgentRequests = openRequests.filter((request) => ['high', 'urgent'].includes(request.priority));
-    const upcoming = state.assignments.filter((assignment) => new Date(assignment.end) >= new Date()).sort((a, b) => new Date(a.start) - new Date(b.start)).slice(0, 4);
+    const upcoming = state.assignments.filter((assignment) => dashboardProjectIds.has(assignment.projectId) && new Date(assignment.end) >= new Date()).sort((a, b) => new Date(a.start) - new Date(b.start)).slice(0, 4);
     const attention = [
       { count: unassigned.length, title: 'Interventions sans équipe', detail: 'Affectations à compléter', view: 'planning', tone: unassigned.length ? 'warning' : 'success' },
       { count: missing.length, title: 'Rapports manquants', detail: 'Rapports terrain attendus', view: 'pilotage', tone: missing.length ? 'warning' : 'success' },
@@ -2674,8 +3070,12 @@ class TeamPlanningUI {
   }
 
   renderPlanning(state) {
+    const activeMember = getActiveMember(state);
+    const fieldLimited = experienceForMember(activeMember) === 'field';
+    const visibleProjectIds = new Set(visibleProjects(state).map((project) => project.id));
     const assignments = state.assignments
-      .filter((assignment) => visibleProjects(state).some((project) => project.id === assignment.projectId))
+      .filter((assignment) => visibleProjectIds.has(assignment.projectId))
+      .filter((assignment) => !fieldLimited || resolveAssignmentMembers(state, assignment).includes(activeMember.id))
       .sort((a, b) => new Date(a.start) - new Date(b.start));
     const suggestions = state.suggestions.filter((suggestion) => suggestion.status === 'pending');
     const unassignedCount = assignments.filter((assignment) => resolveAssignmentMembers(state, assignment).length === 0).length;
@@ -2704,8 +3104,8 @@ class TeamPlanningUI {
           </article>`;
         }).join('')}</div>` : this.empty('Aucune intervention reçue de l’Agenda Chantier.')}
       </article>
-      ${hasEdition(state, 'ultra') && can(state, PERMISSIONS.VIEW_CAPACITY) ? `<article class="panel capacity-panel"><div class="panel-header"><div><h2>Charge prévisionnelle des collaborateurs</h2><p>Calculée uniquement à partir des interventions planifiées sur 4 semaines. Ce n’est pas du pointage.</p></div>${badge('Prévisionnel', 'purple')}</div><div class="capacity-grid">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct} %</b> · ${item.plannedHours} h planifiées / ${item.capacityHours} h disponibles</p><small>${item.assignmentCount} intervention(s)</small></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'L’analyse de charge prévisionnelle et de capacité est réservée au niveau Ultra.')}
-      ${hasEdition(state, 'ultra') ? `<article class="panel ultra-panel">
+      ${hasUltraAccess(state) && can(state, PERMISSIONS.VIEW_CAPACITY) ? `<article class="panel capacity-panel"><div class="panel-header"><div><h2>Charge prévisionnelle des collaborateurs</h2><p>Calculée uniquement à partir des interventions planifiées sur 4 semaines. Ce n’est pas du pointage.</p></div>${badge('Prévisionnel', 'purple')}</div><div class="capacity-grid">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct} %</b> · ${item.plannedHours} h planifiées / ${item.capacityHours} h disponibles</p><small>${item.assignmentCount} intervention(s)</small></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'L’analyse de charge prévisionnelle et de capacité est réservée au niveau Ultra.')}
+      ${hasUltraAccess(state) ? `<article class="panel ultra-panel">
         <div class="panel-header"><div><span class="eyebrow">Mode Ultra</span><h2>Affectations et réorganisations proposées</h2><p>Le moteur Ultra recherche les interventions sans équipe et les indisponibilités déclarées. Validation humaine obligatoire.</p></div><button class="secondary" data-action="generate-suggestions">Analyser le planning</button></div>
         ${suggestions.length ? `<div class="suggestion-grid">${suggestions.map((suggestion) => `<article class="suggestion"><div class="row-between"><strong>${escapeHtml(suggestion.assignmentTitle || projectName(state, suggestion.projectId))}</strong>${badge(suggestion.type === 'reorganization' ? 'Réorganisation' : `Score ${suggestion.score}`, suggestion.type === 'reorganization' ? 'warning' : 'purple')}</div><p>${suggestion.reasons.map(escapeHtml).join('<br>')}</p><div class="chips">${(suggestion.candidateMemberIds ?? suggestion.memberIds).map((id) => badge(memberName(state, id), 'person')).join('')}</div><div class="button-row"><button class="primary" data-action="approve-suggestion" data-id="${suggestion.id}">Valider la proposition</button><button class="ghost" data-action="reject-suggestion" data-id="${suggestion.id}">Refuser</button></div></article>`).join('')}</div>` : this.empty('Aucune suggestion en attente. Lancez l’analyse.')}
       </article>` : this.lockedPanel('Ultra', 'La planification intelligente est disponible dans le niveau Ultra.')}
@@ -2714,10 +3114,16 @@ class TeamPlanningUI {
 
 
   renderTeam(state) {
+    const activeMember = getActiveMember(state);
+    const experience = experienceForMember(activeMember);
+    const ownCrewIds = new Set(state.crews.filter((crew) => crew.memberIds.includes(activeMember.id)).flatMap((crew) => crew.memberIds));
+    ownCrewIds.add(activeMember.id);
+    const displayedMembers = experience === 'team_lead' ? state.members.filter((member) => ownCrewIds.has(member.id)) : state.members;
+    const displayedCrews = experience === 'team_lead' ? state.crews.filter((crew) => crew.memberIds.includes(activeMember.id)) : state.crews;
     return `
       <div class="page-actions"><div><p class="lead">Profils, rôles, compétences, accès chantier et disponibilités opérationnelles.</p></div>${can(state, PERMISSIONS.MANAGE_TEAM) ? '<div class="button-row"><button class="secondary" data-action="open-crew">+ Créer une équipe</button><button class="primary" data-action="open-member">+ Ajouter un collaborateur</button></div>' : ''}</div>
       <article class="panel"><div class="panel-header"><div><h2>Collaborateurs</h2><p>Chaque membre peut recevoir un périmètre de chantiers et des droits individuels.</p></div></div>
-        <div class="member-grid">${state.members.map((member) => {
+        <div class="member-grid">${displayedMembers.map((member) => {
           const days = (member.availability?.workingDays ?? []).map((day) => WORKDAY_LABELS[day]?.slice(0, 3)).join(' · ');
           const periods = member.availability?.unavailablePeriods ?? [];
           const scopeLabel = member.projectAccessMode === 'all' ? 'Tous les chantiers' : member.projectAccessMode === 'selected' ? `${member.projectAccessIds?.length ?? 0} chantier(s) sélectionné(s)` : member.projectAccessMode === 'assigned' ? 'Chantiers affectés uniquement' : 'Selon le rôle';
@@ -2725,7 +3131,7 @@ class TeamPlanningUI {
         }).join('')}</div>
       </article>
       <article class="panel"><div class="panel-header"><div><h2>Équipes constituées</h2><p>Affectez une équipe entière à une intervention reçue de l’Agenda Chantier.</p></div></div>
-        ${state.crews.length ? `<div class="crew-grid">${state.crews.map((crew) => `<article class="crew-card"><div class="row-between"><h3>${escapeHtml(crew.name)}</h3>${badge(`${crew.memberIds.length} membre(s)`, 'info')}</div><p>${escapeHtml((crew.specialties ?? []).join(' · ') || 'Aucune spécialité')}</p><div class="stack compact">${crew.memberIds.map((id) => `<span>• ${escapeHtml(memberName(state, id))}</span>`).join('')}</div>${can(state, PERMISSIONS.MANAGE_TEAM) ? `<div class="button-row"><button class="ghost" data-action="edit-crew" data-id="${crew.id}">Modifier</button><button class="ghost danger-text" data-action="delete-crew" data-id="${crew.id}">Supprimer</button></div>` : ''}</article>`).join('')}</div>` : this.empty('Aucune équipe créée.')}
+        ${displayedCrews.length ? `<div class="crew-grid">${displayedCrews.map((crew) => `<article class="crew-card"><div class="row-between"><h3>${escapeHtml(crew.name)}</h3>${badge(`${crew.memberIds.length} membre(s)`, 'info')}</div><p>${escapeHtml((crew.specialties ?? []).join(' · ') || 'Aucune spécialité')}</p><div class="stack compact">${crew.memberIds.map((id) => `<span>• ${escapeHtml(memberName(state, id))}</span>`).join('')}</div>${can(state, PERMISSIONS.MANAGE_TEAM) ? `<div class="button-row"><button class="ghost" data-action="edit-crew" data-id="${crew.id}">Modifier</button><button class="ghost danger-text" data-action="delete-crew" data-id="${crew.id}">Supprimer</button></div>` : ''}</article>`).join('')}</div>` : this.empty('Aucune équipe créée.')}
       </article>
       <article class="panel scope-panel"><h2>Disponibilité ≠ pointage</h2><p>Les jours habituels et indisponibilités servent uniquement à préparer les affectations. Aucune heure d’arrivée, de départ ou géolocalisation n’est collectée.</p></article>
     `;
@@ -2737,10 +3143,11 @@ class TeamPlanningUI {
     const selectedProjectId = this.terrainProjectFilter !== 'all' && projects.some((project) => project.id === this.terrainProjectFilter) ? this.terrainProjectFilter : 'all';
     const projectIds = selectedProjectId === 'all' ? new Set(projects.map((project) => project.id)) : new Set([selectedProjectId]);
     const selectedProject = selectedProjectId === 'all' ? null : projects.find((project) => project.id === selectedProjectId);
+    const activeMember = getActiveMember(state);
     const feed = [
-      ...state.messages.filter((item) => projectIds.has(item.projectId)).map((item) => ({ type: 'message', at: item.createdAt, item })),
-      ...state.reports.filter((item) => projectIds.has(item.projectId)).map((item) => ({ type: 'report', at: item.date, item })),
-      ...state.requests.filter((item) => projectIds.has(item.projectId)).map((item) => ({ type: 'request', at: item.createdAt, item })),
+      ...state.messages.filter((item) => projectIds.has(item.projectId) && (item.authorId === activeMember.id || item.recipientIds.includes(activeMember.id) || can(state, PERMISSIONS.VIEW_ALL_PROJECTS))).map((item) => ({ type: 'message', at: item.createdAt, item })),
+      ...state.reports.filter((item) => projectIds.has(item.projectId) && (item.authorId === activeMember.id || can(state, PERMISSIONS.MANAGE_REPORTS))).map((item) => ({ type: 'report', at: item.date, item })),
+      ...state.requests.filter((item) => projectIds.has(item.projectId) && (item.authorId === activeMember.id || can(state, PERMISSIONS.MANAGE_REQUESTS))).map((item) => ({ type: 'request', at: item.createdAt, item })),
     ].sort((a, b) => new Date(b.at) - new Date(a.at));
 
     return `
@@ -2763,36 +3170,41 @@ class TeamPlanningUI {
   renderTerrainEntry(state, entry) {
     const item = entry.item;
     if (entry.type === 'message') {
-      return `<article class="feed-entry"><span class="feed-icon">💬</span><div class="feed-body"><div class="feed-heading"><div><strong>Message · ${escapeHtml(memberName(state, item.authorId))}</strong><small>${escapeHtml(projectName(state, item.projectId))} · ${formatDateTime(item.createdAt)}</small></div>${badge('Message', 'neutral')}</div><p>${escapeHtml(item.body)}</p>${item.attachments?.length ? `<div class="chips">${item.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}${hasEdition(state, 'expert') && can(state, PERMISSIONS.MANAGE_REPORTS) ? this.renderMessageAnalysis(state, item) : ''}</div></article>`;
+      return `<article class="feed-entry"><span class="feed-icon">💬</span><div class="feed-body"><div class="feed-heading"><div><strong>Message · ${escapeHtml(memberName(state, item.authorId))}</strong><small>${escapeHtml(projectName(state, item.projectId))} · ${formatDateTime(item.createdAt)}</small></div>${badge('Message', 'neutral')}</div><p>${escapeHtml(item.body)}</p>${item.attachments?.length ? `<div class="chips">${item.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}${hasExpertAccess(state) && can(state, PERMISSIONS.MANAGE_REPORTS) ? this.renderMessageAnalysis(state, item) : ''}</div></article>`;
     }
     if (entry.type === 'report') {
-      return `<article class="feed-entry"><span class="feed-icon">📝</span><div class="feed-body"><div class="feed-heading"><div><strong>Rapport · ${escapeHtml(memberName(state, item.authorId))}</strong><small>${escapeHtml(projectName(state, item.projectId))} · ${formatDateTime(item.date)}</small></div>${badge(`${item.progress}%`, 'info')}</div><p>${escapeHtml(item.summary)}</p><div class="progress"><span style="width:${Math.max(0, Math.min(100, item.progress))}%"></span></div>${item.problems ? `<div class="inline-alert"><strong>⚠ Difficulté</strong><span>${escapeHtml(item.problems)}</span></div>` : ''}${item.materials ? `<div class="inline-info"><strong>Matériel</strong><span>${escapeHtml(item.materials)}</span></div>` : ''}${item.attachments?.length ? `<div class="chips">${item.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}${hasEdition(state, 'expert') ? this.renderReportAnalysis(state, item) : ''}</div></article>`;
+      return `<article class="feed-entry"><span class="feed-icon">📝</span><div class="feed-body"><div class="feed-heading"><div><strong>Rapport · ${escapeHtml(memberName(state, item.authorId))}</strong><small>${escapeHtml(projectName(state, item.projectId))} · ${formatDateTime(item.date)}</small></div>${badge(`${item.progress}%`, 'info')}</div><p>${escapeHtml(item.summary)}</p><div class="progress"><span style="width:${Math.max(0, Math.min(100, item.progress))}%"></span></div>${item.problems ? `<div class="inline-alert"><strong>⚠ Difficulté</strong><span>${escapeHtml(item.problems)}</span></div>` : ''}${item.materials ? `<div class="inline-info"><strong>Matériel</strong><span>${escapeHtml(item.materials)}</span></div>` : ''}${item.attachments?.length ? `<div class="chips">${item.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}${hasExpertAccess(state) ? this.renderReportAnalysis(state, item) : ''}</div></article>`;
     }
     return `<article class="feed-entry"><span class="feed-icon">⚑</span><div class="feed-body"><div class="feed-heading"><div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(projectName(state, item.projectId))} · par ${escapeHtml(memberName(state, item.authorId))} · ${formatDateTime(item.createdAt)}</small></div><div class="chips compact-chips">${priorityBadge(item.priority)}${statusBadge(item.status)}</div></div><p>${escapeHtml(item.description)}</p>${item.attachments?.length ? `<div class="chips">${item.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}${item.type === 'material' && can(state, PERMISSIONS.MANAGE_REQUESTS) ? `<div class="material-actions"><button class="secondary small" data-action="material-stock-check" data-id="${item.id}">${item.stockCheck?.checkedAt ? 'Stock vérifié' : 'Vérifier le stock'}</button><button class="secondary small" data-action="prepare-order" data-id="${item.id}">${item.orderDraft?.createdAt ? 'Commande préparée' : 'Préparer une commande'}</button></div>` : ''}${can(state, PERMISSIONS.MANAGE_REQUESTS) ? `<label class="inline-status">Statut<select data-control="request-status" data-id="${item.id}"><option value="open" ${item.status === 'open' ? 'selected' : ''}>À traiter</option><option value="acknowledged" ${item.status === 'acknowledged' ? 'selected' : ''}>Prise en compte</option><option value="resolved" ${item.status === 'resolved' ? 'selected' : ''}>Résolue</option></select></label>` : ''}</div></article>`;
   }
 
   renderPilotage(state) {
-    const missing = findMissingReports(state);
-    const capacity = buildCapacityOverview(state);
-    const risks = assignmentAvailabilityRisks(state);
-    const unassigned = state.assignments.filter((assignment) => new Date(assignment.end) >= new Date() && resolveAssignmentMembers(state, assignment).length === 0);
-    const suggestions = state.suggestions.filter((suggestion) => suggestion.status === 'pending');
-    const unread = state.notifications.filter((notification) => !notification.read);
+    const projectIds = new Set(visibleProjects(state).map((project) => project.id));
+    const missing = findMissingReports(state).filter((item) => projectIds.has(item.projectId));
+    const relevantMemberIds = new Set(state.assignments.filter((assignment) => projectIds.has(assignment.projectId)).flatMap((assignment) => resolveAssignmentMembers(state, assignment)));
+    const capacity = buildCapacityOverview(state).filter((item) => relevantMemberIds.has(item.memberId) || item.memberId === state.session.activeMemberId);
+    const risks = assignmentAvailabilityRisks(state).filter((risk) => projectIds.has(risk.projectId));
+    const unassigned = state.assignments.filter((assignment) => projectIds.has(assignment.projectId) && new Date(assignment.end) >= new Date() && resolveAssignmentMembers(state, assignment).length === 0);
+    const suggestions = state.suggestions.filter((suggestion) => suggestion.status === 'pending' && (!suggestion.projectId || projectIds.has(suggestion.projectId)));
+    const forecast = buildUltraForecast(state).filter((item) => item.projectId ? projectIds.has(item.projectId) : can(state, PERMISSIONS.VIEW_ALL_PROJECTS));
+    const scopedNotifications = visibleNotifications(state);
+    const unread = scopedNotifications.filter((notification) => !notification.read);
     const overloads = capacity.filter((item) => item.status === 'overload');
     return `
       <section class="pilotage-kpis">
         ${this.kpi('Sans équipe', unassigned.length, 'Interventions à affecter')}
         ${this.kpi('Rapports manquants', missing.length, 'À relancer')}
-        ${hasEdition(state, 'ultra') ? this.kpi('Surcharges', overloads.length, 'Charge prévisionnelle') : this.kpi('Surcharges', '—', 'Disponible en Ultra')}
+        ${hasUltraAccess(state) ? this.kpi('Surcharges', overloads.length, 'Charge prévisionnelle') : this.kpi('Surcharges', '—', 'Disponible en Ultra')}
         ${this.kpi('Alertes', unread.length, 'Notifications non lues')}
       </section>
       <section class="two-columns pilotage-grid">
-        ${hasEdition(state, 'ultra') ? `<article class="panel"><div class="panel-header"><div><h2>Charge de l’équipe</h2><p>Prévision sur les interventions de l’Agenda Chantier.</p></div>${badge('Ultra · Prévisionnel', 'purple')}</div><div class="capacity-grid compact-capacity">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct}%</b> · ${item.plannedHours} h / ${item.capacityHours} h</p></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'Charge, capacité, surcharge, sous-charge et besoins de renfort sont réservés au niveau Ultra.')}
+        ${hasUltraAccess(state) ? `<article class="panel"><div class="panel-header"><div><h2>Charge de l’équipe</h2><p>Prévision sur les interventions de l’Agenda Chantier.</p></div>${badge('Ultra · Prévisionnel', 'purple')}</div><div class="capacity-grid compact-capacity">${capacity.map((item) => `<article class="capacity-card"><div class="row-between"><strong>${escapeHtml(memberName(state, item.memberId))}</strong>${badge(item.status === 'overload' ? 'Surcharge' : item.status === 'underload' ? 'Sous-charge' : 'Équilibré', item.status === 'overload' ? 'danger' : item.status === 'underload' ? 'warning' : 'success')}</div><div class="capacity-bar"><span style="width:${Math.min(100, item.loadPct)}%"></span></div><p><b>${item.loadPct}%</b> · ${item.plannedHours} h / ${item.capacityHours} h</p></article>`).join('')}</div></article>` : this.lockedPanel('Ultra', 'Charge, capacité, surcharge, sous-charge et besoins de renfort sont réservés au niveau Ultra.')}
         <article class="panel"><div class="panel-header"><div><h2>À contrôler</h2><p>Points nécessitant une décision humaine.</p></div></div><div class="pilotage-alert-list">${unassigned.map((assignment) => `<button data-view="planning"><strong>Équipe à affecter</strong><span>${escapeHtml(assignment.title)} · ${escapeHtml(projectName(state, assignment.projectId))}</span></button>`).join('')}${missing.map((item) => `<button data-action="remind-missing-report" data-assignment-id="${item.assignmentId}" data-member-id="${item.memberId}"><strong>Rapport manquant</strong><span>${escapeHtml(memberName(state, item.memberId))} · ${escapeHtml(projectName(state, item.projectId))}</span></button>`).join('')}${risks.map((risk) => `<button data-view="planning"><strong>Indisponibilité</strong><span>${escapeHtml(memberName(state, risk.memberId))} · ${escapeHtml(risk.reason)}</span></button>`).join('') || this.empty('Aucun point critique détecté.')}</div></article>
       </section>
-      ${hasEdition(state, 'expert') ? `<article class="panel expert-panel"><div class="panel-header"><div><span class="eyebrow">Mode Expert</span><h2>Intelligence terrain</h2><p>Les rapports et messages peuvent être analysés pour détecter problèmes, matériel manquant et actions à préparer.</p></div>${badge('Connexion Ángel prête', 'info')}</div><div class="button-row"><button class="secondary" data-view="terrain">Voir les analyses terrain</button></div><div class="level-note">Ángel reste accessible depuis le bouton global de SpeedArti : aucun bouton Ángel n’est ajouté dans ce module.</div></article>` : this.lockedPanel('Expert', 'Analyse automatique des rapports, messages, problèmes et matériel manquant disponible à partir du niveau Expert.')}
-      ${hasEdition(state, 'ultra') ? `<article class="panel ultra-panel"><div class="panel-header"><div><span class="eyebrow">Mode Ultra</span><h2>Propositions de réorganisation</h2><p>Le moteur du module prépare des propositions. Aucune modification n’est appliquée sans validation.</p></div><button class="secondary" data-action="generate-suggestions">Analyser les affectations</button></div>${suggestions.length ? `<div class="suggestion-grid">${suggestions.map((suggestion) => `<article class="suggestion"><div class="row-between"><strong>${escapeHtml(suggestion.assignmentTitle || projectName(state, suggestion.projectId))}</strong>${badge(suggestion.type === 'reorganization' ? 'Réorganisation' : `Score ${suggestion.score}`, suggestion.type === 'reorganization' ? 'warning' : 'purple')}</div><p>${suggestion.reasons.map(escapeHtml).join('<br>')}</p><div class="chips">${(suggestion.candidateMemberIds ?? suggestion.memberIds).map((id) => badge(memberName(state, id), 'person')).join('')}</div><div class="button-row"><button class="primary" data-action="approve-suggestion" data-id="${suggestion.id}">Valider</button><button class="ghost" data-action="reject-suggestion" data-id="${suggestion.id}">Refuser</button></div></article>`).join('')}</div>` : this.empty('Aucune proposition en attente.')}</article>` : ''}
-      <article class="panel"><div class="panel-header"><div><h2>Notifications</h2><p>Dernières alertes du module.</p></div>${unread.length ? '<button class="secondary" data-action="mark-all-read">Tout marquer lu</button>' : ''}</div><div class="notification-list">${state.notifications.slice(0, 8).map((notification) => `<button class="notification ${notification.read ? '' : 'unread'}" data-action="mark-notification" data-id="${notification.id}"><span class="notification-icon">${notification.priority === 'urgent' ? '!' : notification.type === 'success' ? '✓' : 'i'}</span><span><strong>${escapeHtml(notification.title)}</strong><p>${escapeHtml(notification.body)}</p><small>${formatDateTime(notification.createdAt)}</small></span>${priorityBadge(notification.priority)}</button>`).join('') || this.empty('Aucune notification.')}</div></article>
+      ${hasExpertAccess(state) ? `<article class="panel expert-panel"><div class="panel-header"><div><span class="eyebrow">Mode Expert</span><h2>Intelligence terrain</h2><p>Les rapports et messages peuvent être analysés pour détecter problèmes, matériel manquant et actions à préparer.</p></div>${badge('Connexion Ángel prête', 'info')}</div><div class="button-row"><button class="secondary" data-view="terrain">Voir les analyses terrain</button></div><div class="level-note">Ángel reste accessible depuis le bouton global de SpeedArti : aucun bouton Ángel n’est ajouté dans ce module.</div></article>` : this.lockedPanel('Expert', 'Analyse automatique des rapports, messages, problèmes et matériel manquant disponible à partir du niveau Expert.')}
+      ${hasUltraAccess(state) ? `<article class="panel ultra-panel"><div class="panel-header"><div><span class="eyebrow">Mode Ultra</span><h2>Propositions de réorganisation</h2><p>Le moteur du module prépare des propositions. Aucune modification n’est appliquée sans validation.</p></div><button class="secondary" data-action="generate-suggestions">Analyser les affectations</button></div>${suggestions.length ? `<div class="suggestion-grid">${suggestions.map((suggestion) => `<article class="suggestion"><div class="row-between"><strong>${escapeHtml(suggestion.assignmentTitle || projectName(state, suggestion.projectId))}</strong>${badge(suggestion.type === 'reorganization' ? 'Réorganisation' : `Score ${suggestion.score}`, suggestion.type === 'reorganization' ? 'warning' : 'purple')}</div><p>${suggestion.reasons.map(escapeHtml).join('<br>')}</p><div class="chips">${(suggestion.candidateMemberIds ?? suggestion.memberIds).map((id) => badge(memberName(state, id), 'person')).join('')}</div><div class="button-row"><button class="primary" data-action="approve-suggestion" data-id="${suggestion.id}">Valider</button><button class="ghost" data-action="reject-suggestion" data-id="${suggestion.id}">Refuser</button></div></article>`).join('')}</div>` : this.empty('Aucune proposition en attente.')}</article>` : ''}
+      ${hasUltraAccess(state) ? `<article class="panel ultra-panel"><div class="panel-header"><div><span class="eyebrow">Ultra prédictif</span><h2>Prévisions explicables</h2><p>Signaux calculés uniquement à partir des données disponibles. Aucune décision n’est exécutée automatiquement.</p></div>${badge(`${forecast.length} signal(s)`, 'purple')}</div>${forecast.length ? `<div class="forecast-grid">${forecast.map((item) => `<article class="forecast-card forecast-${item.severity}"><div class="row-between"><h3>${escapeHtml(item.title)}</h3>${badge(item.type === 'delay_risk' ? 'Retard' : item.type === 'reinforcement_review' ? 'Renfort' : (item.type === 'material_security' || item.type === 'material_forecast') ? 'Matériel' : item.type === 'subcontracting_review' ? 'Sous-traitance' : item.type === 'workforce_review' ? 'Capacité' : 'Donnée manquante', item.severity === 'high' ? 'danger' : item.severity === 'warning' ? 'warning' : 'info')}</div><ul>${item.reasons.map((reason) => `<li>${escapeHtml(reason)}</li>`).join('')}</ul><small>${escapeHtml(item.action)}</small></article>`).join('')}</div>` : this.empty('Aucun signal prédictif sur le périmètre visible.')}<div class="forecast-rule-note"><strong>Règles de démonstration explicites :</strong> horizon ${ULTRA_FORECAST_RULES.horizonDays} jours · surcharge > ${ULTRA_FORECAST_RULES.overloadPct} % · tension équipe ≥ ${ULTRA_FORECAST_RULES.teamTensionPct} %. Ces seuils devront être validés avant production.</div></article>` : ''}
+      <article class="panel"><div class="panel-header"><div><h2>Notifications</h2><p>Dernières alertes du module.</p></div>${unread.length ? '<button class="secondary" data-action="mark-all-read">Tout marquer lu</button>' : ''}</div><div class="notification-list">${scopedNotifications.slice(0, 8).map((notification) => `<button class="notification ${notification.read ? '' : 'unread'}" data-action="mark-notification" data-id="${notification.id}"><span class="notification-icon">${notification.priority === 'urgent' ? '!' : notification.type === 'success' ? '✓' : 'i'}</span><span><strong>${escapeHtml(notification.title)}</strong><p>${escapeHtml(notification.body)}</p><small>${formatDateTime(notification.createdAt)}</small></span>${priorityBadge(notification.priority)}</button>`).join('') || this.empty('Aucune notification.')}</div></article>
     `;
   }
 
@@ -2803,7 +3215,7 @@ class TeamPlanningUI {
       .sort((a, b) => new Date(b.date) - new Date(a.date));
     const missing = findMissingReports(state);
     return `
-      <div class="page-actions"><div><p class="lead">Écriture ou dictée vocale, photos, difficultés, matériel et avancement.</p><small>${missing.length} rapport(s) attendu(s) pour des interventions terminées.</small></div><div class="button-row">${hasEdition(state, 'expert') && can(state, PERMISSIONS.MANAGE_REPORTS) ? '<button class="secondary" data-action="detect-missing-reports">Vérifier les rapports manquants</button>' : ''}${can(state, PERMISSIONS.CREATE_REPORTS) ? '<button class="primary" data-action="open-report">+ Nouveau rapport</button>' : ''}</div></div>
+      <div class="page-actions"><div><p class="lead">Écriture ou dictée vocale, photos, difficultés, matériel et avancement.</p><small>${missing.length} rapport(s) attendu(s) pour des interventions terminées.</small></div><div class="button-row">${hasExpertAccess(state) && can(state, PERMISSIONS.MANAGE_REPORTS) ? '<button class="secondary" data-action="detect-missing-reports">Vérifier les rapports manquants</button>' : ''}${can(state, PERMISSIONS.CREATE_REPORTS) ? '<button class="primary" data-action="open-report">+ Nouveau rapport</button>' : ''}</div></div>
       ${missing.length ? `<article class="panel missing-panel"><div class="panel-header"><div><h2>Rapports manquants</h2><p>Interventions terminées sans rapport détecté pour le collaborateur affecté.</p></div>${badge(String(missing.length), 'warning')}</div><div class="stack compact">${missing.map((item) => `<div class="missing-row"><span><strong>${escapeHtml(memberName(state, item.memberId))}</strong><small>${escapeHtml(state.assignments.find((assignment) => assignment.id === item.assignmentId)?.title ?? 'Intervention')} · ${escapeHtml(projectName(state, item.projectId))} · attendu le ${formatDate(item.expectedAt)}</small></span>${can(state, PERMISSIONS.MANAGE_REPORTS) ? `<button class="secondary small" data-action="remind-missing-report" data-assignment-id="${item.assignmentId}" data-member-id="${item.memberId}">Relancer</button>` : ''}</div>`).join('')}</div></article>` : ''}
       ${reports.length ? `<div class="report-grid">${reports.map((report) => `<article class="panel report-card">
         <div class="row-between"><div><span class="eyebrow">${escapeHtml(projectName(state, report.projectId))}</span><h2>Rapport de ${escapeHtml(memberName(state, report.authorId))}</h2></div>${priorityBadge(report.analysis?.priority ?? 'normal')}</div>
@@ -2812,7 +3224,7 @@ class TeamPlanningUI {
         ${report.problems ? `<div class="callout danger-callout"><strong>Difficulté signalée</strong><p>${escapeHtml(report.problems)}</p></div>` : ''}
         ${report.materials ? `<div class="callout"><strong>Matériel</strong><p>${escapeHtml(report.materials)}</p></div>` : ''}
         ${report.attachments?.length ? `<div class="chips">${report.attachments.map((attachment) => attachmentMarkup(state, attachment)).join('')}</div>` : ''}
-        ${hasEdition(state, 'expert') ? this.renderReportAnalysis(state, report) : this.lockedInline('Analyse Expert non active')}
+        ${hasExpertAccess(state) ? this.renderReportAnalysis(state, report) : this.lockedInline('Analyse Expert non accessible pour ce profil')}
       </article>`).join('')}</div>` : this.empty('Aucun rapport terrain.')}
     `;
   }
@@ -2840,7 +3252,7 @@ class TeamPlanningUI {
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     return `
       <div class="page-actions"><label class="filter-label">Chantier<select data-control="message-filter"><option value="all">Tous les chantiers</option>${projects.map((project) => `<option value="${project.id}" ${this.messageProjectFilter === project.id ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')}</select></label><p class="lead">La messagerie équipe reste séparée de la messagerie client.</p></div>
-      <article class="panel messaging-panel"><div class="message-list">${messages.length ? messages.map((message) => `<div class="message ${message.authorId === state.session.activeMemberId ? 'mine' : ''}"><div class="message-meta"><strong>${escapeHtml(memberName(state, message.authorId))}</strong><span>${escapeHtml(projectName(state, message.projectId))} · ${formatDateTime(message.createdAt)}</span></div><p>${escapeHtml(message.body)}</p>${message.attachments?.length ? `<small>${message.attachments.map((attachment) => attachmentMarkup(state, attachment)).join(' ')}</small>` : ''}${hasEdition(state, 'expert') && can(state, PERMISSIONS.MANAGE_REPORTS) ? this.renderMessageAnalysis(state, message) : ''}</div>`).join('') : this.empty('Aucun message.')}</div>
+      <article class="panel messaging-panel"><div class="message-list">${messages.length ? messages.map((message) => `<div class="message ${message.authorId === state.session.activeMemberId ? 'mine' : ''}"><div class="message-meta"><strong>${escapeHtml(memberName(state, message.authorId))}</strong><span>${escapeHtml(projectName(state, message.projectId))} · ${formatDateTime(message.createdAt)}</span></div><p>${escapeHtml(message.body)}</p>${message.attachments?.length ? `<small>${message.attachments.map((attachment) => attachmentMarkup(state, attachment)).join(' ')}</small>` : ''}${hasExpertAccess(state) && can(state, PERMISSIONS.MANAGE_REPORTS) ? this.renderMessageAnalysis(state, message) : ''}</div>`).join('') : this.empty('Aucun message.')}</div>
         ${can(state, PERMISSIONS.SEND_MESSAGES) ? `<form data-form="message" class="composer"><label>Chantier<select name="projectId" required>${projects.map((project) => `<option value="${project.id}">${escapeHtml(project.name)}</option>`).join('')}</select></label><label>Destinataires<select name="recipientIds" multiple required>${state.members.filter((member) => member.id !== state.session.activeMemberId && member.status === 'active').map((member) => `<option value="${member.id}">${escapeHtml(member.name)}</option>`).join('')}</select></label><label class="grow">Message<textarea name="body" required placeholder="Écrivez un message interne..."></textarea></label><label>Pièces jointes<input type="file" name="attachments" multiple /></label><button class="primary" type="submit">Envoyer</button></form>` : ''}
       </article>
     `;
@@ -2853,7 +3265,7 @@ class TeamPlanningUI {
 
 
   renderAngel(state) {
-    if (!hasEdition(state, 'expert')) return this.lockedPanel('Expert', 'Ángel Collaborateurs nécessite le niveau Expert ou Ultra.');
+    if (!hasExpertAccess(state) || !can(state, PERMISSIONS.ASK_ANGEL)) return this.lockedPanel('Expert', 'Ángel Collaborateurs nécessite le niveau Expert/Ultra et un droit explicite.');
     const conversations = state.angelConversations ?? [];
     const quickQuestions = ['Quels rapports manquent ?', 'Qui est disponible ?', 'Où sont les problèmes de matériel ?', 'Y a-t-il une surcharge ?'];
     return `
@@ -2944,6 +3356,8 @@ class TeamPlanningUI {
       'remind-missing-report': () => this.remindMissingReport(target.dataset.assignmentId, target.dataset.memberId),
       'apply-report-action': () => this.applyReportAction(target.dataset.reportId, target.dataset.actionId),
       'open-request': () => this.openRequestForm(state),
+      'open-material-request': () => this.openRequestForm(state, 'material'),
+      'open-problem-request': () => this.openRequestForm(state, 'site_problem'),
       'material-stock-check': () => this.simulateStockCheck(id),
       'prepare-order': () => this.prepareOrder(id),
       'open-task': () => this.openTaskForm(state),
@@ -2970,6 +3384,8 @@ class TeamPlanningUI {
     if (!control) return;
     if (control === 'active-member') {
       this.store.update((state) => { state.session.activeMemberId = target.value; }, { action: 'session.member.changed', entityType: 'member', entityId: target.value });
+      this.view = 'dashboard';
+      if (window.history?.replaceState) window.history.replaceState({ teamPlanningView: 'dashboard' }, '', '#dashboard');
     }
     if (control === 'toggle-task') {
       this.store.update((state) => {
@@ -2978,6 +3394,7 @@ class TeamPlanningUI {
       }, { action: 'task.status.changed', entityType: 'task', entityId: target.dataset.id });
     }
     if (control === 'request-status') {
+      if (!can(this.store.getState(), PERMISSIONS.MANAGE_REQUESTS)) return this.notify('Modification de la demande non autorisée.', 'error');
       this.store.update((state) => {
         const request = state.requests.find((item) => item.id === target.dataset.id);
         if (request) request.status = target.value;
@@ -2996,6 +3413,7 @@ class TeamPlanningUI {
       this.render();
     }
     if (control === 'role-permission') {
+      if (!can(this.store.getState(), PERMISSIONS.MANAGE_SETTINGS)) return this.notify('Modification des droits non autorisée.', 'error');
       this.store.update((state) => {
         const role = target.dataset.role;
         const permission = target.dataset.permission;
@@ -3201,6 +3619,7 @@ class TeamPlanningUI {
   saveAssignment(data) {
     const id = String(data.get('sourceAssignmentId') || data.get('id'));
     const currentState = this.store.getState();
+    if (!can(currentState, PERMISSIONS.MANAGE_PLANNING)) return this.notify('Modification du planning non autorisée.', 'error');
     const existing = currentState.assignments.find((item) => item.id === id);
     if (!existing) throw new Error('Intervention de l’Agenda Chantier introuvable.');
     const record = {
@@ -3221,6 +3640,8 @@ class TeamPlanningUI {
   }
 
   deleteAssignment(id) {
+    const current = this.store.getState();
+    if (!can(current, PERMISSIONS.MANAGE_PLANNING)) return this.notify('Modification du planning non autorisée.', 'error');
     if (!confirm('Retirer l’équipe de cette intervention ? L’intervention restera dans l’Agenda Chantier.')) return;
     this.store.update((state) => {
       const assignment = state.assignments.find((item) => item.id === id);
@@ -3273,6 +3694,8 @@ class TeamPlanningUI {
 
 
   analyzeExistingReport(id) {
+    const current = this.store.getState();
+    if (!hasExpertAccess(current) || !can(current, PERMISSIONS.MANAGE_REPORTS)) return this.notify('Analyse Expert non autorisée pour ce profil.', 'error');
     this.store.update((state) => {
       const report = state.reports.find((item) => item.id === id);
       if (report) report.analysis = analyzeReport(report);
@@ -3281,6 +3704,8 @@ class TeamPlanningUI {
   }
 
   applyReportAction(reportId, actionId) {
+    const current = this.store.getState();
+    if (!hasExpertAccess(current) || !can(current, PERMISSIONS.MANAGE_REPORTS)) return this.notify('Action Expert non autorisée pour ce profil.', 'error');
     this.store.update((state) => {
       const report = state.reports.find((item) => item.id === reportId);
       const action = report?.analysis?.actions.find((item) => item.id === actionId);
@@ -3302,10 +3727,10 @@ class TeamPlanningUI {
     this.notify('Action appliquée après validation.');
   }
 
-  openRequestForm(state) {
+  openRequestForm(state, defaultType = 'material') {
     const projects = visibleProjects(state);
     const preferredProjectId = this.terrainProjectFilter !== 'all' ? this.terrainProjectFilter : projects[0]?.id;
-    this.modal = `<form data-form="request"><h2>Nouvelle demande terrain</h2><div class="form-grid"><label>Chantier<select name="projectId" required>${projects.map((project) => `<option value="${project.id}" ${project.id === preferredProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')}</select></label><label>Type<select name="type">${optionList(REQUEST_TYPES, 'material')}</select></label><label>Titre<input name="title" required/></label><label>Priorité<select name="priority">${optionList(PRIORITIES, 'normal')}</select></label><label class="full-span">Description<textarea name="description" required></textarea></label><label class="full-span">Photos ou documents<input type="file" name="attachments" multiple accept="image/*,.pdf,.doc,.docx"/></label></div><p class="form-hint">Les pièces jointes restent dans cette démonstration locale jusqu’au raccord au stockage documentaire SpeedArti.</p><div class="modal-actions"><button type="button" class="ghost" data-action="close-modal">Annuler</button><button class="primary" type="submit">Envoyer</button></div></form>`;
+    this.modal = `<form data-form="request"><h2>Nouvelle demande terrain</h2><div class="form-grid"><label>Chantier<select name="projectId" required>${projects.map((project) => `<option value="${project.id}" ${project.id === preferredProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')}</select></label><label>Type<select name="type">${optionList(REQUEST_TYPES, defaultType)}</select></label><label>Titre<input name="title" required/></label><label>Priorité<select name="priority">${optionList(PRIORITIES, 'normal')}</select></label><label class="full-span">Description<textarea name="description" required></textarea></label><label class="full-span">Photos ou documents<input type="file" name="attachments" multiple accept="image/*,.pdf,.doc,.docx"/></label></div><p class="form-hint">Les pièces jointes restent dans cette démonstration locale jusqu’au raccord au stockage documentaire SpeedArti.</p><div class="modal-actions"><button type="button" class="ghost" data-action="close-modal">Annuler</button><button class="primary" type="submit">Envoyer</button></div></form>`;
     this.render();
   }
 
@@ -3315,12 +3740,14 @@ class TeamPlanningUI {
     const request = { id: uid('request'), projectId: String(data.get('projectId')), authorId: state.session.activeMemberId, type: String(data.get('type')), title: String(data.get('title')).trim(), description: String(data.get('description')).trim(), priority: String(data.get('priority')), status: 'open', attachments, createdAt: nowIso() };
     this.store.update((next) => {
       next.requests.unshift(request);
-      next.notifications.unshift({ id: uid('notification'), type: 'info', title: REQUEST_TYPES[request.type] ?? 'Nouvelle demande', body: `${request.title} — ${projectName(next, request.projectId)}`, priority: request.priority, createdAt: nowIso(), read: false, entityType: 'request', entityId: request.id });
+      next.notifications.unshift({ id: uid('notification'), type: 'info', title: request.type === 'material' ? 'Demande matériel terrain' : (REQUEST_TYPES[request.type] ?? 'Nouvelle demande'), body: `${request.title} — ${projectName(next, request.projectId)}`, priority: request.priority, createdAt: nowIso(), read: false, entityType: 'request', entityId: request.id });
     }, { action: 'request.created', entityType: 'request', entityId: request.id, details: request.title });
     this.modal = null; this.notify('Demande envoyée.');
   }
 
   simulateStockCheck(id) {
+    const current = this.store.getState();
+    if (!can(current, PERMISSIONS.MANAGE_REQUESTS)) return this.notify('Vérification Stock non autorisée.', 'error');
     this.store.update((state) => {
       const request = state.requests.find((item) => item.id === id);
       if (!request) return;
@@ -3331,6 +3758,8 @@ class TeamPlanningUI {
   }
 
   prepareOrder(id) {
+    const current = this.store.getState();
+    if (!can(current, PERMISSIONS.MANAGE_REQUESTS)) return this.notify('Préparation de commande non autorisée.', 'error');
     this.store.update((state) => {
       const request = state.requests.find((item) => item.id === id);
       if (!request) return;
@@ -3370,11 +3799,15 @@ class TeamPlanningUI {
   }
 
   analyzeExistingMessage(id) {
+    const current = this.store.getState();
+    if (!hasExpertAccess(current) || !can(current, PERMISSIONS.MANAGE_REPORTS)) return this.notify('Analyse Expert non autorisée pour ce profil.', 'error');
     this.store.update((state) => { const message = state.messages.find((item) => item.id === id); if (message) message.analysis = analyzeMessage(message); }, { action: 'message.analyzed', entityType: 'message', entityId: id });
     this.notify('Message analysé.');
   }
 
   applyMessageAction(messageId, actionId) {
+    const current = this.store.getState();
+    if (!hasExpertAccess(current) || !can(current, PERMISSIONS.MANAGE_REPORTS)) return this.notify('Action Expert non autorisée pour ce profil.', 'error');
     this.store.update((state) => {
       const message = state.messages.find((item) => item.id === messageId);
       const action = message?.analysis?.actions.find((item) => item.id === actionId);
@@ -3394,7 +3827,7 @@ class TeamPlanningUI {
     const clean = String(question || '').trim();
     if (!clean) throw new Error('Écrivez une question.');
     const state = this.store.getState();
-    if (!hasEdition(state, 'expert')) return this.notify('Ángel Collaborateurs nécessite le niveau Expert.', 'error');
+    if (!hasExpertAccess(state) || !can(state, PERMISSIONS.ASK_ANGEL)) return this.notify('Ángel Collaborateurs n’est pas autorisé pour ce profil.', 'error');
     const response = answerTeamQuestion(state, clean);
     this.store.update((next) => { next.angelConversations.unshift({ id: uid('angel'), question: clean, response, createdAt: nowIso(), authorId: next.session.activeMemberId }); }, { action: 'angel.question.asked', entityType: 'angel', entityId: response.title, details: clean });
     this.notify('Réponse préparée pour Ángel SpeedArti.', 'info');
@@ -3403,7 +3836,7 @@ class TeamPlanningUI {
 
   generateSuggestions() {
     const state = this.store.getState();
-    if (!hasEdition(state, 'ultra')) return this.notify('Le mode Ultra n’est pas actif.', 'error');
+    if (!hasUltraAccess(state)) return this.notify('Le mode Ultra n’est pas autorisé pour ce profil.', 'error');
     const generated = buildPlanningSuggestions(state);
     this.store.update((next) => {
       next.suggestions = [...generated, ...next.suggestions.filter((suggestion) => suggestion.status !== 'pending')];
@@ -3412,6 +3845,8 @@ class TeamPlanningUI {
   }
 
   approveSuggestion(id) {
+    const current = this.store.getState();
+    if (!hasUltraAccess(current) || !can(current, PERMISSIONS.MANAGE_PLANNING)) return this.notify('Validation Ultra non autorisée pour ce profil.', 'error');
     this.store.update((state) => {
       const suggestion = state.suggestions.find((item) => item.id === id);
       if (!suggestion || suggestion.status !== 'pending') return;
@@ -3438,6 +3873,8 @@ class TeamPlanningUI {
   }
 
   rejectSuggestion(id) {
+    const current = this.store.getState();
+    if (!hasUltraAccess(current) || !can(current, PERMISSIONS.MANAGE_PLANNING)) return this.notify('Validation Ultra non autorisée pour ce profil.', 'error');
     this.store.update((state) => {
       const suggestion = state.suggestions.find((item) => item.id === id);
       if (suggestion) { suggestion.status = 'rejected'; suggestion.reviewedAt = nowIso(); suggestion.reviewedBy = state.session.activeMemberId; }
@@ -3455,6 +3892,8 @@ class TeamPlanningUI {
   }
 
   setEdition(value) {
+    const current = this.store.getState();
+    if (!can(current, PERMISSIONS.MANAGE_SETTINGS)) return this.notify('Seul un profil autorisé peut simuler le niveau d’abonnement.', 'error');
     if (!Object.prototype.hasOwnProperty.call(EDITION_LABELS, value)) return;
     this.store.update((state) => { state.settings.edition = value; }, { action: 'settings.edition.changed', entityType: 'settings', entityId: 'edition', details: `demo:${value}` });
     const config = EDITION_CONFIG[value];
