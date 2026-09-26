@@ -43,6 +43,21 @@
   };
   const suggestionsForNeed=(state,need)=>(state.members||[]).map(m=>candidateScore(state,need,m)).filter(x=>x&&x.score>-40).sort((a,b)=>b.score-a.score).slice(0,Math.max(need.headcount||1,3));
 
+  const durationForNeed=(state,need,suggestions)=>{
+    const hours=Number(need.plannedHours);
+    if(!Number.isFinite(hours)||hours<=0||!suggestions.length) return null;
+    const count=Math.max(1,Number(need.headcount)||1);
+    const picked=suggestions.slice(0,count);
+    const dailyCapacity=picked.reduce((sum,x)=>{
+      const member=state.members?.find(m=>m.id===x.memberId);
+      const weekly=Number(member?.availability?.weeklyHours);
+      const days=(member?.availability?.workingDays||[]).length;
+      return sum+(Number.isFinite(weekly)&&weekly>0&&days>0?weekly/days:0);
+    },0);
+    if(dailyCapacity<=0) return null;
+    return Math.round((hours/dailyCapacity)*10)/10;
+  };
+
   const dependencyImpacts=state=>{
     const ext=ensure(state),out=[];
     for(const dep of ext.dependencies){
@@ -82,7 +97,11 @@
       <details class="v17-details" open><summary>Besoins à pourvoir : collaborateurs proposés <span>${openNeeds.length}</span></summary>
         <div class="v17-list">${openNeeds.length?openNeeds.map(n=>{
           const sug=suggestionsForNeed(state,n);
-          return `<article><div><strong>${esc(pname(state,n.projectId))} · ${esc(n.headcount)} personne(s)</strong><p>${esc((n.requiredSkills||[]).join(', ')||'Compétence non précisée')} · ${esc(n.neededAt)}</p><small>${sug.length?'Propositions : '+sug.map(x=>mname(state,x.memberId)).join(', '):'Aucun profil interne compatible et disponible identifié.'}</small></div></article>`;
+          const duration=durationForNeed(state,n,sug);
+          const effectif=n.headcount||'à définir';
+          const source=n.source==='chiffrage'&&Number.isFinite(Number(n.plannedHours))?` · ${n.plannedHours} h prévues par Chiffrage`:'';
+          const durationText=duration!=null?` · durée estimée : ${duration} jour(s) ouvré(s), calculée avec les horaires des profils proposés`:'';
+          return `<article><div><strong>${esc(pname(state,n.projectId))} · ${esc(effectif)} personne(s)</strong><p>${esc((n.requiredSkills||[]).join(', ')||'Compétence non précisée')} · ${esc(n.neededAt||'date à définir')}${esc(source)}</p><small>${sug.length?'Propositions : '+sug.map(x=>mname(state,x.memberId)).join(', '):'Aucun profil interne compatible et disponible identifié.'}${esc(durationText)}</small></div></article>`;
         }).join(''):'<p class="v17-muted">Aucun besoin déclaré.</p>'}</div>
       </details>
 
