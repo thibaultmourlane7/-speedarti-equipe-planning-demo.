@@ -141,7 +141,7 @@
   }
 
   const api={
-    version:'1.8.0',
+    version:'1.8.1',
     mode:'contracts_only_no_live_connection',
     contracts:CONTRACTS,
     applySnapshot,
@@ -149,7 +149,7 @@
     exportValidatedDocument,
     calendarPayload,
     exportPreparationBundle:()=>({
-      version:'1.8.0',mode:'contracts_only_no_live_connection',contracts:CONTRACTS,
+      version:'1.8.1',mode:'contracts_only_no_live_connection',contracts:CONTRACTS,
       sourceOfTruth:{
         datesAndInterventions:'Agenda Chantier',teams:'Équipe & Planning',actualHours:'Temps & Présence',
         employees:'RH',consumables:'Stock',vehiclesEquipment:'Parc matériel',orders:'Commandes',
