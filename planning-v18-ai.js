@@ -96,7 +96,21 @@
     return suggestion;
   }
 
-  const api={version:'1.8.0',searchProject,dailySummary,angelContext,suggestPhotoClassification};
+  function proposePhotoClassification(input){
+    const suggestion=suggestPhotoClassification(input);
+    let record;
+    demo.store.update(s=>{
+      s.conductorV18??={};s.conductorV18.photoClassifications??=[];
+      record={id:'photo_class_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7),fileId:input.fileId||null,fileName:String(input.fileName||''),pointId:input.pointId||null,...suggestion,status:suggestion.requiresHumanValidation?'pending_validation':'accepted',createdAt:new Date().toISOString()};
+      s.conductorV18.photoClassifications.unshift(record);
+    },{action:'conductor.photo.classification.proposed',entityType:'photo_classification',entityId:input.fileId||'new'});
+    if(record.requiresHumanValidation){
+      core.createValidation({projectId:record.projectId,type:'photo_classification',title:'Classement photo à confirmer',description:[record.lot,record.zone,record.type].filter(Boolean).join(' · ')||record.fileName,entityType:'photo_classification',entityId:record.id});
+    }
+    return structuredClone(record);
+  }
+
+  const api={version:'1.8.0',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification};
   window.SpeedArtiConductorAI=api;
 
   /* Enrichit le contexte du bouton Ángel global, sans créer d'interface Ángel locale. */
