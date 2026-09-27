@@ -220,8 +220,10 @@
       if(!plan) throw new Error('Plan introuvable.');
       assertProjectAccess(state,plan.projectId);
       if(status==='active'){
-        for(const p of c.plans.filter(p=>p.projectId===plan.projectId&&p.name===plan.name&&p.id!==id&&p.active)){p.active=false;p.status='replaced';p.history.unshift(historyEntry(state.session.activeMemberId,'plan.replaced','Remplacé par '+plan.revisionLabel));}
+        const replaced=[];
+        for(const p of c.plans.filter(p=>p.projectId===plan.projectId&&p.name===plan.name&&p.id!==id&&p.active)){p.active=false;p.status='replaced';p.history.unshift(historyEntry(state.session.activeMemberId,'plan.replaced','Remplacé par '+plan.revisionLabel));replaced.push(p);}
         plan.validatedAt=plan.validatedAt||now();plan.validatedBy=plan.validatedBy||state.session.activeMemberId;
+        if(replaced.length&&Array.isArray(state.notifications))state.notifications.unshift({id:uid('notification'),type:'info',title:'Nouvelle révision active',body:plan.name+' — révision '+plan.revisionLabel+' remplace '+replaced.map(p=>p.revisionLabel).join(', '),priority:'normal',createdAt:now(),read:false,entityType:'plan',entityId:plan.id});
       }
       plan.status=status;plan.active=status==='active';
       plan.history.unshift(historyEntry(state.session.activeMemberId,'plan.status:'+status));
@@ -249,6 +251,14 @@
       if(!v) throw new Error('Validation introuvable.');
       if(v.projectId) assertProjectAccess(state,v.projectId);
       v.status=status;v.reviewedAt=now();v.reviewedBy=state.session.activeMemberId;v.decisionNote=cleanText(note,2000);
+      if(v.entityType==='meeting_minutes'){
+        const meeting=c.meetings.find(m=>m.id===v.entityId);
+        if(meeting){meeting.minutesStatus=status;meeting.minutesReviewedAt=now();meeting.minutesReviewedBy=state.session.activeMemberId;}
+      }
+      if(v.entityType==='site_journal'){
+        const journal=c.journals.find(j=>j.id===v.entityId);
+        if(journal){journal.status=status; journal.reviewedAt=now();journal.reviewedBy=state.session.activeMemberId;}
+      }
       result=clone(v);
     },{action:'conductor.validation.'+status,entityType:'validation',entityId:id});
     return result;
@@ -337,6 +347,99 @@
     return result;
   }
 
+  function createMeeting(input){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state);
+      assertProjectAccess(state,input.projectId);
+      result={
+        id:uid('meeting'),projectId:input.projectId,title:cleanText(input.title||'Réunion de chantier',220),
+        startedAt:input.startedAt||now(),endedAt:null,status:'in_progress',
+        participantIds:cleanArray(input.participantIds),notes:cleanText(input.notes,12000),
+        dictation:cleanText(input.dictation,12000),decisions:[],actions:[],attachmentIds:[],
+        planId:input.planId||null,pointIds:cleanArray(input.pointIds),
+        createdBy:state.session.activeMemberId,createdAt:now(),updatedAt:now(),
+        minutesDraft:null,minutesStatus:null,angelRequestId:null
+      };
+      c.meetings.unshift(result);
+    },{action:'conductor.meeting.created',entityType:'meeting',entityId:'new'});
+    return clone(result);
+  }
+
+  function updateMeeting(id,patch){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state),m=c.meetings.find(x=>x.id===id);
+      if(!m) throw new Error('Réunion introuvable.');
+      assertProjectAccess(state,m.projectId);
+      if(patch.notes!==undefined)m.notes=cleanText(patch.notes,12000);
+      if(patch.dictation!==undefined)m.dictation=cleanText(patch.dictation,12000);
+      if(patch.participantIds!==undefined)m.participantIds=cleanArray(patch.participantIds);
+      if(patch.decisions!==undefined)m.decisions=(Array.isArray(patch.decisions)?patch.decisions:[]).map(x=>({id:x.id||uid('decision'),text:cleanText(x.text,2500),createdAt:x.createdAt||now()})).filter(x=>x.text);
+      if(patch.actions!==undefined)m.actions=(Array.isArray(patch.actions)?patch.actions:[]).map(x=>({id:x.id||uid('meeting_action'),text:cleanText(x.text,2500),assigneeId:x.assigneeId||null,dueAt:x.dueAt||null,status:x.status||'open'})).filter(x=>x.text);
+      if(patch.attachmentIds!==undefined)m.attachmentIds=cleanArray(patch.attachmentIds);
+      if(patch.pointIds!==undefined)m.pointIds=cleanArray(patch.pointIds);
+      if(patch.status==='completed'){m.status='completed';m.endedAt=now();}
+      m.updatedAt=now();result=clone(m);
+    },{action:'conductor.meeting.updated',entityType:'meeting',entityId:id});
+    return result;
+  }
+
+  function prepareMeetingMinutes(id){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state),m=c.meetings.find(x=>x.id===id);
+      if(!m) throw new Error('Réunion introuvable.');
+      assertProjectAccess(state,m.projectId);
+      const relatedPoints=c.points.filter(p=>m.pointIds.includes(p.id));
+      m.minutesDraft={
+        generatedAt:now(),source:'structured_local_context',
+        title:m.title,date:m.startedAt,participantIds:[...m.participantIds],
+        notes:m.notes,dictation:m.dictation,decisions:clone(m.decisions),actions:clone(m.actions),
+        points:relatedPoints.map(p=>({id:p.id,type:p.type,description:p.description,status:p.status}))
+      };
+      m.minutesStatus='pending_validation';
+      const existing=c.validations.find(v=>v.entityType==='meeting_minutes'&&v.entityId===m.id&&v.status==='pending');
+      if(!existing)c.validations.unshift({id:uid('validation'),projectId:m.projectId,type:'meeting_minutes',title:'Compte rendu de réunion à valider',description:m.title,entityType:'meeting_minutes',entityId:m.id,status:'pending',createdAt:now(),createdBy:state.session.activeMemberId,reviewedAt:null,reviewedBy:null,decisionNote:''});
+      result=clone(m.minutesDraft);
+    },{action:'conductor.meeting.minutes.prepared',entityType:'meeting_minutes',entityId:id});
+    return result;
+  }
+
+  function prepareDailyJournal(projectId,dateValue){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state);assertProjectAccess(state,projectId);
+      const target=(dateValue?new Date(dateValue):new Date());
+      if(Number.isNaN(+target)) throw new Error('Date de journal invalide.');
+      const sameDay=v=>{const d=new Date(v);return d.getFullYear()===target.getFullYear()&&d.getMonth()===target.getMonth()&&d.getDate()===target.getDate();};
+      const reports=(state.reports||[]).filter(r=>r.projectId===projectId&&sameDay(r.date));
+      const messages=(state.messages||[]).filter(m=>m.projectId===projectId&&sameDay(m.createdAt));
+      const requests=(state.requests||[]).filter(r=>r.projectId===projectId&&sameDay(r.createdAt));
+      const points=c.points.filter(p=>p.projectId===projectId&&sameDay(p.createdAt||p.updatedAt));
+      const assignments=(state.assignments||[]).filter(a=>a.projectId===projectId&&(sameDay(a.start)||sameDay(a.end)||(new Date(a.start)<=target&&new Date(a.end)>=target)));
+      const weather=(state.planningV17?.weather||[]).filter(w=>w.projectId===projectId&&(w.date?sameDay(w.date):true));
+      const existing=c.journals.find(j=>j.projectId===projectId&&j.date===target.toISOString().slice(0,10)&&['draft','pending'].includes(j.status));
+      const journal=existing||{id:uid('journal'),projectId,date:target.toISOString().slice(0,10),createdAt:now(),createdBy:state.session.activeMemberId,status:'draft'};
+      journal.generatedAt=now();
+      journal.sources={reportIds:reports.map(x=>x.id),messageIds:messages.map(x=>x.id),requestIds:requests.map(x=>x.id),pointIds:points.map(x=>x.id),assignmentIds:assignments.map(x=>x.id)};
+      journal.summary={
+        reports:reports.map(r=>({progress:r.progress,summary:r.summary,problems:r.problems,materials:r.materials})),
+        messages:messages.map(m=>m.body),
+        requests:requests.map(r=>({type:r.type,title:r.title,description:r.description,status:r.status})),
+        points:points.map(p=>({type:p.type,description:p.description,status:p.status,priority:p.priority})),
+        assignments:assignments.map(a=>({title:a.title,start:a.start,end:a.end})),
+        weather:weather.map(w=>({summary:w.summary,riskLevel:w.riskLevel,windKmh:w.windKmh,precipitationRiskPct:w.precipitationRiskPct}))
+      };
+      journal.status='pending';
+      if(!existing)c.journals.unshift(journal);
+      const v=c.validations.find(v=>v.entityType==='site_journal'&&v.entityId===journal.id&&v.status==='pending');
+      if(!v)c.validations.unshift({id:uid('validation'),projectId,type:'site_journal',title:'Journal chantier à valider',description:'Synthèse du '+journal.date,entityType:'site_journal',entityId:journal.id,status:'pending',createdAt:now(),createdBy:state.session.activeMemberId,reviewedAt:null,reviewedBy:null,decisionNote:''});
+      result=clone(journal);
+    },{action:'conductor.journal.prepared',entityType:'site_journal',entityId:projectId});
+    return result;
+  }
+
   const api={
     version:'1.8.0',
     POINT_TYPES,DEFAULT_STATUSES,NC_STATUSES,PLAN_STATUSES,
@@ -346,7 +449,8 @@
     createPoint,updatePoint,transitionPoint,listPoints,
     registerPlan,setPlanStatus,
     createValidation,reviewValidation,
-    createChecklistTemplate,startChecklist,answerChecklist,completeChecklist
+    createChecklistTemplate,startChecklist,answerChecklist,completeChecklist,
+    createMeeting,updateMeeting,prepareMeetingMinutes,prepareDailyJournal
   };
   window.SpeedArtiConductor=api;
   demo.store.update(state=>{ensure(state);},{action:'conductor.schema.ready',entityType:'conductor',entityId:'v18'});
