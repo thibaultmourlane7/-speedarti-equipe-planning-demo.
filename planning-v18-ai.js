@@ -166,15 +166,17 @@
   function clientTransmissionContext(){
     const api=window.SpeedArtiClientTransmissionCore;
     if(!api)return {available:false,knowledgeVersion:CLIENT_TRANSMISSION_KNOWLEDGE.version,items:[]};
+    const permission=api.hasPermission();
     return {
       available:true,
       knowledgeVersion:CLIENT_TRANSMISSION_KNOWLEDGE.version,
-      permission:api.hasPermission(),
-      items:api.list().map(t=>({
+      permission,
+      items:permission?api.list().map(t=>({
         id:t.id,projectId:t.projectId,client:t.client?.displayName||'',
         title:t.publicationTitle,status:t.status,createdAt:t.createdAt,sentAt:t.sentAt,
         consultedAt:t.consultedAt,itemCount:t.items?.length||0
-      }))
+      })):[],
+      restrictedReason:permission?null:'Permission share_with_client requise'
     };
   }
 
