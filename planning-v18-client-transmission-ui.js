@@ -61,6 +61,12 @@
 
   const originalManager=ui.renderSiteManagerDashboard.bind(ui);
   ui.renderSiteManagerDashboard=function(s,m){return originalManager(s,m)+transmissionPanel(s);};
+  const originalDashboard=ui.renderDashboard.bind(ui);
+  ui.renderDashboard=function(s){
+    const base=originalDashboard(s),m=active(s);
+    if(m?.role==='site_manager')return base;
+    return base+(memberHas(s,m,tx.SHARE_PERMISSION)?transmissionPanel(s):'');
+  };
 
   function settingsPanel(s){
     const m=active(s);
@@ -72,11 +78,11 @@
   const originalSettings=ui.renderSettings.bind(ui);
   ui.renderSettings=function(s){return originalSettings(s)+settingsPanel(s);};
 
-  function openTransmission(s){
+  function openTransmission(s,preselect=null){
     const project=currentProject(s);if(!project)return;
     const share=collectShareables(s,project.id),c=ext(s),context=c.clientContexts?.[project.id];
     const clientName=context?.displayName||project.client||'Client non identifié';
-    const itemHtml=share.items.map((x,i)=>'<label class="v181-share-row"><input type="checkbox" name="shareItem" value="'+i+'"><span><strong>'+esc(x.title)+'</strong><small>'+esc(x.detail||'')+'</small></span></label>').join('');
+    const itemHtml=share.items.map((x,i)=>'<label class="v181-share-row"><input type="checkbox" name="shareItem" value="'+i+'" '+(preselect&&preselect.entityType===x.entityType&&preselect.entityId===x.entityId?'checked':'')+'><span><strong>'+esc(x.title)+'</strong><small>'+esc(x.detail||'')+'</small></span></label>').join('');
     const photoHtml=share.photos.map((x,i)=>'<label class="v181-photo-choice"><input type="checkbox" name="sharePhoto" value="'+i+'"><span class="v181-thumb" data-v181-thumb="'+esc(x.fileId)+'">📷</span><small>'+esc(x.label||'Photo')+'</small></label>').join('');
     ui.modal='<form data-v181-form="transmission"><input type="hidden" name="projectId" value="'+esc(project.id)+'"><h2>Transmettre au client</h2><p><strong>Destinataire :</strong> '+esc(clientName)+'</p><p class="form-hint">Rien n’est envoyé tant que vous n’appuyez pas sur Envoyer.</p><div class="v181-form"><label>Titre de l’actualité<input name="publicationTitle" required value="Actualité chantier"></label><label class="full">Commentaire facultatif<textarea name="comment" placeholder="Ex. Charpente terminée, démarrage couverture lundi."></textarea></label></div><h3>Éléments</h3><div class="v181-share-list">'+(itemHtml||'<p class="v181-muted">Aucun élément validé disponible.</p>')+'</div><h3>Photos à regrouper</h3><div class="v181-photos">'+(photoHtml||'<p class="v181-muted">Aucune photo disponible dans les éléments partageables.</p>')+'</div><div id="v181-preview" class="v181-preview" hidden></div><div class="modal-actions"><button type="button" class="ghost" data-action="close-modal">Annuler</button><button type="button" class="secondary" data-v181-action="preview">Aperçu</button><button class="primary">Envoyer</button></div></form>';
     ui.render();
@@ -123,6 +129,7 @@
     const t=e.target.closest('[data-v181-action]');if(!t)return;
     const s=store.getState(),action=t.dataset.v181Action;
     if(action==='open-transmission'){openTransmission(s);return;}
+    if(action==='quick-share'){openTransmission(s,{entityType:t.dataset.entityType,entityId:t.dataset.entityId});return;}
     if(action==='preview'){const form=t.closest('form[data-v181-form="transmission"]');if(form)preview(form);return;}
     if(action==='view-slip'){viewSlip(s,t.dataset.id);return;}
   });
