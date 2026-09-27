@@ -70,6 +70,8 @@
       search:question?searchProject(question):[],
       summary,
       projects:[...allowedProjects(s)].map(id=>({id,name:projectName(s,id)})),
+      clientTransmission:clientTransmissionContext(),
+      knowledgePacks:['client_transmission@'+CLIENT_TRANSMISSION_KNOWLEDGE.version],
       policy:{
         entryPointOwnedBy:'speedarti_global_angel',
         localAngelButton:false,
@@ -110,8 +112,75 @@
     return structuredClone(record);
   }
 
-  const api={version:'1.8.0',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification};
+  const CLIENT_TRANSMISSION_KNOWLEDGE=Object.freeze({
+    module:'client_transmission',
+    version:'1.0.0',
+    appliesFrom:'1.8.1',
+    terms:[
+      'transmettre au client','partager au client','envoyer les photos au client','publier l’avancement',
+      'bordereau de transmission','document transmis','document consulté','privé','interne',
+      'élément partageable','version transmise','transmission groupée','suivi client'
+    ],
+    synonyms:{
+      transmit:['envoyer','partager','publier','mettre sur le portail client','faire suivre au client'],
+      photos:['photos chantier','photos avancement','images chantier','preuves photo'],
+      consulted:['vu par le client','consulté','ouvert par le client','lu côté portail']
+    },
+    intents:[
+      {id:'prepare_client_transmission',examples:['Envoie ces trois photos au client Dupont','Prépare l’avancement de cette semaine pour le client','Partage ces photos avec le client']},
+      {id:'check_client_transmission_status',examples:['Est-ce que le client a vu les photos ?','Le client a-t-il consulté mon envoi ?']},
+      {id:'list_client_transmissions',examples:['Montre-moi ce que j’ai déjà envoyé au client','Quels documents ont été transmis ?']},
+      {id:'prepare_validated_reserves_share',examples:['Prépare les réserves validées pour le maître d’œuvre','Partage les OPR validées']}
+    ],
+    workflows:{
+      prepare:['identifier le chantier','vérifier le droit share_with_client','sélectionner uniquement des éléments partageables','préparer un brouillon','demander validation humaine'],
+      send:['validation humaine explicite obligatoire','produire un bordereau','émettre vers Interface client et Notifications','attendre accusé réel'],
+      receipt:['sent = accusé d’envoi reçu','consulted = accusé de consultation reçu','failed = échec fourni par le connecteur']
+    },
+    sourceOfTruth:{
+      clientAndPortal:'Interface client SpeedArti',
+      points:'Suivi chantier / Point chantier',
+      photosAndDocuments:'Documents SpeedArti et références de fichiers existantes',
+      deliveryStatus:'Interface client / Notifications SpeedArti',
+      permissions:'moteur de droits SpeedArti',
+      audit:'Historique / Audit SpeedArti'
+    },
+    restrictions:[
+      'Tout élément est privé par défaut.',
+      'Ángel peut préparer une transmission mais ne doit jamais confirmer lui-même l’envoi au client.',
+      'Une validation humaine explicite est obligatoire avant l’envoi.',
+      'Ne jamais inventer un accusé envoyé ou consulté.',
+      'Une réserve, OPR, non-conformité, contrôle qualité ou décision sensible doit être validé avant partage.',
+      'Une nouvelle révision documentaire nécessite une nouvelle transmission ; ne jamais remplacer silencieusement la version déjà transmise.',
+      'Ne jamais dupliquer physiquement un fichier si une référence Documents suffit.',
+      'Respecter strictement le périmètre chantier et les permissions.'
+    ],
+    tests:[
+      {utterance:'Envoie ces trois photos au client Dupont',expectedIntent:'prepare_client_transmission',requiresHumanValidation:true},
+      {utterance:'Est-ce que le client a vu les photos ?',expectedIntent:'check_client_transmission_status',mustUseConnectorReceipt:true},
+      {utterance:'Montre-moi ce que j’ai déjà envoyé au client',expectedIntent:'list_client_transmissions',mustRespectProjectRights:true},
+      {utterance:'Prépare les réserves validées pour le maître d’œuvre',expectedIntent:'prepare_validated_reserves_share',validatedOnly:true}
+    ]
+  });
+
+  function clientTransmissionContext(){
+    const api=window.SpeedArtiClientTransmissionCore;
+    if(!api)return {available:false,knowledgeVersion:CLIENT_TRANSMISSION_KNOWLEDGE.version,items:[]};
+    return {
+      available:true,
+      knowledgeVersion:CLIENT_TRANSMISSION_KNOWLEDGE.version,
+      permission:api.hasPermission(),
+      items:api.list().map(t=>({
+        id:t.id,projectId:t.projectId,client:t.client?.displayName||'',
+        title:t.publicationTitle,status:t.status,createdAt:t.createdAt,sentAt:t.sentAt,
+        consultedAt:t.consultedAt,itemCount:t.items?.length||0
+      }))
+    };
+  }
+
+  const api={version:'1.8.1',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{clientTransmission:CLIENT_TRANSMISSION_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
+  window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:CLIENT_TRANSMISSION_KNOWLEDGE}));
 
   /* Enrichit le contexte du bouton Ángel global, sans créer d'interface Ángel locale. */
   const bridge=window.SpeedArtiTeamPlanning;
