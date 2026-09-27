@@ -8,6 +8,8 @@ on:
       - "planning-v17-standard.js"
       - ".github/workflows/check-planning-v18.yml"
       - "tests/v18-core-smoke.js"
+      - "tests/v181-client-transmission-smoke.js"
+      - "docs/ANGEL_KNOWLEDGE_ABSOLUTE_RULE.md"
 permissions:
   contents: read
 jobs:
@@ -20,6 +22,8 @@ jobs:
           node --check planning-v18-core.js
           node --check planning-v18-conductor.js
           node --check planning-v18-field.js
+          node --check planning-v18-client-transmission-core.js
+          node --check planning-v18-client-transmission-ui.js
           node --check planning-v18-ai.js
           node --check planning-v18-contracts.js
           node --check planning-v17-standard.js
@@ -39,3 +43,14 @@ jobs:
           grep -q "planning-v18-core.js" sw-planning-v17.js
       - name: Run V1.8 core smoke test
         run: node tests/v18-core-smoke.js
+      - name: Check V1.8.1 client transmission contracts
+        run: |
+          grep -q "share_with_client" planning-v18-client-transmission-core.js
+          grep -q "ready_for_client_interface" planning-v18-client-transmission-core.js
+          grep -q "Validation humaine explicite requise" planning-v18-client-transmission-core.js
+          grep -q "Bordereau de transmission" planning-v18-client-transmission-ui.js
+          grep -q "client_transmission_receipt" planning-v18-contracts.js
+          grep -q "CLIENT_TRANSMISSION_KNOWLEDGE" planning-v18-ai.js
+          grep -q "Aucun agent ne peut supprimer" docs/ANGEL_KNOWLEDGE_ABSOLUTE_RULE.md
+      - name: Run V1.8.1 client transmission smoke test
+        run: node tests/v181-client-transmission-smoke.js
