@@ -1,0 +1,40 @@
+name: Wire planning v1.8 conductor
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wire-planning-v18.yml'
+permissions:
+  contents: write
+jobs:
+  wire:
+    if: contains(github.event.head_commit.message, 'Wire planning v1.8')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire scripts
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<!-- SPEEDARTI_CONDUCTOR_V18 -->'
+          block='''
+  <!-- SPEEDARTI_CONDUCTOR_V18 -->
+  <script src="planning-v18-core.js"></script>
+  <script src="planning-v18-conductor.js"></script>
+  <script src="planning-v18-field.js"></script>
+  <script src="planning-v18-ai.js"></script>
+  <script src="planning-v18-contracts.js"></script>
+'''
+          if marker not in s:
+              s=s.replace('</body>',block+'\n</body>')
+              p.write_text(s,encoding='utf-8')
+          PY
+          rm -f .github/workflows/wire-planning-v18.yml
+          git config user.name "SpeedArti FORGE"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html .github/workflows/wire-planning-v18.yml
+          git commit -m "V1.8 — branche la couche Conducteur"
+          git push origin main
