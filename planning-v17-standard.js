@@ -185,3 +185,20 @@
   ns.standardLoaded=true;
   ui.render();
 })();
+
+/* Chargeur SpeedArti Suivi chantier / Conducteur v1.8 */
+(()=>{
+  if(window.__SpeedArtiConductorV18Loader) return;
+  window.__SpeedArtiConductorV18Loader=true;
+  const files=['planning-v18-core.js','planning-v18-conductor.js','planning-v18-field.js','planning-v18-ai.js','planning-v18-contracts.js'];
+  const load=(index)=>{
+    if(index>=files.length) return;
+    const script=document.createElement('script');
+    script.src='./'+files[index]+'?v=1.8.0';
+    script.async=false;
+    script.onload=()=>load(index+1);
+    script.onerror=()=>console.error('SpeedArti v1.8 : chargement impossible',files[index]);
+    document.body.appendChild(script);
+  };
+  load(0);
+})();
