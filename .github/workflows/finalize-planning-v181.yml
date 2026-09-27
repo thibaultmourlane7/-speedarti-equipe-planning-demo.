@@ -1,0 +1,31 @@
+name: "Finalize planning v1.8.1"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/finalize-planning-v181.yml"
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish V1.8.1
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.8','Démo fonctionnelle autonome SpeedArti Équipe & Planning v1.8.1')
+          s=s.replace('<title>SpeedArti — Équipe & Planning v1.8</title>','<title>SpeedArti — Équipe & Planning v1.8.1</title>')
+          s=s.replace("version: '1.8',","version: '1.8.1',",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm -f .github/workflows/finalize-planning-v181.yml
+          git config user.name "SpeedArti FORGE"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html .github/workflows/finalize-planning-v181.yml
+          git commit -m "V1.8.1 — transmission client Standard"
+          git push origin main
