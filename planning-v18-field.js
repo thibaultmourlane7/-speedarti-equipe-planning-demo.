@@ -111,6 +111,12 @@
       ui.notify(action==='ack-notice'?'Planning consulté.':'Problème signalé.');ui.render();return;
     }
     if(action==='edit-qualification'){ui.modal=qualificationForm(s,t.dataset.id);ui.render();return;}
+    if(action==='project-constraints'){
+      const projectId=t.dataset.projectId||'', c=ext(s).projectConstraints[projectId]||{};
+      const join=x=>(x||[]).join(', ');
+      ui.modal='<form data-v18-field-form="project-constraints"><input type="hidden" name="projectId" value="'+esc(projectId)+'"><h2>Contraintes métier du chantier</h2><p>Renseignez uniquement les contraintes réellement nécessaires à l’affectation.</p><div class="v18-field-form"><label>Effectif minimum<input type="number" name="minCrewSize" min="1" max="50" value="'+esc(c.minCrewSize||'')+'" placeholder="Ex. 2"></label><label>Permis requis<input name="permits" value="'+esc(join(c.requiredPermits))+'" placeholder="BE…"></label><label>Certifications requises<input name="certifications" value="'+esc(join(c.requiredCertifications))+'"></label><label>Autorisations engin/véhicule<input name="equipment" value="'+esc(join(c.requiredEquipmentAuthorizations))+'" placeholder="Nacelle…"></label></div><div class="modal-actions"><button class="primary">Enregistrer</button></div></form>';
+      ui.render();return;
+    }
   });
   document.addEventListener('submit',e=>{
     const form=e.target.closest('form[data-v18-field-form]');if(!form)return;e.preventDefault();const fd=new FormData(form);
@@ -118,6 +124,13 @@
       const split=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean),id=String(fd.get('memberId'));
       store.update(s=>{ext(s).memberQualifications[id]={permits:split(fd.get('permits')),certifications:split(fd.get('certifications')),equipmentAuthorizations:split(fd.get('equipment')),restrictions:split(fd.get('restrictions')),updatedAt:nowIso()};},{action:'member.qualifications.updated',entityType:'member',entityId:id});
       ui.modal=null;ui.notify('Habilitations enregistrées.');ui.render();
+    }
+    if(form.dataset.v18FieldForm==='project-constraints'){
+      const split=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean), projectId=String(fd.get('projectId'));
+      const minRaw=String(fd.get('minCrewSize')||'').trim(), minCrewSize=minRaw?Number(minRaw):null;
+      if(minCrewSize!==null&&(!Number.isInteger(minCrewSize)||minCrewSize<1)) return ui.notify('Effectif minimum invalide.','error');
+      store.update(s=>{ext(s).projectConstraints[projectId]={minCrewSize,requiredPermits:split(fd.get('permits')),requiredCertifications:split(fd.get('certifications')),requiredEquipmentAuthorizations:split(fd.get('equipment')),updatedAt:nowIso()};},{action:'project.constraints.updated',entityType:'project',entityId:projectId});
+      ui.modal=null;ui.notify('Contraintes chantier enregistrées.');ui.render();
     }
   });
 
