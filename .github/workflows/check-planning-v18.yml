@@ -22,3 +22,17 @@ jobs:
           node --check planning-v18-ai.js
           node --check planning-v18-contracts.js
           node --check planning-v17-standard.js
+      - name: Check V1.8 feature contracts
+        run: |
+          grep -q "createMeeting" planning-v18-core.js
+          grep -q "prepareDailyJournal" planning-v18-core.js
+          grep -q "createChecklistTemplate" planning-v18-core.js
+          grep -q "non_conformity" planning-v18-core.js
+          grep -q "v18-plan-stage" planning-v18-conductor.js
+          grep -q "Mon brief chantier" planning-v18-field.js
+          grep -q "project-constraints" planning-v18-field.js
+          grep -q "localAngelButton:false" planning-v18-ai.js
+          grep -q "proposePhotoClassification" planning-v18-ai.js
+          grep -q "temps_presence" planning-v18-contracts.js
+          grep -q "external_calendar" planning-v18-contracts.js
+          grep -q "planning-v18-core.js" sw-planning-v17.js
