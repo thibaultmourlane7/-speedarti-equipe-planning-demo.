@@ -25,7 +25,10 @@
     subcontracting_points:{direction:'bidirectionnel',sourceOfTruth:'Sous-traitance SpeedArti',purpose:'Attribuer des actions autorisées à un sous-traitant sans créer un second réseau.'},
     temps_presence:{direction:'entrant',sourceOfTruth:'Temps & Présence',purpose:'Recevoir les heures réellement réalisées pour comparaison avec le prévisionnel.'},
     rh_qualifications:{direction:'entrant',sourceOfTruth:'RH SpeedArti',purpose:'Recevoir habilitations, permis, certifications et restrictions validées.'},
-    external_calendar:{direction:'sortant',sourceOfTruth:'Agenda Chantier SpeedArti',purpose:'Publier facultativement les affectations personnelles vers Google/Outlook sans permettre à ces calendriers de devenir la source.'}
+    external_calendar:{direction:'sortant',sourceOfTruth:'Agenda Chantier SpeedArti',purpose:'Publier facultativement les affectations personnelles vers Google/Outlook sans permettre à ces calendriers de devenir la source.'},
+    client_interface_context:{direction:'entrant',sourceOfTruth:'Interface client SpeedArti',purpose:'Recevoir l’identifiant client et le projet portail réellement liés au chantier.'},
+    client_transmission:{direction:'sortant',sourceOfTruth:'Suivi chantier',purpose:'Transmettre uniquement les éléments explicitement validés par un utilisateur autorisé.'},
+    client_transmission_receipt:{direction:'entrant',sourceOfTruth:'Interface client / Notifications SpeedArti',purpose:'Recevoir les statuts réels envoyé, consulté ou échec sans inventer d’accusé de lecture.'}
   });
 
   function validateProject(s,id){
@@ -74,10 +77,34 @@
     return plans.length;
   }
 
+  function applyClientContext(payload){
+    if(payload?.schemaVersion!=='1.0'||!Array.isArray(payload.items))throw new Error('Snapshot Interface client incompatible.');
+    const api=window.SpeedArtiClientTransmissionCore;
+    if(!api)throw new Error('Moteur Transmission client indisponible.');
+    for(const item of payload.items){
+      const s=store.getState();validateProject(s,item.projectId);
+      if(!item.displayName)throw new Error('Nom client obligatoire.');
+      api.setClientContext({projectId:clean(item.projectId),clientId:item.clientId?clean(item.clientId):null,displayName:clean(item.displayName),portalProjectId:item.portalProjectId?clean(item.portalProjectId):null});
+    }
+    store.update(st=>{ext(st).connectorStatus.client_interface_context={receivedAt:now(),count:payload.items.length};},{action:'conductor.connector.client_context.received',entityType:'integration',entityId:'client_interface_context',details:String(payload.items.length)});
+    return payload.items.length;
+  }
+
+  function applyClientReceipts(payload){
+    if(payload?.schemaVersion!=='1.0'||!Array.isArray(payload.receipts))throw new Error('Accusé Interface client incompatible.');
+    const api=window.SpeedArtiClientTransmissionCore;
+    if(!api)throw new Error('Moteur Transmission client indisponible.');
+    for(const receipt of payload.receipts)api.applyReceipt(receipt);
+    store.update(st=>{ext(st).connectorStatus.client_transmission_receipt={receivedAt:now(),count:payload.receipts.length};},{action:'conductor.connector.client_receipts.received',entityType:'integration',entityId:'client_transmission_receipt',details:String(payload.receipts.length)});
+    return payload.receipts.length;
+  }
+
   function applySnapshot(name,payload){
     if(name==='temps_presence')return applyPresence(payload);
     if(name==='rh_qualifications')return applyQualifications(payload);
     if(name==='documents_plans')return applyDocuments(payload);
+    if(name==='client_interface_context')return applyClientContext(payload);
+    if(name==='client_transmission_receipt')return applyClientReceipts(payload);
     throw new Error('Ce connecteur est préparé mais n’accepte pas de snapshot entrant dans la démo.');
   }
 
@@ -138,6 +165,21 @@
   });
   window.addEventListener('speedarti:conductor:offline-sync-ready',event=>{
     window.dispatchEvent(new CustomEvent('speedarti:conductor:outbound-ready',{detail:{type:'offline.queue.ready',payload:event.detail}}));
+  });
+  window.addEventListener('speedarti:client-transmission:outbound-ready',event=>{
+    const payload=event.detail||{};
+    window.dispatchEvent(new CustomEvent('speedarti:conductor:outbound-ready',{detail:{
+      type:'client_transmission.ready',
+      targets:['client_interface','notifications','documents_audit'],
+      payload,
+      notification:{
+        aggregate:true,
+        projectId:payload.projectId||null,
+        clientId:payload.clientId||null,
+        title:payload.publicationTitle||'Nouvelle actualité chantier',
+        transmissionId:payload.transmissionId||null
+      }
+    }}));
   });
 
   window.dispatchEvent(new CustomEvent('speedarti:conductor:contracts-ready',{detail:api.exportPreparationBundle()}));
