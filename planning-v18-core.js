@@ -247,7 +247,8 @@
     if(!['approved','rejected'].includes(status)) throw new Error('Décision invalide.');
     let result;
     demo.store.update(state=>{
-      const v=ensure(state).validations.find(x=>x.id===id);
+      const c=ensure(state);
+      const v=c.validations.find(x=>x.id===id);
       if(!v) throw new Error('Validation introuvable.');
       if(v.projectId) assertProjectAccess(state,v.projectId);
       v.status=status;v.reviewedAt=now();v.reviewedBy=state.session.activeMemberId;v.decisionNote=cleanText(note,2000);
