@@ -1,0 +1,24 @@
+name: "Check planning v1.8"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "planning-v18-*.js"
+      - "planning-v17-standard.js"
+      - ".github/workflows/check-planning-v18.yml"
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check planning-v18-core.js
+          node --check planning-v18-conductor.js
+          node --check planning-v18-field.js
+          node --check planning-v18-ai.js
+          node --check planning-v18-contracts.js
+          node --check planning-v17-standard.js
