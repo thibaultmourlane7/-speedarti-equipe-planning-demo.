@@ -442,7 +442,7 @@
   }
 
   const api={
-    version:'1.8.0',
+    version:'1.8.1',
     POINT_TYPES,DEFAULT_STATUSES,NC_STATUSES,PLAN_STATUSES,
     ensureState:()=>{let out;demo.store.update(s=>{out=clone(ensure(s));},{action:'conductor.schema.ensure',entityType:'conductor',entityId:'v18'});return out;},
     getState:()=>clone(ensure(demo.store.getState())),
