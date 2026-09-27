@@ -7,6 +7,7 @@ on:
       - "planning-v18-*.js"
       - "planning-v17-standard.js"
       - ".github/workflows/check-planning-v18.yml"
+      - "tests/v18-core-smoke.js"
 permissions:
   contents: read
 jobs:
@@ -36,3 +37,5 @@ jobs:
           grep -q "temps_presence" planning-v18-contracts.js
           grep -q "external_calendar" planning-v18-contracts.js
           grep -q "planning-v18-core.js" sw-planning-v17.js
+      - name: Run V1.8 core smoke test
+        run: node tests/v18-core-smoke.js
