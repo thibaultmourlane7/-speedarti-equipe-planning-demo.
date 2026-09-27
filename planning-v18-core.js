@@ -254,6 +254,89 @@
     return result;
   }
 
+  function createChecklistTemplate(input){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state);
+      const name=cleanText(input.name,220);
+      const items=(Array.isArray(input.items)?input.items:[]).map((item,index)=>({
+        id:item.id||uid('check_item'),
+        label:cleanText(item.label,500),
+        required:item.required!==false,
+        requiresPhoto:item.requiresPhoto===true,
+        order:index
+      })).filter(item=>item.label);
+      if(!name||!items.length) throw new Error('Nom et au moins un contrôle sont obligatoires.');
+      result={id:uid('check_template'),name,category:cleanText(input.category,120),blocking:input.blocking===true,items,createdAt:now(),createdBy:state.session.activeMemberId,status:'active'};
+      c.checklistTemplates.unshift(result);
+    },{action:'conductor.checklist.template.created',entityType:'checklist_template',entityId:'new'});
+    return clone(result);
+  }
+
+  function startChecklist(input){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state);
+      assertProjectAccess(state,input.projectId);
+      const template=c.checklistTemplates.find(t=>t.id===input.templateId&&t.status==='active');
+      if(!template) throw new Error('Modèle de contrôle introuvable.');
+      result={
+        id:uid('check_run'),projectId:input.projectId,templateId:template.id,templateName:template.name,
+        pointId:input.pointId||null,status:'in_progress',startedAt:now(),startedBy:state.session.activeMemberId,
+        completedAt:null,validatedAt:null,validatedBy:null,
+        answers:template.items.map(item=>({itemId:item.id,label:item.label,required:item.required,requiresPhoto:item.requiresPhoto,answer:null,comment:'',attachmentIds:[]}))
+      };
+      c.checklistRuns.unshift(result);
+    },{action:'conductor.checklist.started',entityType:'checklist_run',entityId:input.templateId});
+    return clone(result);
+  }
+
+  function answerChecklist(runId,itemId,input){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state),run=c.checklistRuns.find(r=>r.id===runId);
+      if(!run) throw new Error('Contrôle introuvable.');
+      assertProjectAccess(state,run.projectId);
+      if(run.status!=='in_progress') throw new Error('Ce contrôle est déjà terminé.');
+      const answer=run.answers.find(a=>a.itemId===itemId);
+      if(!answer) throw new Error('Ligne de contrôle introuvable.');
+      const value=input.answer==null?null:cleanText(input.answer,10);
+      if(value!==null&&!['yes','no','na'].includes(value)) throw new Error('Réponse de contrôle invalide.');
+      answer.answer=value;
+      answer.comment=cleanText(input.comment,1500);
+      if(input.attachmentIds!==undefined) answer.attachmentIds=cleanArray(input.attachmentIds);
+      result=clone(run);
+    },{action:'conductor.checklist.answered',entityType:'checklist_run',entityId:runId});
+    return result;
+  }
+
+  function completeChecklist(runId){
+    let result;
+    demo.store.update(state=>{
+      const c=ensure(state),run=c.checklistRuns.find(r=>r.id===runId);
+      if(!run) throw new Error('Contrôle introuvable.');
+      assertProjectAccess(state,run.projectId);
+      const template=c.checklistTemplates.find(t=>t.id===run.templateId);
+      const missing=run.answers.filter(a=>a.required&&!a.answer);
+      if(missing.length) throw new Error(missing.length+' contrôle(s) obligatoire(s) sans réponse.');
+      const photoMissing=run.answers.filter(a=>a.requiresPhoto&&a.answer==='yes'&&!(a.attachmentIds||[]).length);
+      if(photoMissing.length) throw new Error(photoMissing.length+' preuve(s) photo obligatoire(s) manquante(s).');
+      const failed=run.answers.filter(a=>a.answer==='no');
+      run.status=failed.length?'completed_with_issues':'completed';
+      run.completedAt=now();
+      if(template?.blocking&&failed.length){
+        c.validations.unshift({
+          id:uid('validation'),projectId:run.projectId,type:'quality_block',
+          title:'Contrôle obligatoire à valider',description:failed.map(x=>x.label).join(' · '),
+          entityType:'checklist_run',entityId:run.id,status:'pending',createdAt:now(),
+          createdBy:state.session.activeMemberId,reviewedAt:null,reviewedBy:null,decisionNote:''
+        });
+      }
+      result=clone(run);
+    },{action:'conductor.checklist.completed',entityType:'checklist_run',entityId:runId});
+    return result;
+  }
+
   const api={
     version:'1.8.0',
     POINT_TYPES,DEFAULT_STATUSES,NC_STATUSES,PLAN_STATUSES,
@@ -262,7 +345,8 @@
     visibleProjectIds:()=>[...visibleProjectIds(demo.store.getState())],
     createPoint,updatePoint,transitionPoint,listPoints,
     registerPlan,setPlanStatus,
-    createValidation,reviewValidation
+    createValidation,reviewValidation,
+    createChecklistTemplate,startChecklist,answerChecklist,completeChecklist
   };
   window.SpeedArtiConductor=api;
   demo.store.update(state=>{ensure(state);},{action:'conductor.schema.ready',entityType:'conductor',entityId:'v18'});
