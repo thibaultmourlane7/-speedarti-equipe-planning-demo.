@@ -172,8 +172,8 @@
 
   const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
     module:'equipe_planning',
-    version:'1.2.0',
-    appliesFrom:'1.9.2',
+    version:'1.3.0',
+    appliesFrom:'1.9.3',
     principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
     domains:{
       organisation:{
@@ -183,7 +183,7 @@
       navigationSimple:{
         terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Équipe','Terrain','Gantt avancé','Pilotage','Réserves / OPR','Non-conformités','Qualité','Sécurité','Réunions','Journal chantier','Suivi client','Historique','Configuration','Planning simple','Vue avancée','Signaler quelque chose'],
         intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir équipe','ouvrir terrain','ouvrir Gantt avancé','ouvrir pilotage','ouvrir réserves','ouvrir non-conformités','ouvrir qualité','ouvrir sécurité','ouvrir réunions','ouvrir journal chantier','ouvrir suivi client','ouvrir historique','ouvrir configuration','signaler quelque chose'],
-        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.']
+        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.']
       },
       agendaPlanning:{
         terms:['Agenda Chantier','affectation','intervention','planning','Planning simple','Gantt','Vue avancée','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
@@ -248,6 +248,7 @@
       'Une nouvelle version documentaire ne remplace jamais silencieusement une version déjà transmise.',
       'L’interface simple V1.9.2 est la façade par défaut avec un menu latéral complet adapté au rôle.',
       'Le menu Plus global est supprimé : les sections métier autorisées apparaissent directement dans le menu latéral.',
+      'Le bloc Principal est toujours visible ; Organisation, Suivi chantier et Administration sont repliables.',
       'Ángel doit orienter vers l’action la plus simple avant de proposer une vue avancée.',
       'Le Gantt avancé reste une vue secondaire pour les profils qui en ont besoin.',
       'Signaler quelque chose utilise le moteur Point chantier existant et ne crée pas un second système.'
@@ -318,7 +319,7 @@
     };
   }
 
-  const api={version:'1.9.2',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
+  const api={version:'1.9.3',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
   window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
