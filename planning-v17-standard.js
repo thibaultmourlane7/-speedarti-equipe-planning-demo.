@@ -194,7 +194,7 @@
   const load=(index)=>{
     if(index>=files.length) return;
     const script=document.createElement('script');
-    script.src='./'+files[index]+'?v=1.9.1';
+    script.src='./'+files[index]+'?v=1.9.2';
     script.async=false;
     script.onload=()=>load(index+1);
     script.onerror=()=>console.error('SpeedArti v1.9 : chargement impossible',files[index]);
