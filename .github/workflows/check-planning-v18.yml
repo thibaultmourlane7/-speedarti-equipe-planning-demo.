@@ -1,14 +1,17 @@
-name: "Check planning v1.8"
+name: "Check planning v1.9"
 on:
   push:
     branches:
       - main
     paths:
       - "planning-v18-*.js"
+      - "planning-v19-*.js"
       - "planning-v17-standard.js"
       - ".github/workflows/check-planning-v18.yml"
       - "tests/v18-core-smoke.js"
       - "tests/v181-client-transmission-smoke.js"
+      - "tests/v19-gantt-smoke.js"
+      - "tests/v19-angel-knowledge-smoke.js"
       - "docs/ANGEL_KNOWLEDGE_ABSOLUTE_RULE.md"
 permissions:
   contents: read
@@ -19,6 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
         run: |
+          node --check planning-v19-gantt.js
           node --check planning-v18-core.js
           node --check planning-v18-conductor.js
           node --check planning-v18-field.js
@@ -54,3 +58,15 @@ jobs:
           grep -q "Aucun agent ne peut supprimer" docs/ANGEL_KNOWLEDGE_ABSOLUTE_RULE.md
       - name: Run V1.8.1 client transmission smoke test
         run: node tests/v181-client-transmission-smoke.js
+      - name: Check V1.9 Gantt and Ángel knowledge
+        run: |
+          grep -q "scales:\['week','month','year','n3'\]" planning-v19-gantt.js
+          grep -q "sourceOfTruth:'Agenda Chantier'" planning-v19-gantt.js
+          grep -q "TEAM_PLANNING_KNOWLEDGE" planning-v18-ai.js
+          grep -q "module:'equipe_planning'" planning-v18-ai.js
+          grep -q "clientTransmission:CLIENT_TRANSMISSION_KNOWLEDGE" planning-v18-ai.js
+          grep -q "planning-v19-gantt.js" planning-v17-standard.js
+      - name: Run V1.9 Gantt smoke test
+        run: node tests/v19-gantt-smoke.js
+      - name: Run V1.9 Ángel knowledge smoke test
+        run: node tests/v19-angel-knowledge-smoke.js
