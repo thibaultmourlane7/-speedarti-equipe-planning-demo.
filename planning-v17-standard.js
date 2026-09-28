@@ -72,7 +72,7 @@
     const unread=(ext.changeNotices||[]).filter(n=>!(n.readBy||[]).includes(state.session.activeMemberId));
     return `
       <section class="panel v17-panel" data-v17-standard>
-        <div class="panel-header"><div><span class="eyebrow">Standard · organisation simple</span><h2>Planning chantier simplifié</h2><p>Une seule source : l’Agenda Chantier. Ces outils organisent les affectations sans créer un second calendrier.</p></div><span class="badge badge-info">v1.7</span></div>
+        <div class="panel-header"><div><span class="eyebrow">Standard · organisation simple</span><h2>Outils planning & organisation</h2><p>Une seule source : l’Agenda Chantier. Besoins, jalons, dépendances et modèles complètent le Gantt V1.9 sans créer un second calendrier.</p></div><span class="badge badge-info">Standard</span></div>
         <div class="v17-toolbar">
           <label>Voir par
             <select data-v17-control="view-mode">
@@ -197,7 +197,7 @@
     script.src='./'+files[index]+'?v=1.9.0';
     script.async=false;
     script.onload=()=>load(index+1);
-    script.onerror=()=>console.error('SpeedArti v1.8 : chargement impossible',files[index]);
+    script.onerror=()=>console.error('SpeedArti v1.9 : chargement impossible',files[index]);
     document.body.appendChild(script);
   };
   load(0);
