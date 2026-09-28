@@ -172,16 +172,21 @@
 
   const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
     module:'equipe_planning',
-    version:'1.0.0',
-    appliesFrom:'1.9.0',
+    version:'1.1.0',
+    appliesFrom:'1.9.1',
     principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
     domains:{
       organisation:{
         terms:['collaborateur','équipe','chef d’équipe','conducteur de travaux','ouvrier','sous-traitant','rôle','permission','droit individuel','disponibilité','charge','capacité'],
         intents:['consulter équipe','chercher collaborateur','comprendre rôle','vérifier disponibilité','vérifier droit','analyser charge']
       },
+      navigationSimple:{
+        terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Plus','Planning simple','Vue avancée','Signaler quelque chose'],
+        intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir plus','passer en Gantt avancé','signaler quelque chose'],
+        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Les fonctions avancées restent derrière Plus ou Vue avancée.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.']
+      },
       agendaPlanning:{
-        terms:['Agenda Chantier','affectation','intervention','planning','Gantt','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
+        terms:['Agenda Chantier','affectation','intervention','planning','Planning simple','Gantt','Vue avancée','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
         intents:['voir planning','voir Gantt','changer échelle','chercher intervention','préparer réorganisation','analyser dépendances','identifier besoin non pourvu']
       },
       terrain:{
@@ -240,10 +245,19 @@
       'Respecter le périmètre chantier et les permissions du profil actif.',
       'Les éléments de suivi chantier et documents restent privés par défaut.',
       'Une transmission client nécessite le droit share_with_client et validation humaine explicite.',
-      'Une nouvelle version documentaire ne remplace jamais silencieusement une version déjà transmise.'
+      'Une nouvelle version documentaire ne remplace jamais silencieusement une version déjà transmise.',
+      'L’interface simple V1.9.1 est la façade par défaut : Aujourd’hui, Planning, Chantiers, À traiter, Plus.',
+      'Ángel doit orienter vers l’action la plus simple avant de proposer une vue avancée.',
+      'Le Gantt avancé reste une vue secondaire pour les profils qui en ont besoin.',
+      'Signaler quelque chose utilise le moteur Point chantier existant et ne crée pas un second système.'
     ],
     artisanLanguage:{
       examples:[
+        'Montre-moi aujourd’hui.',
+        'Qu’est-ce que j’ai à traiter ?',
+        'Ouvre le chantier Dupont.',
+        'Signale un problème sur Dupont.',
+        'Passe en vue Gantt.',
         'Qui va où demain ?',
         'Montre-moi le planning de la semaine.',
         'Montre-moi le planning du mois prochain.',
@@ -262,6 +276,11 @@
       ]
     },
     intentTests:[
+      {utterance:'Montre-moi aujourd’hui',expectedDomain:'navigationSimple',expectedIntent:'ouvrir aujourd’hui'},
+      {utterance:'Qu’est-ce que j’ai à traiter ?',expectedDomain:'navigationSimple',expectedIntent:'voir à traiter'},
+      {utterance:'Ouvre le chantier Dupont',expectedDomain:'navigationSimple',expectedIntent:'ouvrir chantier'},
+      {utterance:'Signale un problème sur Dupont',expectedDomain:'navigationSimple',expectedIntent:'signaler quelque chose'},
+      {utterance:'Passe en vue Gantt',expectedDomain:'navigationSimple',expectedIntent:'passer en Gantt avancé'},
       {utterance:'Montre-moi le planning du mois prochain',expectedDomain:'agendaPlanning',expectedIntent:'voir planning'},
       {utterance:'Passe le Gantt sur les trois prochaines années',expectedDomain:'agendaPlanning',expectedIntent:'voir Gantt'},
       {utterance:'Décale Dupont d’une semaine',expectedDomain:'agendaPlanning',requiresHumanValidation:true,mustNotChangeAgendaAutomatically:true},
@@ -292,7 +311,7 @@
     };
   }
 
-  const api={version:'1.9.0',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
+  const api={version:'1.9.1',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
   window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
