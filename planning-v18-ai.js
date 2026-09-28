@@ -64,14 +64,21 @@
     const s=store.getState();
     const summary=dailySummary();
     return {
-      module:'suivi_chantier_conducteur',
-      version:'1.8.0',
+      module:'equipe_planning',
+      version:'1.9.0',
       query:String(question||'').trim(),
       search:question?searchProject(question):[],
       summary,
       projects:[...allowedProjects(s)].map(id=>({id,name:projectName(s,id)})),
+      gantt:window.SpeedArtiGanttV19?window.SpeedArtiGanttV19.getConfig():null,
+      planning:{
+        milestones:(s.planningV17?.milestones||[]).filter(x=>allowedProjects(s).has(x.projectId)),
+        dependencies:(s.planningV17?.dependencies||[]).filter(x=>allowedProjects(s).has(x.projectId)),
+        needs:(s.planningV17?.needs||[]).filter(x=>allowedProjects(s).has(x.projectId))
+      },
+      qualifications:Object.fromEntries(Object.entries(stateExt(s).memberQualifications||{}).filter(([memberId])=>s.members?.some(m=>m.id===memberId))),
       clientTransmission:clientTransmissionContext(),
-      knowledgePacks:['client_transmission@'+CLIENT_TRANSMISSION_KNOWLEDGE.version],
+      knowledgePacks:['equipe_planning@'+TEAM_PLANNING_KNOWLEDGE.version],
       policy:{
         entryPointOwnedBy:'speedarti_global_angel',
         localAngelButton:false,
@@ -163,6 +170,111 @@
     ]
   });
 
+  const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
+    module:'equipe_planning',
+    version:'1.0.0',
+    appliesFrom:'1.9.0',
+    principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
+    domains:{
+      organisation:{
+        terms:['collaborateur','équipe','chef d’équipe','conducteur de travaux','ouvrier','sous-traitant','rôle','permission','droit individuel','disponibilité','charge','capacité'],
+        intents:['consulter équipe','chercher collaborateur','comprendre rôle','vérifier disponibilité','vérifier droit','analyser charge']
+      },
+      agendaPlanning:{
+        terms:['Agenda Chantier','affectation','intervention','planning','Gantt','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
+        intents:['voir planning','voir Gantt','changer échelle','chercher intervention','préparer réorganisation','analyser dépendances','identifier besoin non pourvu']
+      },
+      terrain:{
+        terms:['rapport terrain','avancement','difficulté','problème','demande matériel','message chantier','photo chantier','brief chantier','hors connexion','vu','j’ai un problème'],
+        intents:['résumer journée','créer rapport','signaler problème','demander matériel','préparer brief','retrouver photo']
+      },
+      resources:{
+        terms:['véhicule','engin','gros matériel','réservation ressource','conflit matériel','nacelle','remorque','permis','habilitation','certification'],
+        intents:['vérifier ressource','chercher personne habilitée','proposer remplacement','détecter conflit matériel']
+      },
+      intelligencePlanning:{
+        terms:['prévu','réalisé','Chiffrage','Temps & Présence','heures prévues','heures réalisées','écart','renfort','sous-traitance','météo','trajet','distance','cartographie'],
+        intents:['comparer prévu réalisé','proposer équipe','proposer remplacement','analyser retard','analyser météo','optimiser trajet','préparer renfort']
+      },
+      conducteur:{
+        terms:['cockpit chantier','Point chantier','plan interactif','réserve','OPR','non-conformité','action corrective','contrôle qualité','sécurité chantier','check-list','réunion de chantier','compte rendu','journal chantier','validation'],
+        intents:['chercher point chantier','voir réserves ouvertes','préparer contrôle','préparer réunion','préparer compte rendu','préparer journal','résumer validations']
+      },
+      documents:{
+        terms:['plan','PDF','révision','version active','document remplacé','brouillon','à valider','validé','archivé'],
+        intents:['chercher plan','identifier version active','retrouver ancienne révision','préparer document validé']
+      },
+      clientTransmission:{
+        terms:CLIENT_TRANSMISSION_KNOWLEDGE.terms,
+        synonyms:CLIENT_TRANSMISSION_KNOWLEDGE.synonyms,
+        intents:CLIENT_TRANSMISSION_KNOWLEDGE.intents.map(x=>x.id),
+        rules:CLIENT_TRANSMISSION_KNOWLEDGE.restrictions
+      }
+    },
+    sourceOfTruth:{
+      datesAndInterventions:'Agenda Chantier',
+      teamsAndAssignments:'Équipe & Planning',
+      employeesAbsencesContracts:'RH',
+      actualHours:'Temps & Présence',
+      estimatedHoursPhases:'Chiffrage',
+      consumables:'Stock',
+      products:'Catalogue',
+      orders:'Commandes',
+      vehiclesEquipment:'Parc matériel',
+      documentsPlans:'Documents',
+      weather:'Connecteur Météo',
+      travel:'Connecteur Cartographie',
+      subcontracting:'Sous-traitance',
+      clientPortal:'Interface client',
+      ai:'Ángel global'
+    },
+    absoluteRules:[
+      'Ne jamais créer ou utiliser un deuxième Agenda.',
+      'Ne jamais inventer une date, une quantité, une durée, une météo, une distance, une compétence, une habilitation ou un accusé de lecture.',
+      'Toute proposition de réorganisation sensible nécessite validation humaine.',
+      'Les dates du Gantt viennent exclusivement de l’Agenda Chantier.',
+      'Le prévisionnel vient du Chiffrage ; le réel vient de Temps & Présence.',
+      'Les salariés, congés et contrats viennent du RH.',
+      'Les véhicules et engins ne doivent pas être confondus avec le stock consommable.',
+      'Ángel reste global : aucun bouton Ángel local dans Équipe & Planning.',
+      'Respecter le périmètre chantier et les permissions du profil actif.',
+      'Les éléments de suivi chantier et documents restent privés par défaut.',
+      'Une transmission client nécessite le droit share_with_client et validation humaine explicite.',
+      'Une nouvelle version documentaire ne remplace jamais silencieusement une version déjà transmise.'
+    ],
+    artisanLanguage:{
+      examples:[
+        'Qui va où demain ?',
+        'Montre-moi le planning de la semaine.',
+        'Montre-moi le planning du mois prochain.',
+        'Passe le Gantt sur l’année.',
+        'Affiche-moi les trois prochaines années.',
+        'Qui est libre mardi ?',
+        'Mets Jean et Marc sur Martin.',
+        'Décale Dupont d’une semaine.',
+        'Trouve-moi quelqu’un avec le permis BE.',
+        'Il me manque deux couvreurs mardi.',
+        'Quelles réserves restent ouvertes ?',
+        'Quelle est la dernière version du plan toiture ?',
+        'Prépare le compte rendu de réunion.',
+        'Combien d’heures étaient prévues et combien ont été faites ?',
+        'Envoie ces photos au client.'
+      ]
+    },
+    intentTests:[
+      {utterance:'Montre-moi le planning du mois prochain',expectedDomain:'agendaPlanning',expectedIntent:'voir planning'},
+      {utterance:'Passe le Gantt sur les trois prochaines années',expectedDomain:'agendaPlanning',expectedIntent:'voir Gantt'},
+      {utterance:'Décale Dupont d’une semaine',expectedDomain:'agendaPlanning',requiresHumanValidation:true,mustNotChangeAgendaAutomatically:true},
+      {utterance:'Qui est libre mardi ?',expectedDomain:'organisation',expectedIntent:'vérifier disponibilité'},
+      {utterance:'Trouve-moi quelqu’un avec le permis BE',expectedDomain:'resources',expectedIntent:'chercher personne habilitée'},
+      {utterance:'Combien d’heures étaient prévues et combien ont été faites ?',expectedDomain:'intelligencePlanning',mustUse:['Chiffrage','Temps & Présence']},
+      {utterance:'Quelles réserves restent ouvertes ?',expectedDomain:'conducteur',expectedIntent:'voir réserves ouvertes'},
+      {utterance:'Quelle est la dernière version du plan toiture ?',expectedDomain:'documents',mustUse:'Documents'},
+      ...CLIENT_TRANSMISSION_KNOWLEDGE.tests
+    ],
+    clientTransmission:CLIENT_TRANSMISSION_KNOWLEDGE
+  });
+
   function clientTransmissionContext(){
     const api=window.SpeedArtiClientTransmissionCore;
     if(!api)return {available:false,knowledgeVersion:CLIENT_TRANSMISSION_KNOWLEDGE.version,items:[]};
@@ -180,9 +292,9 @@
     };
   }
 
-  const api={version:'1.8.1',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{clientTransmission:CLIENT_TRANSMISSION_KNOWLEDGE}};
+  const api={version:'1.9.0',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
-  window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:CLIENT_TRANSMISSION_KNOWLEDGE}));
+  window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
   /* Enrichit le contexte du bouton Ángel global, sans créer d'interface Ángel locale. */
   const bridge=window.SpeedArtiTeamPlanning;
