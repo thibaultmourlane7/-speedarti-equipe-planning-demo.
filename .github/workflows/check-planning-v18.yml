@@ -1,4 +1,4 @@
-name: "Check planning v1.9"
+name: "Check planning v1.9.1"
 on:
   push:
     branches:
@@ -12,6 +12,7 @@ on:
       - "tests/v181-client-transmission-smoke.js"
       - "tests/v19-gantt-smoke.js"
       - "tests/v19-angel-knowledge-smoke.js"
+      - "tests/v191-ux-smoke.js"
       - "docs/ANGEL_KNOWLEDGE_ABSOLUTE_RULE.md"
 permissions:
   contents: read
@@ -23,6 +24,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check planning-v19-gantt.js
+          node --check planning-v19-ux-simple.js
           node --check planning-v18-core.js
           node --check planning-v18-conductor.js
           node --check planning-v18-field.js
@@ -70,3 +72,13 @@ jobs:
         run: node tests/v19-gantt-smoke.js
       - name: Run V1.9 Ángel knowledge smoke test
         run: node tests/v19-angel-knowledge-smoke.js
+      - name: Check V1.9.1 simple UX
+        run: |
+          grep -q "sections:\['today','planning','projects','attention','more'\]" planning-v19-ux-simple.js
+          grep -q "Planning simple" planning-v19-ux-simple.js
+          grep -q "Signaler quelque chose" planning-v19-ux-simple.js
+          grep -q "Vue avancée → Gantt" planning-v19-ux-simple.js
+          grep -q "navigationSimple" planning-v18-ai.js
+          grep -q "equipe_planning@1.1.0" tests/v19-angel-knowledge-smoke.js
+      - name: Run V1.9.1 UX smoke test
+        run: node tests/v191-ux-smoke.js
