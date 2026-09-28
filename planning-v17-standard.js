@@ -86,7 +86,7 @@
         </div>
         <div class="v17-groups">${renderGroupSummary(state,assignments,ext.viewMode)}</div>
 
-        <details class="v17-details"><summary>Gantt chantier léger</summary>${renderGantt(state,assignments)}</details>
+        <details class="v17-details" data-v17-lite-gantt><summary>Gantt chantier léger</summary>${renderGantt(state,assignments)}</details>
 
         <details class="v17-details"><summary>Besoins à pourvoir <span>${ext.needs.length}</span></summary>
           <div class="v17-list">${ext.needs.length?ext.needs.map(n=>`<article><div><strong>${esc(projectLabel(state,n.projectId))}</strong><p>${esc(n.headcount)} personne(s) · ${esc((n.requiredSkills||[]).join(', ')||'compétence non précisée')} · ${fmt(n.neededAt)}</p></div>${manage?`<button class="ghost" data-v17-action="remove-need" data-id="${esc(n.id)}">Supprimer</button>`:''}</article>`).join(''):'<p class="v17-muted">Aucun besoin non pourvu déclaré.</p>'}</div>
@@ -190,11 +190,11 @@
 (()=>{
   if(window.__SpeedArtiConductorV18Loader) return;
   window.__SpeedArtiConductorV18Loader=true;
-  const files=['planning-v18-core.js','planning-v18-conductor.js','planning-v18-field.js','planning-v18-client-transmission-core.js','planning-v18-client-transmission-ui.js','planning-v18-ai.js','planning-v18-contracts.js'];
+  const files=['planning-v18-core.js','planning-v19-gantt.js','planning-v18-conductor.js','planning-v18-field.js','planning-v18-client-transmission-core.js','planning-v18-client-transmission-ui.js','planning-v18-ai.js','planning-v18-contracts.js'];
   const load=(index)=>{
     if(index>=files.length) return;
     const script=document.createElement('script');
-    script.src='./'+files[index]+'?v=1.8.1';
+    script.src='./'+files[index]+'?v=1.9.0';
     script.async=false;
     script.onload=()=>load(index+1);
     script.onerror=()=>console.error('SpeedArti v1.8 : chargement impossible',files[index]);
