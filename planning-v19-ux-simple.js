@@ -27,6 +27,8 @@
     x.navGroups??={organisation:false,site:false,admin:false};
     return x;
   }
+  store.update(st=>{ensure(st);},{action:'ux193.navigation.schema.ready',entityType:'navigation',entityId:'sidebar-groups'});
+
   function active(s){return s.members?.find(m=>m.id===s.session?.activeMemberId)||null;}
   function role(m){return m?.role||'worker';}
   function isField(m){return ['worker','subcontractor'].includes(role(m));}
