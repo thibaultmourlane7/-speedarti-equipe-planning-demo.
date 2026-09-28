@@ -131,7 +131,7 @@
     const cfg=ensure(s),r=simpleRange(s),list=assignments(s).filter(a=>new Date(a.end)>=r.start&&new Date(a.start)<r.end);
     const byDay=new Map();
     for(const a of list){const key=startDay(a.start).toISOString();if(!byDay.has(key))byDay.set(key,[]);byDay.get(key).push(a);}
-    return '<section class="v191-section-head"><div><span class="eyebrow">Planning simple</span><h2>'+esc(r.label)+'</h2><p>Une lecture simple de l’Agenda Chantier.</p></div><button class="secondary" data-v191-action="advanced-gantt">Vue avancée → Gantt</button></section>'+
+    return '<section class="v191-section-head"><div><span class="eyebrow">Planning simple</span><h2>'+esc(r.label)+'</h2><p>Une lecture simple de l’Agenda Chantier.</p></div>'+(isManager(active(s))?'<button class="secondary" data-v191-action="advanced-gantt">Vue avancée → Gantt</button>':'')+'</section>'+
       '<div class="v191-plan-toolbar"><div class="v191-toggle"><button class="'+(cfg.simpleScale==='week'?'active':'')+'" data-v191-action="simple-scale" data-scale="week">Semaine</button><button class="'+(cfg.simpleScale==='month'?'active':'')+'" data-v191-action="simple-scale" data-scale="month">Mois</button></div><div><button class="ghost" data-v191-action="simple-move" data-direction="prev">‹</button><button class="secondary" data-v191-action="simple-today">Aujourd’hui</button><button class="ghost" data-v191-action="simple-move" data-direction="next">›</button></div></div>'+
       '<section class="v191-calendar-list">'+(byDay.size?[...byDay.entries()].map(([day,items])=>'<div class="v191-day"><div class="v191-day-label"><strong>'+fmtDate(day)+'</strong><span>'+items.length+' intervention'+(items.length>1?'s':'')+'</span></div><div class="v191-day-items">'+items.map(a=>{const team=resolveMembers(s,a).map(id=>name(s,id));return '<button class="v191-plan-item" data-v191-action="open-assignment" data-id="'+esc(a.id)+'"><span class="v191-time">'+fmtTime(a.start)+'</span><span><strong>'+esc(projectName(s,a.projectId))+'</strong><small>'+esc(a.title)+' · '+esc(team.join(' + ')||'Équipe à affecter')+'</small></span></button>';}).join('')+'</div></div>').join(''):'<div class="v191-empty">Aucune intervention sur cette période.</div>')+'</section>';
   }
@@ -166,7 +166,7 @@
       body='<div class="v191-summary-grid"><article><span>Avancement</span><strong>'+(prog==null?'—':prog+' %')+'</strong></article><article><span>Points ouverts</span><strong>'+open.length+'</strong></article><article><span>À valider</span><strong>'+vals.length+'</strong></article><article><span>Prochaine intervention</span><strong>'+(next?fmtDate(next.start):'—')+'</strong></article></div><div class="v191-simple-block"><h3>Prochaine étape</h3>'+(next?'<p><strong>'+esc(next.title)+'</strong><br>'+fmtDate(next.start)+' · '+fmtTime(next.start)+' → '+fmtTime(next.end)+'</p>':'<p class="v191-muted">Aucune intervention future.</p>')+'</div>';
     }
     return '<section class="v191-project-head"><button class="ghost" data-v191-action="back-projects">← Chantiers</button><div><span class="eyebrow">Chantier</span><h2>'+esc(p.name)+'</h2><p>'+esc(p.client||'')+' · '+esc(p.address||'')+'</p></div></section>'+
-      '<nav class="v191-project-tabs">'+tabs.map(x=>'<button class="'+(ui.v191ProjectTab===x[0]?'active':'')+'" data-v191-action="project-tab" data-tab="'+x[0]+'">'+x[1]+'</button>').join('')+'<button class="'+(ui.v191ProjectTab==='more'?'active':'')+'" data-v191-action="project-tab" data-tab="more">Plus</button></nav>'+
+      '<nav class="v191-project-tabs">'+tabs.map(x=>'<button class="'+(ui.v191ProjectTab===x[0]?'active':'')+'" data-v191-action="project-tab" data-tab="'+x[0]+'">'+x[1]+'</button>').join('')+(isManager(active(s))?'<button class="'+(ui.v191ProjectTab==='more'?'active':'')+'" data-v191-action="project-tab" data-tab="more">Plus</button>':'')+'</nav>'+
       '<section class="v191-project-body">'+body+'</section>';
   }
 
@@ -189,13 +189,13 @@
 
   function renderMore(s){
     const m=active(s),manager=isManager(m);
-    return '<section class="v191-section-head"><div><span class="eyebrow">Plus</span><h2>Outils avancés</h2><p>Ils restent disponibles sans encombrer l’usage quotidien.</p></div></section><div class="v191-more-grid">'+
+    return '<section class="v191-section-head"><div><span class="eyebrow">Plus</span><h2>'+(manager?'Outils avancés':'Outils complémentaires')+'</h2><p>Ils restent disponibles sans encombrer l’usage quotidien.</p></div></section><div class="v191-more-grid">'+
       (manager?'<button data-v191-legacy-view="team"><strong>Équipe & compétences</strong><span>Collaborateurs, droits, disponibilités ›</span></button>':'')+
-      '<button data-v191-action="advanced-gantt"><strong>Gantt avancé</strong><span>Semaine · Mois · Année · N+3 ›</span></button>'+
+      (manager?'<button data-v191-action="advanced-gantt"><strong>Gantt avancé</strong><span>Semaine · Mois · Année · N+3 ›</span></button>':'')+
       '<button data-v191-legacy-view="terrain"><strong>Fil terrain complet</strong><span>Rapports, demandes, messages ›</span></button>'+
       (manager?'<button data-v191-legacy-view="pilotage"><strong>Pilotage avancé</strong><span>Charge, risques, suggestions ›</span></button>':'')+
       (['owner','associate'].includes(m?.role)?'<button data-v191-legacy-view="history"><strong>Historique</strong><span>Traçabilité ›</span></button><button data-v191-legacy-view="settings"><strong>Configuration</strong><span>Droits et réglages ›</span></button>':'')+
-      '<button data-v191-action="legacy-dashboard"><strong>Vue complète</strong><span>Retrouver toutes les fonctions V1.9 ›</span></button>'+
+      (manager?'<button data-v191-action="legacy-dashboard"><strong>Vue complète</strong><span>Retrouver toutes les fonctions V1.9 ›</span></button>':'')+
       '</div>';
   }
 
