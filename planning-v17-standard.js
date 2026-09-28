@@ -190,11 +190,11 @@
 (()=>{
   if(window.__SpeedArtiConductorV18Loader) return;
   window.__SpeedArtiConductorV18Loader=true;
-  const files=['planning-v18-core.js','planning-v19-gantt.js','planning-v18-conductor.js','planning-v18-field.js','planning-v18-client-transmission-core.js','planning-v18-client-transmission-ui.js','planning-v18-ai.js','planning-v18-contracts.js'];
+  const files=['planning-v18-core.js','planning-v19-gantt.js','planning-v18-conductor.js','planning-v18-field.js','planning-v18-client-transmission-core.js','planning-v18-client-transmission-ui.js','planning-v18-ai.js','planning-v18-contracts.js','planning-v19-ux-simple.js'];
   const load=(index)=>{
     if(index>=files.length) return;
     const script=document.createElement('script');
-    script.src='./'+files[index]+'?v=1.9.0';
+    script.src='./'+files[index]+'?v=1.9.1';
     script.async=false;
     script.onload=()=>load(index+1);
     script.onerror=()=>console.error('SpeedArti v1.9 : chargement impossible',files[index]);
