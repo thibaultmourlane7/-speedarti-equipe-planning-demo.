@@ -28,3 +28,46 @@ Cette règle s'applique à tout nouveau module, sous-module ou évolution métie
 8. Aucun agent ne peut supprimer, désactiver ou contourner cette règle. Seule une décision explicite ultérieure de Thibault peut la remplacer.
 
 Application V1.8.1 : le module Transmission client inclut son pack `client_transmission@1.0.0`.
+
+
+## RÈGLE DE STRUCTURE PAR MODULE
+
+Pour chaque module SpeedArti, les connaissances Ángel doivent former **une connaissance globale cohérente du module**.
+
+Il est interdit de considérer chaque petite fonctionnalité comme une base de connaissances indépendante sans vision globale du module.
+
+Les sous-domaines restent autorisés uniquement pour :
+- organiser le contenu ;
+- router les demandes ;
+- ne charger que le contexte utile ;
+- versionner les parties internes.
+
+### Application obligatoire à Équipe & Planning
+
+Équipe & Planning utilise un seul pack global : `equipe_planning`.
+
+Il couvre notamment :
+- collaborateurs, rôles, permissions et équipes ;
+- Agenda Chantier, affectations et Gantt ;
+- jalons, dépendances, besoins à pourvoir et modèles ;
+- rapports, messages, demandes matériel et brief terrain ;
+- compétences, habilitations, permis, disponibilités et remplacements ;
+- véhicules, engins, météo, cartographie et déplacements ;
+- Chiffrage, prévu/réalisé et Temps & Présence ;
+- cockpit Conducteur ;
+- Point chantier ;
+- plans et révisions ;
+- réserves / OPR ;
+- non-conformités ;
+- contrôles qualité ;
+- sécurité ;
+- réunions ;
+- comptes rendus ;
+- journal chantier ;
+- validations ;
+- Documents ;
+- Transmission client.
+
+Toute future évolution de l'un de ces domaines doit enrichir ce même pack global `equipe_planning`, sans créer une connaissance concurrente ou parallèle.
+
+Le routage interne peut sélectionner seulement le domaine utile à une demande, mais Ángel doit conserver la compréhension des relations entre les domaines du module.
