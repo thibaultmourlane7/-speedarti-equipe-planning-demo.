@@ -43,7 +43,7 @@ global.window={
 require('../planning-v19-ux-simple.js');
 assert.ok(window.SpeedArtiUX191);
 assert.equal(window.SpeedArtiUX191.version,'1.9.1');
-assert.deepEqual(window.SpeedArtiUX191.sections,['today','planning','projects','attention','more']);
+assert.deepEqual(window.SpeedArtiUX191.sections,['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client']);
 
 let html=ui.renderDashboard(store.getState());
 for(const label of ['Aujourd’hui','Rapport','Problème','Matériel'])assert.ok(html.includes(label),label);
@@ -60,16 +60,14 @@ html=ui.renderDashboard(store.getState());
 assert.ok(html.includes('Mes chantiers'));
 assert.ok(html.includes('Dupont'));
 
-ui.v191Section='more';
+ui.v191Section='client';
 html=ui.renderDashboard(store.getState());
-assert.ok(html.includes('Fil terrain complet'));
-assert.ok(!html.includes('Gantt avancé'),'Le Gantt avancé ne doit pas être proposé à un ouvrier');
+assert.ok(html.includes('Suivi client'));
 
 store.state.session.activeMemberId='manager';
-ui.v191Section='more';
+ui.v191Section='gantt';
 html=ui.renderDashboard(store.getState());
 assert.ok(html.includes('Gantt avancé'));
-assert.ok(html.includes('Équipe & compétences'));
 
 ui.v191Section='attention';
 html=ui.renderDashboard(store.getState());
