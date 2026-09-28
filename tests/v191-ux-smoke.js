@@ -42,8 +42,9 @@ global.window={
 };
 require('../planning-v19-ux-simple.js');
 assert.ok(window.SpeedArtiUX191);
-assert.equal(window.SpeedArtiUX191.version,'1.9.1');
+assert.equal(window.SpeedArtiUX191.version,'1.9.3');
 assert.deepEqual(window.SpeedArtiUX191.sections,['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client']);
+assert.deepEqual(store.getState().planningV191.navGroups,{organisation:false,site:false,admin:false});
 
 let html=ui.renderDashboard(store.getState());
 for(const label of ['Aujourd’hui','Rapport','Problème','Matériel'])assert.ok(html.includes(label),label);
