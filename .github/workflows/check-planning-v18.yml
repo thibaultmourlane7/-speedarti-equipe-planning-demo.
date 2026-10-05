@@ -1,4 +1,4 @@
-name: "Check planning v1.9.4"
+name: "Check planning v1.9.5"
 on:
   push:
     branches:
@@ -72,7 +72,7 @@ jobs:
         run: node tests/v19-gantt-smoke.js
       - name: Run V1.9 Ángel knowledge smoke test
         run: node tests/v19-angel-knowledge-smoke.js
-      - name: Check V1.9.4 simple UX
+      - name: Check V1.9.5 simple UX
         run: |
           grep -q "sections:\['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client'\]" planning-v19-ux-simple.js
           grep -q "Planning simple" planning-v19-ux-simple.js
@@ -83,7 +83,7 @@ jobs:
           grep -q "Suivi client" planning-v19-ux-simple.js
           ! grep -q "\['more','•••','Plus'\]" planning-v19-ux-simple.js
           grep -q "navigationSimple" planning-v18-ai.js
-          grep -q "equipe_planning@1.4.0" tests/v19-angel-knowledge-smoke.js
+          grep -q "equipe_planning@1.5.0" tests/v19-angel-knowledge-smoke.js
           grep -q "navGroups??={organisation:false,site:false,admin:false}" planning-v19-ux-simple.js
           grep -q "toggle-nav-group" planning-v19-ux-simple.js
           grep -q "v191-nav-group-fixed" planning-v19-ux-simple.js
@@ -93,5 +93,10 @@ jobs:
           grep -q "@media(max-width:700px)" planning-v19-ux-simple.js
           grep -q "grid-template-columns:82px minmax(0,1fr)" planning-v19-ux-simple.js
           grep -q "position:fixed!important" planning-v19-ux-simple.js
-      - name: Run V1.9.4 UX smoke test
+          grep -q "sidebarCollapsed??=false" planning-v19-ux-simple.js
+          grep -q "toggle-sidebar" planning-v19-ux-simple.js
+          grep -q "v191-sidebar-master-toggle" planning-v19-ux-simple.js
+          grep -q "v191-sidebar-collapsed" planning-v19-ux-simple.js
+          grep -q "grid-template-columns:0 minmax(0,1fr)" planning-v19-ux-simple.js
+      - name: Run V1.9.5 UX smoke test
         run: node tests/v191-ux-smoke.js
