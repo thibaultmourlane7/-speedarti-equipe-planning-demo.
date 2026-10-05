@@ -26,7 +26,7 @@ global.window={
 require('../planning-v18-ai.js');
 const api=window.SpeedArtiConductorAI;
 assert.ok(api);
-assert.equal(api.version,'1.9.3');
+assert.equal(api.version,'1.9.4');
 assert.deepEqual(Object.keys(api.knowledgePacks),['teamPlanning']);
 const pack=api.knowledgePacks.teamPlanning;
 assert.equal(pack.module,'equipe_planning');
@@ -38,7 +38,7 @@ assert.ok(pack.absoluteRules.some(x=>x.includes('deuxième Agenda')));
 assert.ok(pack.absoluteRules.some(x=>x.includes('bloc Principal')));
 const ctx=api.angelContext('Montre-moi le planning du mois prochain');
 assert.equal(ctx.module,'equipe_planning');
-assert.deepEqual(ctx.knowledgePacks,['equipe_planning@1.3.0']);
+assert.deepEqual(ctx.knowledgePacks,['equipe_planning@1.4.0']);
 assert.equal(ctx.gantt.scale,'month');
 assert.ok(events.some(e=>e.type==='speedarti:angel:knowledge-pack-ready'&&e.detail.module==='equipe_planning'));
 console.log(JSON.stringify({ok:true,module:pack.module,domains:Object.keys(pack.domains).length}));
