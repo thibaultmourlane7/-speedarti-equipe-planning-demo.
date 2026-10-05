@@ -42,7 +42,7 @@ global.window={
 };
 require('../planning-v19-ux-simple.js');
 assert.ok(window.SpeedArtiUX191);
-assert.equal(window.SpeedArtiUX191.version,'1.9.3');
+assert.equal(window.SpeedArtiUX191.version,'1.9.4');
 assert.deepEqual(window.SpeedArtiUX191.sections,['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client']);
 
 let html=ui.renderDashboard(store.getState());
