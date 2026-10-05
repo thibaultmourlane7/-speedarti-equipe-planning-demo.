@@ -42,8 +42,13 @@ global.window={
 };
 require('../planning-v19-ux-simple.js');
 assert.ok(window.SpeedArtiUX191);
-assert.equal(window.SpeedArtiUX191.version,'1.9.4');
+assert.equal(window.SpeedArtiUX191.version,'1.9.5');
 assert.deepEqual(window.SpeedArtiUX191.sections,['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client']);
+assert.equal(window.SpeedArtiUX191.isSidebarCollapsed(),false);
+window.SpeedArtiUX191.toggleSidebar();
+assert.equal(window.SpeedArtiUX191.isSidebarCollapsed(),true);
+window.SpeedArtiUX191.toggleSidebar();
+assert.equal(window.SpeedArtiUX191.isSidebarCollapsed(),false);
 
 let html=ui.renderDashboard(store.getState());
 for(const label of ['Aujourd’hui','Rapport','Problème','Matériel'])assert.ok(html.includes(label),label);
