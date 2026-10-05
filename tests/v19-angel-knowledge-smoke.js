@@ -26,7 +26,7 @@ global.window={
 require('../planning-v18-ai.js');
 const api=window.SpeedArtiConductorAI;
 assert.ok(api);
-assert.equal(api.version,'1.9.4');
+assert.equal(api.version,'1.9.5');
 assert.deepEqual(Object.keys(api.knowledgePacks),['teamPlanning']);
 const pack=api.knowledgePacks.teamPlanning;
 assert.equal(pack.module,'equipe_planning');
@@ -34,11 +34,12 @@ for(const domain of ['navigationSimple','organisation','agendaPlanning','terrain
 assert.ok(pack.artisanLanguage.examples.includes('Qui va où demain ?'));
 assert.ok(pack.artisanLanguage.examples.includes('Qu’est-ce que j’ai à traiter ?'));
 assert.ok(pack.artisanLanguage.examples.includes('Ouvre le journal chantier.'));
+assert.ok(pack.artisanLanguage.examples.includes('Masque le menu.'));
 assert.ok(pack.absoluteRules.some(x=>x.includes('deuxième Agenda')));
 assert.ok(pack.absoluteRules.some(x=>x.includes('bloc Principal')));
 const ctx=api.angelContext('Montre-moi le planning du mois prochain');
 assert.equal(ctx.module,'equipe_planning');
-assert.deepEqual(ctx.knowledgePacks,['equipe_planning@1.4.0']);
+assert.deepEqual(ctx.knowledgePacks,['equipe_planning@1.5.0']);
 assert.equal(ctx.gantt.scale,'month');
 assert.ok(events.some(e=>e.type==='speedarti:angel:knowledge-pack-ready'&&e.detail.module==='equipe_planning'));
 console.log(JSON.stringify({ok:true,module:pack.module,domains:Object.keys(pack.domains).length}));
