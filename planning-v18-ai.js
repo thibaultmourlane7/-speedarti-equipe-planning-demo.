@@ -172,8 +172,8 @@
 
   const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
     module:'equipe_planning',
-    version:'1.3.0',
-    appliesFrom:'1.9.3',
+    version:'1.4.0',
+    appliesFrom:'1.9.4',
     principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
     domains:{
       organisation:{
@@ -183,7 +183,7 @@
       navigationSimple:{
         terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Équipe','Terrain','Gantt avancé','Pilotage','Réserves / OPR','Non-conformités','Qualité','Sécurité','Réunions','Journal chantier','Suivi client','Historique','Configuration','Planning simple','Vue avancée','Signaler quelque chose'],
         intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir équipe','ouvrir terrain','ouvrir Gantt avancé','ouvrir pilotage','ouvrir réserves','ouvrir non-conformités','ouvrir qualité','ouvrir sécurité','ouvrir réunions','ouvrir journal chantier','ouvrir suivi client','ouvrir historique','ouvrir configuration','signaler quelque chose'],
-        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.']
+        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Sur tablette, le menu reste latéral et compact ; il ne bascule pas en barre basse.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.']
       },
       agendaPlanning:{
         terms:['Agenda Chantier','affectation','intervention','planning','Planning simple','Gantt','Vue avancée','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
@@ -319,7 +319,7 @@
     };
   }
 
-  const api={version:'1.9.3',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
+  const api={version:'1.9.4',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
   window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
