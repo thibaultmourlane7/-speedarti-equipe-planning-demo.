@@ -22,6 +22,8 @@
     journal_documents:{direction:'sortant',sourceOfTruth:'Journal chantier',purpose:'Archiver/diffuser uniquement le journal validé.'},
     document_versioning_notifications:{direction:'sortant',sourceOfTruth:'Documents SpeedArti',purpose:'Notifier qu’une nouvelle révision remplace une ancienne version.'},
     stock_orders_points:{direction:'bidirectionnel',sourceOfTruth:'Stock / Commandes SpeedArti',purpose:'Relier un Point matériel à la disponibilité et au brouillon de commande.'},
+    parc_materiel:{direction:'entrant',sourceOfTruth:'Parc matériel / Paramètres SpeedArti',purpose:'Recevoir l’identité, l’immatriculation et l’état actif des véhicules/engins sans les recréer dans Équipe & Planning.'},
+    stock_vehicle_context:{direction:'bidirectionnel',sourceOfTruth:'Parc matériel pour le véhicule ; Stock pour les quantités chargées',purpose:'Associer une ressource véhicule réservée au stock de son vehicleId sans dupliquer Parc matériel ni Stock.'},
     subcontracting_points:{direction:'bidirectionnel',sourceOfTruth:'Sous-traitance SpeedArti',purpose:'Attribuer des actions autorisées à un sous-traitant sans créer un second réseau.'},
     temps_presence:{direction:'entrant',sourceOfTruth:'Temps & Présence',purpose:'Recevoir les heures réellement réalisées pour comparaison avec le prévisionnel.'},
     rh_qualifications:{direction:'entrant',sourceOfTruth:'RH SpeedArti',purpose:'Recevoir habilitations, permis, certifications et restrictions validées.'},
@@ -141,7 +143,7 @@
   }
 
   const api={
-    version:'1.8.1',
+    version:'1.8.2',
     mode:'contracts_only_no_live_connection',
     contracts:CONTRACTS,
     applySnapshot,
@@ -149,7 +151,7 @@
     exportValidatedDocument,
     calendarPayload,
     exportPreparationBundle:()=>({
-      version:'1.8.1',mode:'contracts_only_no_live_connection',contracts:CONTRACTS,
+      version:'1.8.2',mode:'contracts_only_no_live_connection',contracts:CONTRACTS,
       sourceOfTruth:{
         datesAndInterventions:'Agenda Chantier',teams:'Équipe & Planning',actualHours:'Temps & Présence',
         employees:'RH',consumables:'Stock',vehiclesEquipment:'Parc matériel',orders:'Commandes',
