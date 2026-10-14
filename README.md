@@ -1,12 +1,20 @@
 # SpeedArti — Équipe & Planning
 
-## Démonstration V1.9.7 — correctif téléphone et simplicité
+## Démonstration V1.9.8 — correction structurante du responsive iPhone
 
 Démo : https://thibaultmourlane7.github.io/-speedarti-equipe-planning-demo./
 
 Dépôt de démonstration autonome sur `main`. **Ne jamais modifier le dépôt source `GSTAI-Sp/speedarti-v2`.**
 
-### Nouveautés V1.9.7 (téléphone)
+### Correctifs V1.9.8 (téléphone)
+
+- Suppression **dans la feuille de styles source** des règles de barre latérale fixe à 82px et de marge supplémentaire à 82px : correction du double décalage constaté sur iPhone.
+- Initialisation du menu fermé par défaut sur téléphone, y compris avec des données enregistrées avant la correction.
+- Sécurisation de l’ordre d’exécution des scripts (app initialisée avant les extensions) et règles de largeur pleine page présentes dès le HTML initial.
+- Actualisation du cache de service worker et des versions des ressources, sans toucher aux moteurs métiers.
+- Connaissance Ángel globale existante `equipe_planning` actualisée.
+
+### Nouveautés V1.9.7 conservées
 
 - Sur téléphone (320–700 px) : interface **pleine largeur** au lieu d'un menu fixe de 82 px.
 - Navigation principale **Aujourd'hui / Planning / Chantiers / À traiter** fixée en bas avec de grands boutons.
@@ -61,4 +69,8 @@ Les chiffres et tarifs d'édition de la démo ne valent pas publication commerci
 11. Tester petit téléphone (~320 px), mobile (~375 px), tablette, ordinateur et menu réduit/ouvert.
 12. Rafraîchir et vérifier la persistance locale, l'absence d'erreurs console et le renouvellement du cache.
 
-**Statut :** correctif téléphone V1.9.7 poussé sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
+**Statut :** correctif source V1.9.8 poussé sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
+
+### Contrôle spécifique après retour de capture iPhone (14/10/2026)
+
+La capture montrait une barre latérale de 82px + une marge de 82px produisant un contenu extrêmement étroit. Après déploiement, contrôler sur vrai iPhone l'absence de double décalage, puis l'affichage plein écran, la barre de navigation basse, les menus, les formulaires et les rôles. Pour écarter le cache navigateur, ouvrir dans un nouvel onglet avec `?mobile=198` en suffixe. Aucun parcours humain complet n'est réputé validé tant qu'il n'a pas été testé réellement.
