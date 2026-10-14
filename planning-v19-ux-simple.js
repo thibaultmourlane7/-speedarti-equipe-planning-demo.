@@ -391,13 +391,14 @@
     reportDraftForm(s);
   }
   function submitGuidedReport(){
-    const d=ui.v196ReportDraft;if(!d)return;
+    const d=ui.v196ReportDraft;if(!d||d.submitting||d.step!==3)return;
+    d.submitting=true;
     const fd=new FormData();
     for(const field of ['assignmentId','date','progress','summary','problems','materials'])fd.set(field,d[field]||'');
     for(const f of d.attachments||[])fd.append('attachments',f,f.name);
     ui.saveReport(fd).then(()=>{
       ui.v196ReportDraft=null;ui.v191Section='today';ui.view='dashboard';ui.render();
-    }).catch(err=>ui.notify(err?.message||'Rapport impossible à enregistrer.','error'));
+    }).catch(err=>{d.submitting=false;ui.notify(err?.message||'Rapport impossible à enregistrer.','error');});
   }
 
   function openSignalChooser(projectId=''){
@@ -468,6 +469,7 @@
   });
 
   document.addEventListener('submit',async e=>{
+    if(e.target.closest('form[data-v196-form="report"]')){e.preventDefault();return;}
     const form=e.target.closest('form[data-v191-form="point"]');if(!form)return;
     e.preventDefault();const fd=new FormData(form),api=conductor();
     if(!api)return ui.notify('Moteur Point chantier indisponible.','error');
@@ -576,6 +578,9 @@
   window.SpeedArtiUX191={
     version:'1.9.6',
     principles:['5-second-understanding','simple-first','advanced-on-demand','no-feature-removal'],
+    sourceOfTruthForDates:'Agenda Chantier',
+    timesheetOwnership:'Temps & Présence',
+    demoOnly:true,
     sections:['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client'],
     attentionItems:()=>structuredClone(attentionItems(store.getState())),
     setSection:section=>{if(['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client'].includes(section)){ui.v191Section=section;ui.v191LegacyDashboard=false;ui.view='dashboard';ui.render();}},
