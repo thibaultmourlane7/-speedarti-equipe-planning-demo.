@@ -1,4 +1,4 @@
-/* SpeedArti Equipe & Planning — V1.9.7 phone-width corrections.
+/* SpeedArti Equipe & Planning — V1.9.8 phone-width corrections.
    Applied AFTER v1.9.5 legacy media queries. Desktop/tablet untouched. */
 .v197-bottom-nav,.v197-drawer-backdrop,.v197-drawer-close{display:none}
 @media(max-width:700px){
