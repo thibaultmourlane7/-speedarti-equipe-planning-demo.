@@ -26,7 +26,10 @@
     x.simpleGroup??='chantier';
     x.anchorDate??=nowIso();
     x.navGroups??={organisation:false,site:false,admin:false};
-    x.sidebarCollapsed??=false;
+    if(typeof window!=='undefined'&&window.matchMedia?.('(max-width: 700px)').matches&&x.mobileLayoutVersion!=='1.9.8'){
+       x.sidebarCollapsed=true; x.mobileLayoutVersion='1.9.8';
+     }
+     x.sidebarCollapsed??=false;
     return x;
   }
   store.update(st=>{ensure(st);},{action:'ux193.navigation.schema.ready',entityType:'navigation',entityId:'sidebar-groups'});
@@ -521,26 +524,48 @@
       .v191-day{grid-template-columns:110px 1fr}
     }
     @media(max-width:700px){
-      .v191-full-sidebar.app-shell{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;min-height:100vh}
-      .v191-full-sidebar .sidebar{display:flex!important;position:fixed!important;inset:0 auto 0 0!important;top:0!important;left:0!important;right:auto!important;bottom:0!important;width:82px!important;min-width:82px!important;height:100dvh!important;padding:.45rem .25rem!important;border-top:0!important;border-right:1px solid rgba(255,255,255,.12)!important;box-shadow:8px 0 24px rgba(8,20,38,.14)!important;overflow-y:auto!important}
-      .v191-full-sidebar .sidebar .brand{display:flex!important;justify-content:center;padding:.45rem .1rem .65rem!important}
-      .v191-full-sidebar .sidebar .brand div,.v191-full-sidebar .sidebar .v191-nav-group span{display:none!important}
-      .v191-full-sidebar .sidebar .v191-nav-group{display:flex!important;justify-content:center!important;padding:.35rem .1rem!important}
-      .v191-full-sidebar .sidebar .v191-nav-group-fixed{display:none!important}
-      .v191-full-sidebar .sidebar .v191-nav-toggle b{font-size:.9rem}
-      .v191-full-sidebar .sidebar nav{display:block!important;overflow:visible!important;padding:.1rem!important}
-      .v191-full-sidebar .sidebar .nav-item{width:100%;min-width:0!important;display:grid!important;grid-template-columns:1fr!important;place-items:center!important;text-align:center!important;padding:.45rem .1rem!important;gap:.08rem!important;min-height:54px}
-      .v191-full-sidebar .sidebar .nav-item .nav-icon{font-size:1rem}
-      .v191-full-sidebar .sidebar .nav-item span:last-child{font-size:.53rem;line-height:1.05;white-space:normal}
-      .v191-simple-shell .workspace{margin-left:82px!important;padding-bottom:0!important;min-width:0;transition:margin-left .2s ease}
-      .v191-full-sidebar.v191-sidebar-collapsed.app-shell{grid-template-columns:0 minmax(0,1fr)!important}
-      .v191-full-sidebar.v191-sidebar-collapsed .sidebar{width:82px!important;min-width:82px!important;transform:translateX(-100%)!important;opacity:0!important;pointer-events:none!important}
-      .v191-full-sidebar.v191-sidebar-collapsed .workspace{margin-left:0!important}
-      .v191-simple-shell .topbar{position:sticky!important;top:0!important;padding:.7rem!important}
+      /* V1.9.8: a phone is full-width; NEVER reserve 82px for the sidebar or margin. */
+      .v191-full-sidebar.app-shell,.v191-full-sidebar.v191-sidebar-collapsed.app-shell{
+        display:block!important;grid-template-columns:minmax(0,1fr)!important;
+        width:100%!important;max-width:100%!important;min-width:0!important
+      }
+      .v191-full-sidebar .workspace,.v191-full-sidebar.v191-sidebar-collapsed .workspace,
+      .v191-simple-shell .workspace{
+        display:block!important;margin-left:0!important;margin-right:0!important;
+        width:100%!important;max-width:100%!important;min-width:0!important;
+        padding:0!important
+      }
+      .v191-simple-shell .content{min-width:0!important;max-width:100%!important;padding:12px 12px 92px!important}
+      .v191-full-sidebar .sidebar,.v191-full-sidebar.v191-sidebar-collapsed .sidebar{
+        position:fixed!important;inset:0 auto 0 0!important;
+        width:min(310px,88vw)!important;min-width:0!important;height:100dvh!important;
+        overflow-y:auto!important;z-index:80!important;
+        transform:translateX(-105%)!important;pointer-events:none!important;
+        visibility:hidden!important;box-shadow:8px 0 26px rgba(8,20,38,.2)!important
+      }
+      .v191-full-sidebar:not(.v191-sidebar-collapsed):not(.v197-responsive-shell) .sidebar{
+        transform:translateX(0)!important;pointer-events:auto!important;visibility:visible!important
+      }
+      .v191-full-sidebar .sidebar .brand{display:flex!important;padding:.5rem!important}
+      .v191-full-sidebar .sidebar .brand div{display:block!important}
+      .v191-full-sidebar .sidebar .v191-nav-group{display:flex!important;justify-content:space-between!important;padding:.6rem!important}
+      .v191-full-sidebar .sidebar .v191-nav-group span,.v191-full-sidebar .sidebar .v191-nav-group-fixed{display:block!important}
+      .v191-full-sidebar .sidebar nav{display:block!important;overflow:visible!important}
+      .v191-full-sidebar .sidebar .nav-item{
+        display:grid!important;grid-template-columns:24px minmax(0,1fr) auto!important;
+        text-align:left!important;place-items:initial!important;align-items:center!important;
+        gap:.65rem!important;min-height:46px!important;padding:.65rem!important
+      }
+      .v191-full-sidebar .sidebar .nav-item span:last-child{font-size:.84rem!important;line-height:1.25!important}
+      .v191-simple-shell .topbar{
+        position:sticky!important;top:0!important;width:100%!important;
+        max-width:100%!important;min-width:0!important;padding:.65rem!important
+      }
       .v191-simple-shell .global-search{display:none!important}
-      .v191-hero,.v191-section-head,.v191-project-head{align-items:flex-start}
+      .v191-hero,.v191-section-head,.v191-project-head{align-items:flex-start;flex-wrap:wrap}
       .v191-big-actions{gap:.45rem}.v191-big-actions button{min-height:105px}
-      .v191-day{grid-template-columns:1fr}.v191-day-label{padding:.55rem}.v191-more-grid{grid-template-columns:1fr}
+      .v191-day{grid-template-columns:1fr}.v191-day-label{padding:.55rem}
+      .v191-more-grid{grid-template-columns:1fr}
     }
     @media(max-width:480px){.v191-today-card{grid-template-columns:1fr}.v191-today-time{padding:.55rem;flex-direction:row;gap:.3rem}.v191-big-actions small{font-size:.65rem}.v191-big-actions strong{font-size:.85rem}.v191-summary-grid{grid-template-columns:1fr 1fr}.v191-form-grid{grid-template-columns:1fr}}
   `;
@@ -576,7 +601,7 @@
   document.head.appendChild(ux196Style);
 
   window.SpeedArtiUX191={
-    version:'1.9.7',
+    version:'1.9.8',
     principles:['5-second-understanding','simple-first','advanced-on-demand','no-feature-removal'],
     sourceOfTruthForDates:'Agenda Chantier',
     timesheetOwnership:'Temps & Présence',
