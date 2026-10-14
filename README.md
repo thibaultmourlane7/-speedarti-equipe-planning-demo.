@@ -1,8 +1,49 @@
 # SpeedArti — Équipe & Planning
 
-Démonstration autonome du module Équipe & Planning v1.3.
+## Démonstration V1.9.6 — simplicité mobile
 
-- Les interventions proviennent de l’Agenda Chantier simulé.
-- Aucun second calendrier n’est créé.
-- Le pointage reste séparé.
-- Les connecteurs SpeedArti sont désactivés et simulés.
+Démo : https://thibaultmourlane7.github.io/-speedarti-equipe-planning-demo./
+
+Dépôt de démonstration autonome sur `main`. **Ne jamais modifier le dépôt source `GSTAI-Sp/speedarti-v2`.**
+
+### Nouveautés V1.9.6
+
+- Accueil « Ma journée » : prochain chantier, horaires, collaborateurs, consignes, bouton **Voir ma fiche de mission** et trois grandes actions.
+- Planning simple : boutons **Personnes / Équipes / Chantiers**, vues **Semaine / Mois**, flèches de navigation et ouverture de chaque intervention.
+- Fiche de mission intégrée au chantier : lieu, intervention, collègues, consignes, ressources connues, météo reçue, actions rapport / signalement / documents / planning.
+- Rapport journalier guidé en **quatre étapes** : intervention, travaux et avancement, difficultés et fichiers, récapitulatif et confirmation.
+- Menu latéral et accès aux fonctionnalités existantes : **Gantt avancé**, suivi chantier, qualité, sécurité, réunions, transmissions client, historique, permissions, Expert et Ultra.
+- Enrichissement de la connaissance **Ángel globale `equipe_planning`** existante avec le vocabulaire des nouveaux parcours.
+
+### Frontières métier à préserver
+
+- **Agenda Chantier** : source unique des dates et des interventions. Les vues planning / Gantt n'enregistrent pas une deuxième date métier.
+- **Temps & Présence** : seul propriétaire du pointage et des heures réelles. Aucun système de pointage ici.
+- **RH** : données administratives et congés ; **Parc matériel** : identité des véhicules ; **Stock** : quantités ; **Documents** : originaux et versions.
+- **Ángel** : une seule connaissance globale, aucune base parallèle.
+- Les propositions Expert / Ultra restent soumises à validation humaine et au traitement par leur module propriétaire.
+
+### Démonstration des éditions
+
+- **Standard** : planning, équipe, rapports, signalements, suivi chantier, Gantt et préparation de transmission client.
+- **Expert** : Standard + analyses de rapports/messages, propositions d'action, aide à la recherche d'effectifs et analyse de retards / ressources.
+- **Ultra** : Expert + charge prévisionnelle et propositions d'optimisation / réorganisation explicables.
+
+Les chiffres et tarifs d'édition de la démo ne valent pas publication commerciale. Les connecteurs SpeedArti restent **simulés ou préparés** tant que le raccordement n'a pas été validé.
+
+### Recette humaine avant validation commerciale
+
+1. Depuis un téléphone, ouvrir **Aujourd'hui**, puis **Voir ma fiche de mission**.
+2. Vérifier le chantier, les horaires, les collègues, les documents et le bouton de retour.
+3. Aller dans **Planning** et changer successivement **Personnes**, **Équipes**, **Chantiers**, puis semaine/mois et période précédente/suivante.
+4. Ouvrir une intervention depuis les cartes ; vérifier qu'il s'agit d'une intervention de l'Agenda simulé.
+5. Faire un rapport guidé : conserver la sélection, le résumé, le pourcentage, une difficulté et une photo jusqu'à la confirmation ; vérifier le rapport enregistré dans Terrain.
+6. Refaire le parcours en utilisant **Retour**, en annulant et en rouvrant le formulaire ; vérifier l'absence de doublons.
+7. Signaler un problème et demander du matériel, puis consulter **À traiter**.
+8. Passer sur des profils ouvrier, chef d'équipe et dirigeant ; vérifier les droits et chantiers accessibles.
+9. Ouvrir **Gantt avancé**, puis revenir au planning simple.
+10. Comparer **Standard**, **Expert** et **Ultra** sans supposer que des connecteurs externes fonctionnent réellement.
+11. Tester petit téléphone (~320 px), mobile (~375 px), tablette, ordinateur et menu réduit/ouvert.
+12. Rafraîchir et vérifier la persistance locale, l'absence d'erreurs console et le renouvellement du cache.
+
+**Statut :** code mis à jour sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
