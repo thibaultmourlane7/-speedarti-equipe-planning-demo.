@@ -1,4 +1,4 @@
-/* SpeedArti — Mobile responsive V1.9.7. Presentation only.
+/* SpeedArti — Mobile responsive V1.9.8. Presentation only.
    Agenda Chantier is source of truth; pointage belongs to Temps & Presence. */
 (()=>{
   'use strict';
@@ -10,7 +10,7 @@
   const sections=[['today','⌂',"Aujourd'hui"],['planning','▦','Planning'],['projects','🏗','Chantiers'],['attention','✓','À traiter']];
 
   const link=document.createElement('link');
-  link.rel='stylesheet';link.href='./planning-v197-mobile.css?v=1.9.7';
+  link.rel='stylesheet';link.href='./planning-v197-mobile.css?v=1.9.8';
   document.head.appendChild(link);
 
   function patchMobile(){
@@ -88,6 +88,6 @@
   window.addEventListener('resize',()=>{
     if(!isPhone()&&drawerOpen){drawerOpen=false;ui.render();}
   });
-  window.__SpeedArtiMobileV197={version:'1.9.7',viewportThreshold:700,features:['full-width-phone','bottom-navigation','drawer-menu','responsive-cards','responsive-forms']};
+  window.__SpeedArtiMobileV197={version:'1.9.8',viewportThreshold:700,features:['full-width-phone','bottom-navigation','drawer-menu','responsive-cards','responsive-forms']};
   ui.render();
 })();
