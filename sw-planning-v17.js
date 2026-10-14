@@ -1,5 +1,5 @@
-const CACHE='speedarti-equipe-planning-v196-20261014';
-const ASSETS=['./','./index.html','./planning-v17-standard.js','./planning-v17-expert.js','./planning-v17-ultra.js','./planning-v17-contracts.js','./planning-v18-core.js','./planning-v19-gantt.js','./planning-v18-conductor.js','./planning-v18-field.js','./planning-v18-client-transmission-core.js','./planning-v18-client-transmission-ui.js','./planning-v18-ai.js','./planning-v18-contracts.js','./planning-v19-ux-simple.js'];
+const CACHE='speedarti-equipe-planning-v197-20261014';
+const ASSETS=['./','./index.html','./planning-v17-standard.js','./planning-v17-expert.js','./planning-v17-ultra.js','./planning-v17-contracts.js','./planning-v18-core.js','./planning-v19-gantt.js','./planning-v18-conductor.js','./planning-v18-field.js','./planning-v18-client-transmission-core.js','./planning-v18-client-transmission-ui.js','./planning-v18-ai.js','./planning-v18-contracts.js','./planning-v19-ux-simple.js','./planning-v197-mobile.js','./planning-v197-mobile.css'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
