@@ -23,6 +23,7 @@
     s.planningV191??={};
     const x=s.planningV191;
     x.simpleScale??='week';
+    x.simpleGroup??='chantier';
     x.anchorDate??=nowIso();
     x.navGroups??={organisation:false,site:false,admin:false};
     x.sidebarCollapsed??=false;
@@ -110,19 +111,20 @@
   function renderToday(s){
     const m=active(s),a=todayAssignment(s),p=a?s.projects.find(x=>x.id===a.projectId):null;
     const team=a?resolveMembers(s,a).map(id=>name(s,id)):[];
-    const weather=a?weatherFor(s,a.projectId):null,resources=resourceLabels(s,a);
+    const weather=a?weatherFor(s,a.projectId):null,resources=a?resourceLabels(s,a):[];
     const c=ext(s),notice=c.scheduleNotices.find(n=>n.memberId===m?.id&&n.status==='unread');
-    const tasks=(s.tasks||[]).filter(t=>t.status!=='completed'&&(t.assigneeId===m?.id||['owner','associate','site_manager'].includes(m?.role))).slice(0,4);
-    return '<section class="v191-hero"><div><span class="eyebrow">Aujourd’hui</span><h2>'+(a?esc(p?.name||a.title):'Rien de prévu pour le moment')+'</h2><p>'+(a?esc(p?.address||'Adresse non renseignée'):'Votre prochaine intervention apparaîtra ici.')+'</p></div><strong>'+fmtDate(new Date())+'</strong></section>'+
-      (a?'<section class="v191-today-card"><div class="v191-today-time"><strong>'+fmtTime(a.start)+'</strong><span>→ '+fmtTime(a.end)+'</span></div><div class="v191-today-main"><h3>'+esc(a.title)+'</h3><div class="v191-info-grid"><div><span>Avec qui ?</span><strong>'+esc(team.join(' · ')||'Équipe non affectée')+'</strong></div><div><span>Matériel / engin</span><strong>'+esc(resources.join(' · ')||'Rien de particulier indiqué')+'</strong></div><div><span>Météo</span><strong>'+esc(weather?.summary||'Aucune donnée météo reçue')+'</strong></div><div><span>Consigne</span><strong>'+esc(a.notes||'Aucune consigne particulière')+'</strong></div></div></div></section>':'')+
-      (notice?'<section class="v191-notice"><div><strong>Changement important</strong><p>'+esc(notice.title)+' · '+esc(notice.body)+'</p></div><div><button class="primary" data-v18-field-action="ack-notice" data-id="'+esc(notice.id)+'">Vu</button><button class="secondary" data-v18-field-action="problem-notice" data-id="'+esc(notice.id)+'">J’ai un problème</button></div></section>':'')+
-      '<section class="v191-big-actions">'+
-        '<button data-action="open-report"><span>📝</span><strong>Rapport</strong><small>Dire ce qui a été fait</small></button>'+
-        '<button data-v191-action="signal"><span>⚠️</span><strong>Problème</strong><small>Signaler quelque chose</small></button>'+
-        '<button data-action="open-material-request"><span>🧰</span><strong>Matériel</strong><small>Faire une demande</small></button>'+
+    const tasks=(s.tasks||[]).filter(t=>t.status!=='completed'&&(t.assigneeId===m?.id||['owner','associate','site_manager'].includes(m?.role))).slice(0,3);
+    const firstName=String(m?.name||'').trim().split(/\s+/)[0]||'';
+    return '<section class="v191-hero v196-hero"><div><span class="eyebrow">Ma journée · SpeedArti</span><h2>Bonjour '+esc(firstName)+' 👋</h2><p>'+fmtDate(new Date())+'</p></div><button class="secondary" data-v191-nav="planning">🗓 Mon planning</button></section>'+
+      (a?'<section class="v191-today-card v196-today-card"><div class="v191-today-time"><strong>'+fmtTime(a.start)+'</strong><span>→ '+fmtTime(a.end)+'</span></div><div class="v191-today-main"><span class="eyebrow">Mon prochain chantier</span><h3>'+esc(p?.name||a.title)+'</h3><p class="v196-address">📍 '+esc(p?.address||'Adresse non renseignée')+'</p><p class="v196-work"><strong>À faire :</strong> '+esc(a.title)+'</p><div class="v196-quick-info"><span>👷 '+esc(team.join(' · ')||'Équipe à affecter')+'</span>'+(resources.length?'<span>🧰 '+esc(resources.join(' · '))+'</span>':'')+'</div>'+(a.notes?'<p class="v196-consigne">💡 '+esc(a.notes)+'</p>':'')+(weather?.summary?'<p class="v196-weather">☁ '+esc(weather.summary)+'</p>':'')+'<button class="primary v196-mission-button" data-v191-action="open-mission" data-project-id="'+esc(a.projectId)+'">📋 Voir ma fiche de mission →</button></div></section>':'<section class="v191-simple-block v196-empty-day"><h3>Aucune intervention à venir</h3><p>Consultez le planning pour organiser votre prochaine journée.</p><button class="secondary" data-v191-nav="planning">Ouvrir le planning</button></section>')+
+      (notice?'<section class="v191-notice"><div><strong>🔔 Changement important</strong><p>'+esc(notice.title)+' · '+esc(notice.body)+'</p></div><div><button class="primary" data-v18-field-action="ack-notice" data-id="'+esc(notice.id)+'">J&rsquo;ai vu</button><button class="secondary" data-v18-field-action="problem-notice" data-id="'+esc(notice.id)+'">J&rsquo;ai un problème</button></div></section>':'')+
+      '<h3 class="v196-actions-title">Que voulez-vous faire ?</h3><section class="v191-big-actions v196-big-actions" aria-label="Actions rapides">'+
+        '<button data-v191-action="guided-report"><span aria-hidden="true">📝</span><strong>Faire mon rapport</strong><small>Raconter ma journée</small></button>'+
+        '<button data-v191-action="signal"><span aria-hidden="true">⚠️</span><strong>Signaler un problème</strong><small>Prévenir mon équipe</small></button>'+
+        '<button data-action="open-material-request"><span aria-hidden="true">🧰</span><strong>Demander du matériel</strong><small>Ce qui me manque</small></button>'+
       '</section>'+
-      '<section class="v191-simple-block"><div class="v191-title"><div><h3>À ne pas oublier</h3><p>Seulement ce qui vous concerne.</p></div><button class="ghost" data-v191-nav="attention">Tout voir</button></div>'+
-        (tasks.length?tasks.map(t=>'<div class="v191-line"><span>✓</span><div><strong>'+esc(t.title)+'</strong><small>'+esc(projectName(s,t.projectId))+'</small></div></div>').join(''):'<p class="v191-muted">Aucune tâche urgente.</p>')+
+      '<section class="v191-simple-block"><div class="v191-title"><div><h3>À ne pas oublier</h3><p>Les informations qui vous concernent.</p></div><button class="ghost" data-v191-nav="attention">Tout voir →</button></div>'+
+        (tasks.length?tasks.map(t=>'<div class="v191-line"><span>☐</span><div><strong>'+esc(t.title)+'</strong><small>'+esc(projectName(s,t.projectId))+'</small></div></div>').join(''):'<p class="v191-muted">Tout est à jour.</p>')+
       '</section>';
   }
 
@@ -132,13 +134,37 @@
     const start=startWeek(anchor);return {start,end:addDays(start,7),label:'Semaine du '+fmtDate(start)};
   }
   function renderSimplePlanning(s){
-    const cfg=ensure(s),r=simpleRange(s),list=assignments(s).filter(a=>new Date(a.end)>=r.start&&new Date(a.start)<r.end);
-    const byDay=new Map();
-    for(const a of list){const key=startDay(a.start).toISOString();if(!byDay.has(key))byDay.set(key,[]);byDay.get(key).push(a);}
-    return '<section class="v191-section-head"><div><span class="eyebrow">Planning simple</span><h2>'+esc(r.label)+'</h2><p>Une lecture simple de l’Agenda Chantier.</p></div>'+(isManager(active(s))?'<button class="secondary" data-v191-action="advanced-gantt">Vue avancée → Gantt</button>':'')+'</section>'+
-      '<div class="v191-plan-toolbar"><div class="v191-toggle"><button class="'+(cfg.simpleScale==='week'?'active':'')+'" data-v191-action="simple-scale" data-scale="week">Semaine</button><button class="'+(cfg.simpleScale==='month'?'active':'')+'" data-v191-action="simple-scale" data-scale="month">Mois</button></div><div><button class="ghost" data-v191-action="simple-move" data-direction="prev">‹</button><button class="secondary" data-v191-action="simple-today">Aujourd’hui</button><button class="ghost" data-v191-action="simple-move" data-direction="next">›</button></div></div>'+
-      '<section class="v191-calendar-list">'+(byDay.size?[...byDay.entries()].map(([day,items])=>'<div class="v191-day"><div class="v191-day-label"><strong>'+fmtDate(day)+'</strong><span>'+items.length+' intervention'+(items.length>1?'s':'')+'</span></div><div class="v191-day-items">'+items.map(a=>{const team=resolveMembers(s,a).map(id=>name(s,id));return '<button class="v191-plan-item" data-v191-action="open-assignment" data-id="'+esc(a.id)+'"><span class="v191-time">'+fmtTime(a.start)+'</span><span><strong>'+esc(projectName(s,a.projectId))+'</strong><small>'+esc(a.title)+' · '+esc(team.join(' + ')||'Équipe à affecter')+'</small></span></button>';}).join('')+'</div></div>').join(''):'<div class="v191-empty">Aucune intervention sur cette période.</div>')+'</section>';
+    const cfg=ensure(s),range=simpleRange(s);
+    const list=assignments(s).filter(a=>new Date(a.end)>=range.start&&new Date(a.start)<range.end);
+    const view=cfg.simpleGroup||'chantier';
+    const groups=new Map();
+    const add=(key,label,a)=>{
+      if(!groups.has(key))groups.set(key,{label,items:[]});
+      groups.get(key).items.push(a);
+    };
+    for(const a of list){
+      if(view==='collaborateur'){
+        const members=resolveMembers(s,a);
+        if(members.length)members.forEach(id=>add('m:'+id,name(s,id),a));
+        else add('unassigned','Sans collaborateur',a);
+      }else if(view==='equipe'){
+        if(a.crewIds?.length){
+          a.crewIds.forEach(id=>add('e:'+id,s.crews?.find(c=>c.id===id)?.name||'Équipe',a));
+        }else add('individuals',resolveMembers(s,a).length?'Collaborateurs individuels':'Équipe à affecter',a);
+      }else add('p:'+a.projectId,projectName(s,a.projectId),a);
+    }
+    const groupCards=[...groups.values()].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
+    return '<section class="v191-section-head"><div><span class="eyebrow">Planning simple</span><h2>'+esc(range.label)+'</h2><p>Un seul planning, issu de l&rsquo;Agenda Chantier.</p></div>'+(isManager(active(s))?'<button class="secondary" data-v191-action="advanced-gantt">Voir le Gantt avancé →</button>':'')+'</section>'+
+      '<div class="v196-group-choices" role="group" aria-label="Voir le planning par">'+
+        [['collaborateur','👤 Personnes'],['equipe','👷 Équipes'],['chantier','🏗 Chantiers']].map(([key,label])=>'<button class="'+(view===key?'active':'')+'" data-v191-action="simple-group" data-group="'+key+'" aria-pressed="'+(view===key)+'">'+label+'</button>').join('')+
+      '</div>'+
+      '<div class="v191-plan-toolbar"><div class="v191-toggle"><button class="'+(cfg.simpleScale==='week'?'active':'')+'" data-v191-action="simple-scale" data-scale="week">Semaine</button><button class="'+(cfg.simpleScale==='month'?'active':'')+'" data-v191-action="simple-scale" data-scale="month">Mois</button></div><div class="v196-date-controls"><button class="ghost" data-v191-action="simple-move" data-direction="prev" aria-label="Période précédente">‹</button><button class="secondary" data-v191-action="simple-today">Aujourd&rsquo;hui</button><button class="ghost" data-v191-action="simple-move" data-direction="next" aria-label="Période suivante">›</button></div></div>'+
+      '<section class="v196-group-list" aria-live="polite">'+(groupCards.length?groupCards.map(g=>
+        '<article class="v196-group-card"><header><strong>'+esc(g.label)+'</strong><small>'+g.items.length+' intervention'+(g.items.length>1?'s':'')+'</small></header><div>'+
+        g.items.map(a=>'<button class="v196-group-item" data-v191-action="open-assignment" data-id="'+esc(a.id)+'"><span class="v196-group-date">'+fmtDate(a.start)+'<strong>'+fmtTime(a.start)+' → '+fmtTime(a.end)+'</strong></span><span><strong>'+esc(a.title)+'</strong><small>'+esc(projectName(s,a.projectId))+' · '+esc(resolveMembers(s,a).map(id=>name(s,id)).join(' + ')||'Équipe à affecter')+'</small></span><b aria-hidden="true">›</b></button>').join('')+
+        '</div></article>').join(''):'<div class="v191-empty">Aucune intervention sur cette période. Utilisez les flèches ou changez de vue.</div>')+'</section>';
   }
+
   function renderAdvancedPlanning(s){
     return '<div class="v191-advanced-head"><button class="secondary" data-v191-action="simple-planning">← Planning simple</button><div><strong>Gantt avancé</strong><small>Semaine · Mois · Année · N+3</small></div></div><div class="v191-advanced-planning">'+legacyPlanning(s)+'</div>';
   }
@@ -151,11 +177,27 @@
       '</div>';
   }
 
+  function renderMission(s,p,as){
+    const a=as.find(x=>new Date(x.end)>=new Date())||as[0];
+    if(!a)return '<div class="v191-empty">Aucune intervention prévue pour ce chantier.<button class="secondary" data-v191-nav="planning">Voir le planning</button></div>';
+    const team=resolveMembers(s,a).map(id=>name(s,id));
+    const resources=resourceLabels(s,a),weather=weatherFor(s,p.id);
+    return '<section class="v196-mission"><span class="eyebrow">Ma fiche de mission</span><h3>'+esc(a.title)+'</h3>'+
+      '<div class="v196-mission-facts"><p>📍 <strong>Lieu :</strong> '+esc(p.address||'Adresse à renseigner')+'</p><p>🕒 <strong>Quand :</strong> '+fmtDate(a.start)+' · '+fmtTime(a.start)+' → '+fmtTime(a.end)+'</p><p>👷 <strong>Avec qui :</strong> '+esc(team.join(' · ')||'Équipe non affectée')+'</p>'+
+      (a.notes?'<p>💡 <strong>Consigne :</strong> '+esc(a.notes)+'</p>':'')+
+      (resources.length?'<p>🧰 <strong>Matériel prévu :</strong> '+esc(resources.join(' · '))+'</p>':'')+
+      (weather?.summary?'<p>☁ <strong>Météo :</strong> '+esc(weather.summary)+'</p>':'')+'</div>'+
+      '<div class="v196-mission-actions"><button class="primary" data-v191-action="guided-report" data-assignment-id="'+esc(a.id)+'">📝 Faire mon rapport</button><button class="secondary" data-v191-action="signal" data-project-id="'+esc(p.id)+'">⚠️ Signaler un problème</button><button class="secondary" data-v191-action="project-tab" data-tab="documents">📄 Voir les documents</button><button class="ghost" data-v191-action="project-tab" data-tab="planning">🗓 Voir le planning</button></div>'+
+      '<p class="v196-small-note">Les informations proviennent des modules existants. Le pointage se fait exclusivement dans Temps &amp; Présence.</p></section>';
+  }
+
   function renderProjectDetail(s,p){
-    const tabs=[['summary','Résumé'],['terrain','Terrain'],['planning','Planning'],['documents','Documents']];
+    const tabs=[['summary','Résumé'],['mission','Ma mission'],['terrain','Terrain'],['planning','Planning'],['documents','Documents']];
     let body='';
     const c=ext(s),pts=c.points.filter(x=>x.projectId===p.id),plans=c.plans.filter(x=>x.projectId===p.id),as=assignments(s).filter(x=>x.projectId===p.id);
-    if(ui.v191ProjectTab==='terrain'){
+    if(ui.v191ProjectTab==='mission'){
+      body=renderMission(s,p,as);
+    }else if(ui.v191ProjectTab==='terrain'){
       body='<div class="v191-title"><div><h3>Terrain</h3><p>Points et problèmes du chantier.</p></div><button class="primary" data-v191-action="signal" data-project-id="'+esc(p.id)+'">+ Signaler quelque chose</button></div><div class="v191-compact-list">'+(pts.length?pts.slice(0,12).map(x=>'<div class="v191-line"><span>•</span><div><strong>'+esc((conductor()?.POINT_TYPES?.[x.type]||x.type))+'</strong><small>'+esc(x.description||'')+' · '+esc(x.status)+'</small></div></div>').join(''):'<p class="v191-muted">Aucun point chantier.</p>')+'</div>';
     }else if(ui.v191ProjectTab==='planning'){
       body='<div class="v191-title"><div><h3>Planning du chantier</h3><p>Dates issues de l’Agenda Chantier.</p></div><button class="secondary" data-v191-nav="planning">Voir tout le planning</button></div><div class="v191-compact-list">'+(as.length?as.slice(0,12).map(a=>'<button class="v191-line v191-click" data-v191-action="open-assignment" data-id="'+esc(a.id)+'"><span>'+fmtDate(a.start)+'</span><div><strong>'+esc(a.title)+'</strong><small>'+fmtTime(a.start)+' → '+fmtTime(a.end)+' · '+esc(resolveMembers(s,a).map(id=>name(s,id)).join(' · ')||'Sans équipe')+'</small></div></button>').join(''):'<p class="v191-muted">Aucune intervention.</p>')+'</div>';
@@ -308,6 +350,56 @@
   }
   ui.render=function(){originalRender();patchChrome();};
 
+  function reportDraftForm(s){
+    const d=ui.v196ReportDraft;if(!d)return;
+    const as=assignments(s),opts=as.map(a=>'<option value="'+esc(a.id)+'" '+(d.assignmentId===a.id?'selected':'')+'>'+esc(projectName(s,a.projectId))+' — '+esc(a.title)+'</option>').join('');
+    const step=d.step||0;
+    let section='';
+    if(step===0)section='<h2>Sur quel chantier travaillez-vous ?</h2><p>Choisissez l&rsquo;intervention à laquelle rattacher votre rapport.</p><label>Mon intervention<select name="assignmentId" required>'+opts+'</select></label>';
+    if(step===1)section='<h2>Qu&rsquo;avez-vous fait aujourd&rsquo;hui ?</h2><p>Une phrase simple suffit pour commencer.</p><label>Date et heure<input type="datetime-local" name="date" value="'+esc(d.date)+'" required></label><label>Avancement (%)<input type="number" name="progress" min="0" max="100" required value="'+esc(d.progress)+'"></label><label>Travaux réalisés<textarea id="report-summary" name="summary" required placeholder="Exemple : pose des liteaux terminée.">'+esc(d.summary)+'</textarea></label><button type="button" class="secondary" data-action="dictate-summary">🎙 Dicter au lieu d&rsquo;écrire</button>';
+    if(step===2)section='<h2>Y a-t-il quelque chose à signaler ?</h2><p>Vous pouvez laisser ces champs vides si tout se passe bien.</p><label>Problème ou difficulté<textarea name="problems" placeholder="Aucun si tout va bien">'+esc(d.problems)+'</textarea></label><label>Matériel manquant<textarea name="materials" placeholder="Exemple : 40 tuiles">'+esc(d.materials)+'</textarea></label><label>Ajouter des photos ou documents<input type="file" name="attachments" accept="image/*,.pdf,.doc,.docx" multiple></label>'+(d.attachments?.length?'<small>'+d.attachments.length+' fichier(s) conservé(s) dans ce brouillon.</small>':'');
+    if(step===3){
+      const a=as.find(x=>x.id===d.assignmentId);
+      section='<h2>Vérifiez votre rapport</h2><div class="v196-review"><p><strong>Chantier :</strong> '+esc(projectName(s,a?.projectId))+'</p><p><strong>Intervention :</strong> '+esc(a?.title||'—')+'</p><p><strong>Avancement :</strong> '+esc(d.progress)+' %</p><p><strong>Travail :</strong> '+esc(d.summary)+'</p><p><strong>Problèmes :</strong> '+esc(d.problems||'Aucun signalé')+'</p><p><strong>Matériel :</strong> '+esc(d.materials||'Aucun signalé')+'</p><p><strong>Pièces jointes :</strong> '+(d.attachments?.length||0)+'</p></div><p class="v196-small-note">Votre rapport sera enregistré après confirmation.</p>';
+    }
+    ui.modal='<form data-v196-form="report" class="v196-wizard"><div class="v196-wizard-progress"><span>Étape '+(step+1)+' sur 4</span><div class="v196-wizard-bars">'+[0,1,2,3].map(i=>'<i class="'+(i<=step?'filled':'')+'"></i>').join('')+'</div></div>'+section+
+      '<div class="modal-actions v196-wizard-buttons">'+(step?'<button type="button" class="ghost" data-v191-action="report-back">← Retour</button>':'<button type="button" class="ghost" data-v191-action="report-cancel">Annuler</button>')+
+      (step===3?'<button type="button" class="primary" data-v191-action="report-submit">✓ Enregistrer le rapport</button>':'<button type="button" class="primary" data-v191-action="report-next">Continuer →</button>')+'</div></form>';
+    ui.render();
+  }
+  function captureReportStep(){
+    const d=ui.v196ReportDraft,form=ui.root.querySelector('form[data-v196-form="report"]');if(!d||!form)return false;
+    if(d.step<3&&!form.reportValidity())return false;
+    const data=new FormData(form);
+    if(d.step===0)d.assignmentId=String(data.get('assignmentId')||'');
+    if(d.step===1){
+      d.date=String(data.get('date')||'');d.progress=String(data.get('progress')||'0');
+      d.summary=String(data.get('summary')||'').trim();
+    }
+    if(d.step===2){
+      d.problems=String(data.get('problems')||'');d.materials=String(data.get('materials')||'');
+      const files=Array.from(form.querySelector('input[name="attachments"]')?.files||[]);
+      if(files.length)d.attachments=files;
+    }
+    return true;
+  }
+  function openGuidedReport(s,assignmentId=''){
+    const as=assignments(s);if(!as.length){ui.notify('Aucune intervention autorisée pour créer un rapport.','info');return;}
+    const now=new Date(),pad=n=>String(n).padStart(2,'0');
+    const localDate=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
+    ui.v196ReportDraft={step:0,assignmentId:assignmentId||todayAssignment(s)?.id||as[0].id,date:localDate,progress:'50',summary:'',problems:'',materials:'',attachments:[]};
+    reportDraftForm(s);
+  }
+  function submitGuidedReport(){
+    const d=ui.v196ReportDraft;if(!d)return;
+    const fd=new FormData();
+    for(const field of ['assignmentId','date','progress','summary','problems','materials'])fd.set(field,d[field]||'');
+    for(const f of d.attachments||[])fd.append('attachments',f,f.name);
+    ui.saveReport(fd).then(()=>{
+      ui.v196ReportDraft=null;ui.v191Section='today';ui.view='dashboard';ui.render();
+    }).catch(err=>ui.notify(err?.message||'Rapport impossible à enregistrer.','error'));
+  }
+
   function openSignalChooser(projectId=''){
     ui.modal='<div><h2>Signaler quelque chose</h2><p>Choisissez simplement ce qui se rapproche le plus de votre besoin.</p><div class="v191-signal-grid">'+
       [['problem','⚠️','Problème'],['reservation','📌','Réserve'],['quality','✅','Qualité'],['safety','🦺','Sécurité'],['request','➕','Autre']].map(x=>'<button data-v191-action="signal-type" data-type="'+x[0]+'" data-project-id="'+esc(projectId)+'"><span>'+x[1]+'</span><strong>'+x[2]+'</strong></button>').join('')+
@@ -336,6 +428,25 @@
       store.update(st=>{const x=ensure(st);x.navGroups[key]=!x.navGroups[key];},{action:'ux192.nav.toggle',entityType:'navigation',entityId:key,details:String(!cfg.navGroups[key])});
       ui.render();return;
     }
+    if(action==='simple-group'){
+      if(!['collaborateur','equipe','chantier'].includes(t.dataset.group))return;
+      store.update(st=>{ensure(st).simpleGroup=t.dataset.group;},{action:'ux196.planning.group',entityType:'planning',entityId:'simple',details:t.dataset.group});
+      ui.render();return;
+    }
+    if(action==='open-mission'){
+      ui.v191Section='projects';ui.v191ProjectId=t.dataset.projectId;ui.v191ProjectTab='mission';ui.v191LegacyDashboard=false;ui.view='dashboard';ui.render();return;
+    }
+    if(action==='guided-report'){openGuidedReport(s,t.dataset.assignmentId||'');return;}
+    if(action==='report-cancel'){ui.v196ReportDraft=null;ui.modal=null;ui.render();return;}
+    if(action==='report-back'){
+      if(ui.v196ReportDraft){ui.v196ReportDraft.step=Math.max(0,ui.v196ReportDraft.step-1);reportDraftForm(s);}return;
+    }
+    if(action==='report-next'){
+      if(captureReportStep()&&ui.v196ReportDraft){
+        ui.v196ReportDraft.step=Math.min(3,ui.v196ReportDraft.step+1);reportDraftForm(s);
+      }return;
+    }
+    if(action==='report-submit'){submitGuidedReport();return;}
     if(action==='advanced-gantt'){ui.v191Section='planning';ui.v191PlanningAdvanced=true;ui.view='dashboard';ui.render();return;}
     if(action==='simple-planning'){ui.v191PlanningAdvanced=false;ui.render();return;}
     if(action==='simple-scale'){store.update(st=>{ensure(st).simpleScale=t.dataset.scale;},{action:'ux191.planning.scale',entityType:'planning',entityId:'simple',details:t.dataset.scale});ui.render();return;}
@@ -433,8 +544,37 @@
   `;
   document.head.appendChild(style);
 
+  
+  const ux196Style=document.createElement('style');
+  ux196Style.textContent=`
+    .v196-hero h2{font-size:clamp(1.5rem,3vw,2rem)}.v196-hero .secondary{min-height:44px}
+    .v196-today-card{grid-template-columns:105px minmax(0,1fr);box-shadow:0 12px 30px rgba(22,75,145,.07)}.v196-today-card h3{font-size:1.3rem}
+    .v196-address{color:var(--muted);margin:.2rem 0 .7rem}.v196-work{font-size:.95rem;margin-bottom:.6rem}
+    .v196-quick-info{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.65rem}.v196-quick-info span{background:#eef5ff;color:#16417a;padding:.35rem .65rem;border-radius:9px;font-size:.8rem}
+    .v196-consigne,.v196-weather{padding:.45rem .6rem;background:#f7f9fc;border-radius:8px;font-size:.82rem;margin:.4rem 0}
+    .v196-mission-button{display:block;width:100%;text-align:center;margin-top:.9rem;min-height:48px}
+    .v196-actions-title{font-size:1rem;margin:.85rem 0 .2rem}.v196-big-actions button{min-height:126px;transition:transform .15s ease,background .15s ease}.v196-big-actions button:hover{background:#f0f6ff;transform:translateY(-2px)}.v196-big-actions button:focus-visible,.v196-group-choices button:focus-visible,.v196-group-item:focus-visible{outline:3px solid #83b7ff;outline-offset:2px}
+    .v196-group-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-bottom:1rem}
+    .v196-group-choices button{border:1px solid var(--border);border-radius:12px;background:white;font-weight:800;min-height:50px;padding:.6rem;font-size:.85rem}.v196-group-choices button.active{background:#e9f2ff;color:#0b55d0;border-color:#1167ff}
+    .v196-date-controls{display:flex;gap:.35rem}.v196-date-controls button{min-height:42px}
+    .v196-group-list{display:grid;gap:.8rem}.v196-group-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#fff}
+    .v196-group-card header{padding:.8rem 1rem;background:#f4f8ff;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+    .v196-group-card header strong{font-size:1rem}.v196-group-card header small{color:var(--muted)}
+    .v196-group-item{display:grid;grid-template-columns:138px minmax(0,1fr) 15px;align-items:center;gap:1rem;width:100%;padding:.85rem 1rem;text-align:left;border:0;border-top:1px solid var(--border);background:#fff;min-height:76px}
+    .v196-group-item:hover{background:#f8fbff}.v196-group-item>span strong,.v196-group-item>span small{display:block}.v196-group-item>span small{color:var(--muted)}.v196-group-item .v196-group-date{color:#426181;font-size:.75rem}.v196-group-date strong{margin-top:.18rem;color:var(--navy);font-size:.8rem}
+    .v196-mission h3{font-size:1.35rem;margin:.6rem 0 1rem}.v196-mission-facts{display:grid;gap:.1rem;background:#f6f9fe;padding:1rem;border-radius:14px}.v196-mission-facts p{margin:.2rem 0}.v196-mission-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;margin-top:1rem}.v196-mission-actions button{min-height:52px}
+    .v196-small-note{color:var(--muted);font-size:.77rem;margin-top:.8rem}
+    .v196-wizard{display:grid;gap:1rem}.v196-wizard h2{margin-bottom:0}.v196-wizard>p{color:var(--muted);margin:0}
+    .v196-wizard label{display:grid;gap:.35rem}.v196-wizard textarea{min-height:112px}
+    .v196-wizard-progress>span{font-weight:800;color:#335476;font-size:.77rem}.v196-wizard-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-top:.45rem}.v196-wizard-bars i{height:6px;border-radius:99px;background:#dce5f2}.v196-wizard-bars i.filled{background:#1167ff}
+    .v196-review{padding:1rem;background:#f6f9ff;border:1px solid #dce9fc;border-radius:12px}.v196-review p{margin:.4rem 0;overflow-wrap:anywhere}.v196-wizard-buttons{justify-content:space-between}.v196-wizard-buttons button{min-height:46px}
+    @media(max-width:700px){.v196-hero{flex-wrap:wrap}.v196-group-item{grid-template-columns:1fr 15px;gap:.4rem}.v196-group-item .v196-group-date{grid-column:1/-1}.v196-group-choices button{font-size:.74rem;padding:.45rem .2rem}.v196-mission-actions{grid-template-columns:1fr}.v196-date-controls button{padding:.5rem}}
+    @media(max-width:480px){.v196-today-card{grid-template-columns:1fr}.v196-today-card .v191-today-time{min-height:48px}.v196-big-actions{grid-template-columns:1fr 1fr}.v196-big-actions button{min-height:110px}.v196-big-actions button:last-child{grid-column:1/-1}.v196-hero .secondary{width:100%}.v196-group-card header{align-items:flex-start}}
+  `;
+  document.head.appendChild(ux196Style);
+
   window.SpeedArtiUX191={
-    version:'1.9.5',
+    version:'1.9.6',
     principles:['5-second-understanding','simple-first','advanced-on-demand','no-feature-removal'],
     sections:['today','planning','projects','attention','gantt','reservations','nonconformities','quality','safety','meetings','journal','client'],
     attentionItems:()=>structuredClone(attentionItems(store.getState())),
