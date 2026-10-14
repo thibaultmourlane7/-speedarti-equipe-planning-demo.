@@ -1,12 +1,22 @@
 # SpeedArti — Équipe & Planning
 
-## Démonstration V1.9.6 — simplicité mobile
+## Démonstration V1.9.7 — correctif téléphone et simplicité
 
 Démo : https://thibaultmourlane7.github.io/-speedarti-equipe-planning-demo./
 
 Dépôt de démonstration autonome sur `main`. **Ne jamais modifier le dépôt source `GSTAI-Sp/speedarti-v2`.**
 
-### Nouveautés V1.9.6
+### Nouveautés V1.9.7 (téléphone)
+
+- Sur téléphone (320–700 px) : interface **pleine largeur** au lieu d'un menu fixe de 82 px.
+- Navigation principale **Aujourd'hui / Planning / Chantiers / À traiter** fixée en bas avec de grands boutons.
+- Menu complet dans un **tiroir latéral** qui s'ouvre à la demande, avec bouton Fermer et fond cliquable.
+- En-tête et sélection de profil adaptés au téléphone, cartes et boutons réorganisés, formulaires sur une colonne.
+- Fiche mission, rapport guidé, listes, planning et Gantt présentés sans forcer la largeur de l'écran.
+- Le Gantt avancé conserve le défilement horizontal nécessaire à sa représentation.
+- Cache hors connexion réactualisé et connaissances Ángel existantes enrichies.
+
+### Nouveautés V1.9.6 conservées
 
 - Accueil « Ma journée » : prochain chantier, horaires, collaborateurs, consignes, bouton **Voir ma fiche de mission** et trois grandes actions.
 - Planning simple : boutons **Personnes / Équipes / Chantiers**, vues **Semaine / Mois**, flèches de navigation et ouverture de chaque intervention.
@@ -33,7 +43,12 @@ Les chiffres et tarifs d'édition de la démo ne valent pas publication commerci
 
 ### Recette humaine avant validation commerciale
 
-1. Depuis un téléphone, ouvrir **Aujourd'hui**, puis **Voir ma fiche de mission**.
+1. Depuis un téléphone de largeur 320–390 px, vérifier qu'aucun menu fixe n'écrase le contenu, puis ouvrir **Aujourd'hui** et **Voir ma fiche de mission**.
+2. Vérifier les quatre boutons fixes en bas et le menu hamburger : tiroir ouvrable et refermable sans perte de page.
+3. Vérifier qu'aucun élément du formulaire de rapport ou de l'en-tête ne dépasse horizontalement.
+4. Faire les mêmes vérifications sur un grand téléphone (~430 px) et une tablette (~768 px) avant de poursuivre les parcours ci-dessous.
+
+5. Depuis un téléphone, ouvrir **Aujourd'hui**, puis **Voir ma fiche de mission**.
 2. Vérifier le chantier, les horaires, les collègues, les documents et le bouton de retour.
 3. Aller dans **Planning** et changer successivement **Personnes**, **Équipes**, **Chantiers**, puis semaine/mois et période précédente/suivante.
 4. Ouvrir une intervention depuis les cartes ; vérifier qu'il s'agit d'une intervention de l'Agenda simulé.
@@ -46,4 +61,4 @@ Les chiffres et tarifs d'édition de la démo ne valent pas publication commerci
 11. Tester petit téléphone (~320 px), mobile (~375 px), tablette, ordinateur et menu réduit/ouvert.
 12. Rafraîchir et vérifier la persistance locale, l'absence d'erreurs console et le renouvellement du cache.
 
-**Statut :** code mis à jour sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
+**Statut :** correctif téléphone V1.9.7 poussé sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
