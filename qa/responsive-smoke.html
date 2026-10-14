@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SpeedArti — recette responsive mobile</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:20px;color:#172a4a}h1{font-size:20px}
+#results{white-space:pre-wrap;font-size:14px;line-height:1.55;background:#f1f5fb;border:1px solid #cdd6e5;border-radius:10px;padding:14px}
+#frames{position:absolute;left:-10000px;top:0;display:flex;gap:30px;pointer-events:none}
+iframe{border:0;height:780px}
+</style></head>
+<body><h1>Contrôle téléphone — V1.9.8</h1><pre id="results">Contrôle en cours...</pre><div id="frames"></div>
+<script>
+const widths=[320,375,414];
+const out=[];
+const result=document.getElementById('results');
+function show(){
+ result.textContent='SPEEDARTI V1.9.8 — TEST VIEWPORT\n'+out.sort((a,b)=>a.width-b.width).map(x=>
+   x.width+'px : '+(x.pass?'PASS':'FAIL')+' | shell='+x.shell+
+   ' workspace='+x.workspace+' left='+x.left+' sidebar='+x.sidebar+
+   ' bottom='+x.bottom+' mobileJS='+x.mobileJS+' sourceUX='+x.uxVersion+
+   (x.error?' erreur='+x.error:'')
+ ).join('\n')+'\n\nMesures réalisées dans les iframes du vrai site, largeur CSS réelle.';
+}
+widths.forEach(width=>{
+ const iframe=document.createElement('iframe');
+ iframe.width=width;
+ iframe.setAttribute('title','Recette '+width+'px');
+ iframe.src='../index.html?responsive-check=198&w='+width;
+ document.getElementById('frames').appendChild(iframe);
+ const finish=()=>{
+  let test={width,pass:false,shell:'?',workspace:'?',left:'?',sidebar:'?',bottom:'?',mobileJS:false,uxVersion:'?'};
+  try{
+   const w=iframe.contentWindow,d=iframe.contentDocument;
+   const shell=d.querySelector('.app-shell'),workspace=d.querySelector('.workspace');
+   const sidebar=d.querySelector('.sidebar'),bottom=d.querySelector('.v197-bottom-nav');
+   const get=e=>e?.getBoundingClientRect();
+   const sr=get(shell),wr=get(workspace);
+   test.shell=Math.round(sr?.width||0);test.workspace=Math.round(wr?.width||0);
+   test.left=Math.round(wr?.left||0);
+   test.sidebar=sidebar?getComputedStyle(sidebar).visibility:'absent';
+   test.bottom=bottom?getComputedStyle(bottom).display:'absent';
+   test.mobileJS=!!w.__SpeedArtiMobileV197;
+   test.uxVersion=w.SpeedArtiUX191?.version||'missing';
+   test.pass=Math.abs((sr?.width||0)-width)<=2&&Math.abs((wr?.width||0)-width)<=2&&
+     Math.abs(wr?.left||999)<=2&&test.sidebar==='hidden'&&test.bottom==='grid'&&test.mobileJS;
+  }catch(e){test.error=e.message}
+  out.push(test);show();
+ };
+ iframe.addEventListener('load',()=>setTimeout(finish,1600),{once:true});
+});
+setTimeout(()=>{if(out.length<widths.length)result.textContent+='\nTIMEOUT: '+out.length+'/'+widths.length+' vues contrôlées.';},10000);
+</script></body></html>
