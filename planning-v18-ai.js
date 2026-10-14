@@ -172,8 +172,8 @@
 
   const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
     module:'equipe_planning',
-    version:'1.7.0',
-    appliesFrom:'1.9.7',
+    version:'1.8.0',
+    appliesFrom:'1.9.8',
     principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
     domains:{
       organisation:{
@@ -183,7 +183,7 @@
       navigationSimple:{
         terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Équipe','Terrain','Gantt avancé','Pilotage','Réserves / OPR','Non-conformités','Qualité','Sécurité','Réunions','Journal chantier','Suivi client','Historique','Configuration','Planning simple','Vue avancée','Signaler quelque chose','Ma fiche de mission','Faire mon rapport','Rapport guidé','Personnes','Équipes','Chantiers','Étape suivante','navigation téléphone','menu complet','barre de navigation basse','ouvrir menu mobile','fermer menu mobile'],
         intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir équipe','ouvrir terrain','ouvrir Gantt avancé','ouvrir pilotage','ouvrir réserves','ouvrir non-conformités','ouvrir qualité','ouvrir sécurité','ouvrir réunions','ouvrir journal chantier','ouvrir suivi client','ouvrir historique','ouvrir configuration','ouvrir menu mobile','fermer menu mobile','ouvrir fiche de mission','faire mon rapport','voir planning par personne','voir planning par équipe','voir planning par chantier','masquer menu latéral','ouvrir menu latéral','signaler quelque chose'],
-        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Sur tablette, le menu reste latéral et compact ; il ne bascule pas en barre basse.','Sur téléphone (largeur <= 700 px), le contenu occupe toute la largeur, avec 4 onglets fixes en bas et le menu avancé en tiroir fermé par défaut.','Le bouton menu du téléphone ouvre et ferme le tiroir ; le fond sombre et Echap permettent aussi de le refermer.','La barre latérale complète peut être masquée pour libérer toute la largeur de travail, avec un bouton permanent dans l’en-tête pour la rouvrir.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.','La version V1.9.6 privilégie un accueil indiquant où aller, avec qui et quel travail effectuer, puis trois actions rapides.','Les vues Personnes, Équipes et Chantiers sont trois lectures des mêmes interventions Agenda, sans second calendrier.','La fiche de mission affiche les données disponibles et ne crée aucune donnée métier parallèle.','Le rapport guidé présente le formulaire métier existant en quatre étapes, puis appelle le même enregistrement de rapport.']
+        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Sur tablette, le menu reste latéral et compact ; il ne bascule pas en barre basse.','Sur téléphone (largeur <= 700 px), le contenu occupe toute la largeur, avec 4 onglets fixes en bas et le menu avancé en tiroir fermé par défaut.','À partir de V1.9.8, aucune colonne ni marge latérale de 82 px ne doit être conservée sur téléphone.','Le chargement initial doit garantir les règles responsive, y compris si les styles dynamiques ne sont pas encore chargés.','Le bouton menu du téléphone ouvre et ferme le tiroir ; le fond sombre et Echap permettent aussi de le refermer.','La barre latérale complète peut être masquée pour libérer toute la largeur de travail, avec un bouton permanent dans l’en-tête pour la rouvrir.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.','La version V1.9.6 privilégie un accueil indiquant où aller, avec qui et quel travail effectuer, puis trois actions rapides.','Les vues Personnes, Équipes et Chantiers sont trois lectures des mêmes interventions Agenda, sans second calendrier.','La fiche de mission affiche les données disponibles et ne crée aucune donnée métier parallèle.','Le rapport guidé présente le formulaire métier existant en quatre étapes, puis appelle le même enregistrement de rapport.']
       },
       agendaPlanning:{
         terms:['Agenda Chantier','affectation','intervention','planning','Planning simple','Gantt','Vue avancée','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
@@ -335,7 +335,7 @@
     };
   }
 
-  const api={version:'1.9.7',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
+  const api={version:'1.9.8',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
   window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
