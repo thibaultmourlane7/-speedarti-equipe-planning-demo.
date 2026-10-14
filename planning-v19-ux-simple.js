@@ -576,7 +576,7 @@
   document.head.appendChild(ux196Style);
 
   window.SpeedArtiUX191={
-    version:'1.9.6',
+    version:'1.9.7',
     principles:['5-second-understanding','simple-first','advanced-on-demand','no-feature-removal'],
     sourceOfTruthForDates:'Agenda Chantier',
     timesheetOwnership:'Temps & Présence',
