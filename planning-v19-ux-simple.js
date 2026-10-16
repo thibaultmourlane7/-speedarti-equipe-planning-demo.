@@ -186,7 +186,9 @@
   }
 
   function renderAdvancedPlanning(s){
-    return '<div class="v191-advanced-head"><button class="secondary" data-v191-action="simple-planning">← Planning simple</button><div><strong>Gantt avancé</strong><small>Semaine · Mois · Année · N+3</small></div></div><div class="v191-advanced-planning">'+legacyPlanning(s)+'</div>';
+    return '<div class="v191-advanced-head"><button class="secondary" data-v191-action="simple-planning">← Planning simple</button><div><strong>Gantt avancé</strong><small>Semaine · Mois · Année · N+3</small></div></div>'+
+      '<div class="v199-advanced-toolbar"><button class="ghost" data-v191-action="toggle-planning-tools" aria-expanded="'+(ui.v199ShowPlanningTools?'true':'false')+'">'+(ui.v199ShowPlanningTools?'Masquer':'Afficher')+' les autres outils de planning</button></div>'+
+      '<div class="v191-advanced-planning '+(ui.v199ShowPlanningTools?'v199-show-tools':'')+'">'+legacyPlanning(s)+'</div>';
   }
 
   function renderProjects(s){
@@ -493,6 +495,7 @@
       }return;
     }
     if(action==='report-submit'){submitGuidedReport();return;}
+    if(action==='toggle-planning-tools'){ui.v199ShowPlanningTools=!ui.v199ShowPlanningTools;ui.render();return;}
     if(action==='advanced-gantt'){ui.v191Section='planning';ui.v191PlanningAdvanced=true;ui.view='dashboard';ui.render();return;}
     if(action==='simple-planning'){ui.v191PlanningAdvanced=false;ui.render();return;}
     if(action==='simple-scale'){store.update(st=>{ensure(st).simpleScale=t.dataset.scale;},{action:'ux191.planning.scale',entityType:'planning',entityId:'simple',details:t.dataset.scale});ui.render();return;}
@@ -676,6 +679,11 @@
     .v199-project-counter{font-size:.76rem;color:var(--muted);margin:.25rem 0 .6rem}
     .v191-project-card[hidden]{display:none!important}
     .v199-project-no-results{padding:1.2rem;border:1px dashed var(--border);border-radius:12px;text-align:center}
+    .v199-advanced-toolbar{display:flex;justify-content:flex-end;margin:0 0 .7rem}
+    .v199-advanced-toolbar button{min-height:44px}
+    .v191-advanced-planning>.v17-expert-panel{display:block!important}
+    .v191-advanced-planning.v199-show-tools>*{display:block!important}
+    .v191-advanced-planning.v199-show-tools>.v19-panel{display:block!important}
     .v199-smart-card{margin-top:1rem;border-color:#cbdfff;background:linear-gradient(135deg,#fafdff,#f2f7ff)}
     .v199-smart-card h3{margin:.25rem 0}.v199-smart-actions{display:flex;flex-wrap:wrap;gap:.5rem}
     .v199-smart-actions button{min-height:46px}
@@ -684,6 +692,13 @@
     @media(max-width:700px){
       .v199-smart-actions{display:grid;grid-template-columns:minmax(0,1fr)}
       .v199-smart-actions button{width:100%;text-align:center}
+      .v199-advanced-toolbar button{width:100%}
+      .v17-expert-panel,.v17-ultra-panel{min-width:0;max-width:100%;overflow-wrap:anywhere}
+      .v17-expert-panel .v17-list article,.v17-ultra-panel .v17-list article{min-width:0;display:flex;flex-wrap:wrap;gap:.7rem}
+      .v17-expert-panel .v17-list article>div,.v17-ultra-panel .v17-list article>div{min-width:0;flex:1 1 100%}
+      .v17-expert-panel .v17-actions,.v17-ultra-panel .v17-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+      .v17-expert-panel .v17-actions button,.v17-ultra-panel .v17-actions button,.v17-ultra-panel .panel-header button{min-height:46px}
+      .forecast-grid,.suggestion-grid,.capacity-grid,.role-dashboard-grid{grid-template-columns:minmax(0,1fr)!important}
       .v191-advanced-head{flex-wrap:wrap}
       .v191-advanced-head button{width:100%;min-height:46px}
       .v191-project-tabs button{min-height:46px}
