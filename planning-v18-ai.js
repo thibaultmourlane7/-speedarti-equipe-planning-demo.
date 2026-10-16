@@ -172,8 +172,8 @@
 
   const TEAM_PLANNING_KNOWLEDGE=Object.freeze({
     module:'equipe_planning',
-    version:'1.8.0',
-    appliesFrom:'1.9.8',
+    version:'1.9.0',
+    appliesFrom:'1.9.9',
     principle:'Une seule connaissance globale Équipe & Planning, structurée par domaines internes et enrichie à chaque évolution du module.',
     domains:{
       organisation:{
@@ -181,9 +181,9 @@
         intents:['consulter équipe','chercher collaborateur','comprendre rôle','vérifier disponibilité','vérifier droit','analyser charge']
       },
       navigationSimple:{
-        terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Équipe','Terrain','Gantt avancé','Pilotage','Réserves / OPR','Non-conformités','Qualité','Sécurité','Réunions','Journal chantier','Suivi client','Historique','Configuration','Planning simple','Vue avancée','Signaler quelque chose','Ma fiche de mission','Faire mon rapport','Rapport guidé','Personnes','Équipes','Chantiers','Étape suivante','navigation téléphone','menu complet','barre de navigation basse','ouvrir menu mobile','fermer menu mobile'],
-        intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir équipe','ouvrir terrain','ouvrir Gantt avancé','ouvrir pilotage','ouvrir réserves','ouvrir non-conformités','ouvrir qualité','ouvrir sécurité','ouvrir réunions','ouvrir journal chantier','ouvrir suivi client','ouvrir historique','ouvrir configuration','ouvrir menu mobile','fermer menu mobile','ouvrir fiche de mission','faire mon rapport','voir planning par personne','voir planning par équipe','voir planning par chantier','masquer menu latéral','ouvrir menu latéral','signaler quelque chose'],
-        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Sur tablette, le menu reste latéral et compact ; il ne bascule pas en barre basse.','Sur téléphone (largeur <= 700 px), le contenu occupe toute la largeur, avec 4 onglets fixes en bas et le menu avancé en tiroir fermé par défaut.','À partir de V1.9.8, aucune colonne ni marge latérale de 82 px ne doit être conservée sur téléphone.','Le chargement initial doit garantir les règles responsive, y compris si les styles dynamiques ne sont pas encore chargés.','Le bouton menu du téléphone ouvre et ferme le tiroir ; le fond sombre et Echap permettent aussi de le refermer.','La barre latérale complète peut être masquée pour libérer toute la largeur de travail, avec un bouton permanent dans l’en-tête pour la rouvrir.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.','La version V1.9.6 privilégie un accueil indiquant où aller, avec qui et quel travail effectuer, puis trois actions rapides.','Les vues Personnes, Équipes et Chantiers sont trois lectures des mêmes interventions Agenda, sans second calendrier.','La fiche de mission affiche les données disponibles et ne crée aucune donnée métier parallèle.','Le rapport guidé présente le formulaire métier existant en quatre étapes, puis appelle le même enregistrement de rapport.']
+        terms:["Aujourd’hui",'Planning','Chantiers','À traiter','Équipe','Terrain','Gantt avancé','Pilotage','Réserves / OPR','Non-conformités','Qualité','Sécurité','Réunions','Journal chantier','Suivi client','Historique','Configuration','Planning simple','Vue avancée','Signaler quelque chose','Ma fiche de mission','Faire mon rapport','Rapport guidé','Personnes','Équipes','Chantiers','Étape suivante','navigation téléphone','menu complet','barre de navigation basse','ouvrir menu mobile','fermer menu mobile','chercher chantier','ouvrir alerte contextualisée','revenir au planning simple','voir outils avancés','voir analyses Expert','voir optimisation Ultra'],
+        intents:['ouvrir aujourd’hui','ouvrir planning','ouvrir chantier','voir à traiter','ouvrir équipe','ouvrir terrain','ouvrir Gantt avancé','ouvrir pilotage','ouvrir réserves','ouvrir non-conformités','ouvrir qualité','ouvrir sécurité','ouvrir réunions','ouvrir journal chantier','ouvrir suivi client','ouvrir historique','ouvrir configuration','ouvrir menu mobile','fermer menu mobile','ouvrir fiche de mission','faire mon rapport','voir planning par personne','voir planning par équipe','voir planning par chantier','masquer menu latéral','ouvrir menu latéral','chercher chantier','ouvrir alerte contextualisée','afficher autres outils de planning','voir analyses Expert','voir optimisation Ultra','signaler quelque chose'],
+        rules:['La façade simple est prioritaire pour les utilisateurs débutants.','Toutes les sections utiles au rôle sont visibles directement dans le menu latéral.','Le bloc Principal du menu reste toujours ouvert.','Les blocs Organisation, Suivi chantier et Administration sont rétractables et mémorisent leur état.','Sur tablette, le menu reste latéral et compact ; il ne bascule pas en barre basse.','Sur téléphone (largeur <= 700 px), le contenu occupe toute la largeur, avec 4 onglets fixes en bas et le menu avancé en tiroir fermé par défaut.','À partir de V1.9.8, aucune colonne ni marge latérale de 82 px ne doit être conservée sur téléphone.','Le chargement initial doit garantir les règles responsive, y compris si les styles dynamiques ne sont pas encore chargés.','Le bouton menu du téléphone ouvre et ferme le tiroir ; le fond sombre et Echap permettent aussi de le refermer.','La barre latérale complète peut être masquée pour libérer toute la largeur de travail, avec un bouton permanent dans l’en-tête pour la rouvrir.','Ne pas utiliser un menu Plus global pour cacher les sections métier.','Un ouvrier ne doit pas être orienté vers le Gantt avancé par défaut.','La version V1.9.6 privilégie un accueil indiquant où aller, avec qui et quel travail effectuer, puis trois actions rapides.','Les vues Personnes, Équipes et Chantiers sont trois lectures des mêmes interventions Agenda, sans second calendrier.','La fiche de mission affiche les données disponibles et ne crée aucune donnée métier parallèle.','Le rapport guidé présente le formulaire métier existant en quatre étapes, puis appelle le même enregistrement de rapport.','V1.9.9 : le bouton Plus du chantier dirige vers chaque écran concerné (réserves, qualité, sécurité, réunions, client), et non vers le même tableau général.','V1.9.9 : un signalement doit ouvrir son contexte chantier et une demande terrain doit ouvrir Terrain.','V1.9.9 : le rapport guidé conserve les textes lors du retour et la dictée vocale sans inventer un taux d’avancement initial.','V1.9.9 : la recherche de chantier et les outils avancés sont accessibles sans masquer les fonctions existantes.','Sur Standard, ne pas proposer les commandes Expert ou Ultra ; Expert affiche de l’aide à la décision ; Ultra prépare de l’optimisation, avec validation humaine.']
       },
       agendaPlanning:{
         terms:['Agenda Chantier','affectation','intervention','planning','Planning simple','Gantt','Vue avancée','semaine','mois','année','N+3','jalon','dépendance','retard','besoin à pourvoir','modèle de planning','duplication'],
@@ -251,7 +251,7 @@
       'Le bloc Principal est toujours visible ; Organisation, Suivi chantier et Administration sont repliables.',
       'Ángel doit orienter vers l’action la plus simple avant de proposer une vue avancée.',
       'Le Gantt avancé reste une vue secondaire pour les profils qui en ont besoin.',
-      'Signaler quelque chose utilise le moteur Point chantier existant et ne crée pas un second système.','Pour les utilisateurs débutants, orienter d’abord vers Ma journée, Ma fiche de mission, Faire mon rapport, Signaler un problème ou Demander du matériel.','Présenter Standard en premier, Expert comme assistance à la décision et Ultra comme optimisation prévisionnelle, sans inventer de connexion externe.'
+      'Signaler quelque chose utilise le moteur Point chantier existant et ne crée pas un second système.','Ne jamais proposer de faire un rapport à un profil sans permission create_reports ni de demander du matériel sans create_requests.','Les outils Expert et Ultra utilisent les moteurs existants et n’impliquent aucune connexion externe réelle.','Les alertes doivent rediriger vers la fonction concernée avec le chantier déjà sélectionné lorsque disponible.','Pour les utilisateurs débutants, orienter d’abord vers Ma journée, Ma fiche de mission, Faire mon rapport, Signaler un problème ou Demander du matériel.','Présenter Standard en premier, Expert comme assistance à la décision et Ultra comme optimisation prévisionnelle, sans inventer de connexion externe.'
     ],
     artisanLanguage:{
       examples:[
@@ -268,6 +268,12 @@
         'Rouvre le menu latéral.',
         'Ouvre le menu complet sur mon téléphone.',
         'Reviens à mon planning sur téléphone.',
+        'Cherche le chantier Martin.',
+        'Ouvre mes analyses Expert.',
+        'Montre les propositions Ultra.',
+        'Montre-moi les réserves du chantier Dupont.',
+        'Reviens à l’étape précédente de mon rapport.',
+        'Affiche tous les outils avancés du planning.',
         'Qui va où demain ?',
         'Montre-moi le planning de la semaine.',
         'Montre-moi le planning du mois prochain.',
@@ -301,6 +307,10 @@
       {utterance:'Rouvre le menu latéral',expectedDomain:'navigationSimple',expectedIntent:'ouvrir menu latéral'},
       {utterance:'Ouvre le menu complet sur mon téléphone',expectedDomain:'navigationSimple',expectedIntent:'ouvrir menu mobile'},
       {utterance:'Ferme le menu mobile',expectedDomain:'navigationSimple',expectedIntent:'fermer menu mobile'},
+      {utterance:'Cherche le chantier Martin',expectedDomain:'navigationSimple',expectedIntent:'chercher chantier'},
+      {utterance:'Ouvre mes analyses Expert',expectedDomain:'navigationSimple',expectedIntent:'voir analyses Expert'},
+      {utterance:'Montre les propositions Ultra',expectedDomain:'navigationSimple',expectedIntent:'voir optimisation Ultra',requiresHumanValidation:true},
+      {utterance:'Affiche tous les outils avancés du planning',expectedDomain:'navigationSimple',expectedIntent:'afficher autres outils de planning'},
       {utterance:'Montre-moi le planning par personne',expectedDomain:'navigationSimple',expectedIntent:'voir planning par personne'},
       {utterance:'Affiche les équipes de la semaine',expectedDomain:'navigationSimple',expectedIntent:'voir planning par équipe'},
       {utterance:'Ouvre ma fiche de mission',expectedDomain:'navigationSimple',expectedIntent:'ouvrir fiche de mission'},
@@ -335,7 +345,7 @@
     };
   }
 
-  const api={version:'1.9.8',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
+  const api={version:'1.9.9',searchProject,dailySummary,angelContext,suggestPhotoClassification,proposePhotoClassification,clientTransmissionContext,knowledgePacks:{teamPlanning:TEAM_PLANNING_KNOWLEDGE}};
   window.SpeedArtiConductorAI=api;
   window.dispatchEvent(new CustomEvent('speedarti:angel:knowledge-pack-ready',{detail:TEAM_PLANNING_KNOWLEDGE}));
 
