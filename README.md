@@ -1,10 +1,22 @@
 # SpeedArti — Équipe & Planning
 
-## Démonstration V1.9.8 — correction structurante du responsive iPhone
+## Démonstration V1.9.9 — ergonomie Planning, Chantiers, Rapports, Expert et Ultra
 
 Démo : https://thibaultmourlane7.github.io/-speedarti-equipe-planning-demo./
 
 Dépôt de démonstration autonome sur `main`. **Ne jamais modifier le dépôt source `GSTAI-Sp/speedarti-v2`.**
+
+### Nouveautés V1.9.9
+
+- Planning : Gantt, panneaux Expert et outils avancés accessibles, sans supprimer le planning simple.
+- Chantiers : recherche dans la liste à partir de cinq chantiers, boutons Plus pointant vers le suivi métier concerné.
+- À traiter : navigation contextualisée vers Terrain, planning, réserves ou suivi client selon le type de demande.
+- Rapport : retour arrière sans perte de saisie, dictée conservée, avancement à renseigner sans 50 % fictif, droits create_reports et create_requests respectés.
+- Accueil : Expert montre l'aide à la décision ; Ultra montre l'accès à l'optimisation. Standard conserve son écran simple.
+- Téléphone : navigation vers Chantiers revient à la liste et ramène au haut de page.
+- Ángel : base globale equipe_planning enrichie, version 1.9.0, sans doublon.
+
+**Recette V1.9.9 à confirmer humainement** : iPhone 320/375/414 px, recherche de chantiers, navigation Plus, alertes, rapport avec retour et dictée, visibilité Standard/Expert/Ultra. Les vérifications syntaxiques et de rendu simulé sont passées, mais ne remplacent pas les clics sur appareil réel.
 
 ### Correctifs V1.9.8 (téléphone)
 
@@ -69,8 +81,8 @@ Les chiffres et tarifs d'édition de la démo ne valent pas publication commerci
 11. Tester petit téléphone (~320 px), mobile (~375 px), tablette, ordinateur et menu réduit/ouvert.
 12. Rafraîchir et vérifier la persistance locale, l'absence d'erreurs console et le renouvellement du cache.
 
-**Statut :** correctif source V1.9.8 poussé sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
+**Statut :** ergonomie V1.9.9 poussée sur la démo ; les tests navigateur humains ci-dessus restent à exécuter / confirmer. Les contrôles syntaxiques ne remplacent pas une recette manuelle.
 
 ### Contrôle spécifique après retour de capture iPhone (14/10/2026)
 
-La capture montrait une barre latérale de 82px + une marge de 82px produisant un contenu extrêmement étroit. Après déploiement, contrôler sur vrai iPhone l'absence de double décalage, puis l'affichage plein écran, la barre de navigation basse, les menus, les formulaires et les rôles. Pour écarter le cache navigateur, ouvrir dans un nouvel onglet avec `?mobile=198` en suffixe. Aucun parcours humain complet n'est réputé validé tant qu'il n'a pas été testé réellement.
+La capture montrait une barre latérale de 82px + une marge de 82px produisant un contenu extrêmement étroit. Après déploiement, contrôler sur vrai iPhone l'absence de double décalage, puis l'affichage plein écran, la barre de navigation basse, les menus, les formulaires et les rôles. Pour écarter le cache navigateur, ouvrir dans un nouvel onglet avec `?mobile=199` en suffixe. Aucun parcours humain complet n'est réputé validé tant qu'il n'a pas été testé réellement.
