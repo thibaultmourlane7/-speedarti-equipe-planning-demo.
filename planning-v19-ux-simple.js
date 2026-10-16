@@ -111,7 +111,24 @@
     return legacyPageTitle();
   };
 
-  function renderToday(s){
+
+  function allowed(s,permission){
+    const m=active(s);if(!m)return false;
+    const explicit=m.permissionOverrides?.[permission];
+    if(explicit===true)return true;if(explicit===false)return false;
+    return !!s.settings?.rolePermissions?.[m.role]?.includes(permission);
+  }
+  function currentEdition(s){return s.settings?.edition||'standard';}
+  function homeIntelligence(s){
+    if(!isManager(active(s))||!allowed(s,'view_capacity'))return '';
+    const edition=currentEdition(s);
+    if(!['expert','ultra'].includes(edition))return '';
+    const waiting=attentionItems(s).length;
+    const title=edition==='ultra'?'Ultra · Anticiper le planning':'Expert · Comprendre les problèmes';
+    const detail=edition==='ultra'?'Charge prévisionnelle, renforts et propositions de réorganisation.':'Rapports à analyser, ressources et décisions à préparer.';
+    return '<section class="v191-simple-block v199-smart-card" aria-label="Aide à la décision"><div class="v191-title"><div><span class="eyebrow">'+esc(title)+'</span><h3>Votre aide à la décision</h3><p>'+esc(detail)+'</p></div></div><div class="v199-smart-actions"><button class="secondary" data-v191-legacy-view="pilotage">Voir les analyses →</button><button class="ghost" data-v191-nav="attention">Voir les '+waiting+' points à traiter</button></div><p class="v196-small-note">Les propositions restent soumises à validation. Les connecteurs externes de cette démo sont simulés ou préparés.</p></section>';
+  }
+    function renderToday(s){
     const m=active(s),a=todayAssignment(s),p=a?s.projects.find(x=>x.id===a.projectId):null;
     const team=a?resolveMembers(s,a).map(id=>name(s,id)):[];
     const weather=a?weatherFor(s,a.projectId):null,resources=a?resourceLabels(s,a):[];
@@ -122,13 +139,13 @@
       (a?'<section class="v191-today-card v196-today-card"><div class="v191-today-time"><strong>'+fmtTime(a.start)+'</strong><span>→ '+fmtTime(a.end)+'</span></div><div class="v191-today-main"><span class="eyebrow">Mon prochain chantier</span><h3>'+esc(p?.name||a.title)+'</h3><p class="v196-address">📍 '+esc(p?.address||'Adresse non renseignée')+'</p><p class="v196-work"><strong>À faire :</strong> '+esc(a.title)+'</p><div class="v196-quick-info"><span>👷 '+esc(team.join(' · ')||'Équipe à affecter')+'</span>'+(resources.length?'<span>🧰 '+esc(resources.join(' · '))+'</span>':'')+'</div>'+(a.notes?'<p class="v196-consigne">💡 '+esc(a.notes)+'</p>':'')+(weather?.summary?'<p class="v196-weather">☁ '+esc(weather.summary)+'</p>':'')+'<button class="primary v196-mission-button" data-v191-action="open-mission" data-project-id="'+esc(a.projectId)+'">📋 Voir ma fiche de mission →</button></div></section>':'<section class="v191-simple-block v196-empty-day"><h3>Aucune intervention à venir</h3><p>Consultez le planning pour organiser votre prochaine journée.</p><button class="secondary" data-v191-nav="planning">Ouvrir le planning</button></section>')+
       (notice?'<section class="v191-notice"><div><strong>🔔 Changement important</strong><p>'+esc(notice.title)+' · '+esc(notice.body)+'</p></div><div><button class="primary" data-v18-field-action="ack-notice" data-id="'+esc(notice.id)+'">J&rsquo;ai vu</button><button class="secondary" data-v18-field-action="problem-notice" data-id="'+esc(notice.id)+'">J&rsquo;ai un problème</button></div></section>':'')+
       '<h3 class="v196-actions-title">Que voulez-vous faire ?</h3><section class="v191-big-actions v196-big-actions" aria-label="Actions rapides">'+
-        '<button data-v191-action="guided-report"><span aria-hidden="true">📝</span><strong>Faire mon rapport</strong><small>Raconter ma journée</small></button>'+
+        (allowed(s,'create_reports')?'<button data-v191-action="guided-report"><span aria-hidden="true">📝</span><strong>Faire mon rapport</strong><small>Raconter ma journée</small></button>':'')+
         '<button data-v191-action="signal"><span aria-hidden="true">⚠️</span><strong>Signaler un problème</strong><small>Prévenir mon équipe</small></button>'+
-        '<button data-action="open-material-request"><span aria-hidden="true">🧰</span><strong>Demander du matériel</strong><small>Ce qui me manque</small></button>'+
+        (allowed(s,'create_requests')?'<button data-action="open-material-request"><span aria-hidden="true">🧰</span><strong>Demander du matériel</strong><small>Ce qui me manque</small></button>':'')+
       '</section>'+
       '<section class="v191-simple-block"><div class="v191-title"><div><h3>À ne pas oublier</h3><p>Les informations qui vous concernent.</p></div><button class="ghost" data-v191-nav="attention">Tout voir →</button></div>'+
         (tasks.length?tasks.map(t=>'<div class="v191-line"><span>☐</span><div><strong>'+esc(t.title)+'</strong><small>'+esc(projectName(s,t.projectId))+'</small></div></div>').join(''):'<p class="v191-muted">Tout est à jour.</p>')+
-      '</section>';
+      '</section>'+homeIntelligence(s);
   }
 
   function simpleRange(s){
@@ -209,7 +226,7 @@
     }else if(ui.v191ProjectTab==='more'){
       const reserves=pts.filter(x=>['reservation','opr'].includes(x.type)).length,nc=pts.filter(x=>x.type==='non_conformity').length,quality=pts.filter(x=>x.type==='quality').length,safety=pts.filter(x=>x.type==='safety').length;
       const meetings=c.meetings.filter(x=>x.projectId===p.id).length,journals=c.journals.filter(x=>x.projectId===p.id).length,tx=c.clientTransmissions.filter(x=>x.projectId===p.id).length;
-      body='<div class="v191-more-grid"><button data-v191-action="legacy-dashboard"><strong>Réserves / OPR</strong><span>'+reserves+'</span></button><button data-v191-action="legacy-dashboard"><strong>Non-conformités</strong><span>'+nc+'</span></button><button data-v191-action="legacy-dashboard"><strong>Qualité</strong><span>'+quality+'</span></button><button data-v191-action="legacy-dashboard"><strong>Sécurité</strong><span>'+safety+'</span></button><button data-v191-action="legacy-dashboard"><strong>Réunions</strong><span>'+meetings+'</span></button><button data-v191-action="legacy-dashboard"><strong>Journal chantier</strong><span>'+journals+'</span></button><button data-v191-action="legacy-dashboard"><strong>Suivi client</strong><span>'+tx+'</span></button><button data-v191-action="legacy-dashboard"><strong>Outils conducteur avancés</strong><span>›</span></button></div>';
+      body='<div class="v191-more-grid"><button data-v191-nav="reservations"><strong>Réserves / OPR</strong><span>'+reserves+' ›</span></button><button data-v191-nav="nonconformities"><strong>Non-conformités</strong><span>'+nc+' ›</span></button><button data-v191-nav="quality"><strong>Qualité</strong><span>'+quality+' ›</span></button><button data-v191-nav="safety"><strong>Sécurité</strong><span>'+safety+' ›</span></button><button data-v191-nav="meetings"><strong>Réunions</strong><span>'+meetings+' ›</span></button><button data-v191-nav="journal"><strong>Journal chantier</strong><span>'+journals+' ›</span></button><button data-v191-nav="client"><strong>Suivi client</strong><span>'+tx+' ›</span></button><button data-v191-action="legacy-dashboard"><strong>Outils conducteur avancés</strong><span>›</span></button></div>';
     }else{
       const prog=progressFor(s,p.id),open=pts.filter(x=>!['resolved','validated'].includes(x.status)),next=as.find(a=>new Date(a.end)>=new Date()),vals=pendingValidations(s,p.id);
       body='<div class="v191-summary-grid"><article><span>Avancement</span><strong>'+(prog==null?'—':prog+' %')+'</strong></article><article><span>Points ouverts</span><strong>'+open.length+'</strong></article><article><span>À valider</span><strong>'+vals.length+'</strong></article><article><span>Prochaine intervention</span><strong>'+(next?fmtDate(next.start):'—')+'</strong></article></div><div class="v191-simple-block"><h3>Prochaine étape</h3>'+(next?'<p><strong>'+esc(next.title)+'</strong><br>'+fmtDate(next.start)+' · '+fmtTime(next.start)+' → '+fmtTime(next.end)+'</p>':'<p class="v191-muted">Aucune intervention future.</p>')+'</div>';
@@ -370,13 +387,13 @@
       (step===3?'<button type="button" class="primary" data-v191-action="report-submit">✓ Enregistrer le rapport</button>':'<button type="button" class="primary" data-v191-action="report-next">Continuer →</button>')+'</div></form>';
     ui.render();
   }
-  function captureReportStep(){
+  function captureReportStep(validate=true){
     const d=ui.v196ReportDraft,form=ui.root.querySelector('form[data-v196-form="report"]');if(!d||!form)return false;
-    if(d.step<3&&!form.reportValidity())return false;
+    if(validate&&d.step<3&&!form.reportValidity())return false;
     const data=new FormData(form);
     if(d.step===0)d.assignmentId=String(data.get('assignmentId')||'');
     if(d.step===1){
-      d.date=String(data.get('date')||'');d.progress=String(data.get('progress')||'0');
+      d.date=String(data.get('date')||'');d.progress=String(data.get('progress')||'');
       d.summary=String(data.get('summary')||'').trim();
     }
     if(d.step===2){
@@ -390,11 +407,12 @@
     const as=assignments(s);if(!as.length){ui.notify('Aucune intervention autorisée pour créer un rapport.','info');return;}
     const now=new Date(),pad=n=>String(n).padStart(2,'0');
     const localDate=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
-    ui.v196ReportDraft={step:0,assignmentId:assignmentId||todayAssignment(s)?.id||as[0].id,date:localDate,progress:'50',summary:'',problems:'',materials:'',attachments:[]};
+    ui.v196ReportDraft={step:0,assignmentId:assignmentId||todayAssignment(s)?.id||as[0].id,date:localDate,progress:'',summary:'',problems:'',materials:'',attachments:[]};
     reportDraftForm(s);
   }
   function submitGuidedReport(){
     const d=ui.v196ReportDraft;if(!d||d.submitting||d.step!==3)return;
+    if(!allowed(store.getState(),'create_reports'))return ui.notify('Vous n’avez pas le droit de créer un rapport.','error');
     d.submitting=true;
     const fd=new FormData();
     for(const field of ['assignmentId','date','progress','summary','problems','materials'])fd.set(field,d[field]||'');
@@ -440,10 +458,10 @@
     if(action==='open-mission'){
       ui.v191Section='projects';ui.v191ProjectId=t.dataset.projectId;ui.v191ProjectTab='mission';ui.v191LegacyDashboard=false;ui.view='dashboard';ui.render();return;
     }
-    if(action==='guided-report'){openGuidedReport(s,t.dataset.assignmentId||'');return;}
+    if(action==='guided-report'){if(!allowed(s,'create_reports'))return ui.notify('Vous n’avez pas le droit de créer un rapport.','error');openGuidedReport(s,t.dataset.assignmentId||'');return;}
     if(action==='report-cancel'){ui.v196ReportDraft=null;ui.modal=null;ui.render();return;}
     if(action==='report-back'){
-      if(ui.v196ReportDraft){ui.v196ReportDraft.step=Math.max(0,ui.v196ReportDraft.step-1);reportDraftForm(s);}return;
+      if(ui.v196ReportDraft){captureReportStep(false);ui.v196ReportDraft.step=Math.max(0,ui.v196ReportDraft.step-1);reportDraftForm(s);}return;
     }
     if(action==='report-next'){
       if(captureReportStep()&&ui.v196ReportDraft){
@@ -462,7 +480,16 @@
     if(action==='project-tab'){ui.v191ProjectTab=t.dataset.tab;ui.render();return;}
     if(action==='signal'){openSignalChooser(t.dataset.projectId||ui.v191ProjectId||'');return;}
     if(action==='signal-type'){openSignalForm(s,t.dataset.type,t.dataset.projectId||'');return;}
-    if(action==='attention-open'){if(t.dataset.projectId){ui.v191Section='projects';ui.v191ProjectId=t.dataset.projectId;ui.v191ProjectTab=t.dataset.kind==='planning'?'planning':'summary';ui.view='dashboard';ui.render();}else{ui.v191LegacyDashboard=true;ui.view='dashboard';ui.render();}return;}
+    if(action==='attention-open'){
+      const projectId=t.dataset.projectId,kind=t.dataset.kind;
+      if(kind==='notice'){ui.v191Section='today';ui.v191LegacyDashboard=false;ui.view='dashboard';}
+      else if(kind==='request'){ui.v191LegacyDashboard=false;ui.view='terrain';}
+      else if(kind==='client'){ui.v191ProjectId=projectId||null;ui.v191Section='client';ui.v191LegacyDashboard=false;ui.view='dashboard';}
+      else if(kind==='validation'){ui.v191LegacyDashboard=true;ui.view='dashboard';}
+      else if(projectId){ui.v191Section='projects';ui.v191ProjectId=projectId;ui.v191ProjectTab=kind==='planning'?'planning':'terrain';ui.v191LegacyDashboard=false;ui.view='dashboard';}
+      else {ui.v191Section='attention';ui.v191LegacyDashboard=false;ui.view='dashboard';}
+      ui.render();return;
+    }
     if(action==='legacy-dashboard'){ui.v191LegacyDashboard=true;ui.view='dashboard';ui.render();return;}
     if(action==='exit-legacy'){ui.v191LegacyDashboard=false;ui.v191Section='today';ui.view='dashboard';ui.render();return;}
   });
@@ -600,8 +627,26 @@
   `;
   document.head.appendChild(ux196Style);
 
+
+  const ux199=document.createElement('style');ux199.textContent=`
+    .v199-smart-card{margin-top:1rem;border-color:#cbdfff;background:linear-gradient(135deg,#fafdff,#f2f7ff)}
+    .v199-smart-card h3{margin:.25rem 0}.v199-smart-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+    .v199-smart-actions button{min-height:46px}
+    .v191-more-grid button,.v191-project-tabs button,.v196-mission-actions button{min-height:46px}
+    .v199-mobile-hint{font-size:.82rem;color:var(--muted)}
+    @media(max-width:700px){
+      .v199-smart-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+      .v199-smart-actions button{width:100%;text-align:center}
+      .v191-advanced-head{flex-wrap:wrap}
+      .v191-advanced-head button{width:100%;min-height:46px}
+      .v191-project-tabs button{min-height:46px}
+      .v191-more-grid button{min-height:56px}
+      .v196-wizard .modal-actions{position:sticky;bottom:0;background:#fff;padding:.6rem 0;z-index:2}
+    }`;
+  document.head.appendChild(ux199);
+
   window.SpeedArtiUX191={
-    version:'1.9.8',
+    version:'1.9.9',
     principles:['5-second-understanding','simple-first','advanced-on-demand','no-feature-removal'],
     sourceOfTruthForDates:'Agenda Chantier',
     timesheetOwnership:'Temps & Présence',
