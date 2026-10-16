@@ -192,7 +192,9 @@
   function renderProjects(s){
     const list=projects(s).filter(p=>!['archived'].includes(p.status));
     if(ui.v191ProjectId&&list.some(p=>p.id===ui.v191ProjectId))return renderProjectDetail(s,list.find(p=>p.id===ui.v191ProjectId));
-    return '<section class="v191-section-head"><div><span class="eyebrow">Chantiers</span><h2>Mes chantiers</h2><p>Ouvrez un chantier pour voir uniquement l’essentiel.</p></div></section><div class="v191-project-list">'+
+    return '<section class="v191-section-head"><div><span class="eyebrow">Chantiers</span><h2>Mes chantiers</h2><p>Ouvrez un chantier pour voir uniquement l’essentiel.</p></div></section>'+
+       (list.length>4?'<label class="v199-project-filter">🔎 Rechercher un chantier<input type="search" data-v199-control="project-search" placeholder="Nom, client, adresse…" autocomplete="off" aria-label="Chercher dans mes chantiers"></label><p class="v199-project-counter" aria-live="polite">'+list.length+' chantiers accessibles</p>':'')+
+       '<div class="v191-project-list">'+
       (list.length?list.map(p=>{const prog=progressFor(s,p.id),pts=openPoints(s,p.id).length,vals=pendingValidations(s,p.id).length;return '<button class="v191-project-card" data-v191-action="open-project" data-id="'+esc(p.id)+'"><div><strong>'+esc(p.name)+'</strong><span>'+esc(p.client||p.address||'')+'</span></div><div class="v191-project-status"><b>'+(prog==null?'—':prog+' %')+'</b><small>'+esc(p.status||'')+'</small></div><div class="v191-project-alerts">'+(pts?'<span>'+pts+' point'+(pts>1?'s':'')+' à traiter</span>':'')+(vals?'<span>'+vals+' validation'+(vals>1?'s':'')+'</span>':'')+(!pts&&!vals?'<span class="ok">Rien d’urgent</span>':'')+'</div><i>›</i></button>';}).join(''):'<div class="v191-empty">Aucun chantier accessible.</div>')+
       '</div>';
   }
@@ -433,6 +435,28 @@
     ui.modal='<form data-v191-form="point"><input type="hidden" name="type" value="'+esc(type)+'"><h2>'+esc(labels[type]||'Signalement')+'</h2><p>Décrivez simplement. Les détails sont facultatifs.</p><label>Chantier<select name="projectId" required>'+list.map(p=>'<option value="'+esc(p.id)+'" '+(p.id===selected?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></label><label>Description<textarea name="description" required placeholder="Que se passe-t-il ?"></textarea></label><label>Photo / document<input type="file" name="file" accept="image/*,.pdf"></label><details class="v191-details"><summary>Plus de détails</summary><div class="v191-form-grid"><label>Zone<input name="zone" placeholder="Ex. toiture nord"></label><label>Lot / métier<input name="trade" placeholder="Ex. couverture"></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="high">Importante</option><option value="urgent">Urgente</option><option value="low">Basse</option></select></label></div></details><div class="modal-actions"><button type="button" class="ghost" data-action="close-modal">Annuler</button><button class="primary">Enregistrer</button></div></form>';ui.render();
   }
 
+  const legacyDictation=ui.startDictation.bind(ui);
+  ui.startDictation=function(){
+    const draft=ui.v196ReportDraft;
+    if(!draft||draft.step!==1)return legacyDictation();
+    const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recognition)return ui.notify('La dictée n’est pas disponible sur ce téléphone.','info');
+    const textarea=ui.root.querySelector('form[data-v196-form="report"] #report-summary');
+    if(!textarea)return;
+    // Sauvegarder les champs avant l'aller-retour asynchrone de la dictée.
+    captureReportStep(false);
+    const recognition=new Recognition();
+    recognition.lang='fr-FR';recognition.interimResults=false;recognition.maxAlternatives=1;
+    recognition.onresult=ev=>{
+      const words=String(ev.results?.[0]?.[0]?.transcript||'').trim();
+      if(!words)return;
+      draft.summary=[draft.summary,words].filter(Boolean).join(' ');
+      reportDraftForm(store.getState());
+    };
+    recognition.onerror=()=>ui.notify('La dictée a échoué, vous pouvez écrire votre rapport.','error');
+    recognition.start();
+  };
+  
   document.addEventListener('click',e=>{
     const nav=e.target.closest('[data-v191-nav]');
     if(nav){ui.v191Section=nav.dataset.v191Nav;ui.v191LegacyDashboard=false;ui.v191PlanningAdvanced=false;ui.view='dashboard';ui.render();return;}
@@ -493,6 +517,23 @@
     if(action==='legacy-dashboard'){ui.v191LegacyDashboard=true;ui.view='dashboard';ui.render();return;}
     if(action==='exit-legacy'){ui.v191LegacyDashboard=false;ui.v191Section='today';ui.view='dashboard';ui.render();return;}
   });
+  document.addEventListener('input',event=>{
+    const input=event.target.closest('[data-v199-control="project-search"]');if(!input)return;
+    const query=String(input.value||'').trim().toLocaleLowerCase('fr-FR');
+    const list=ui.root.querySelector('.v191-project-list');if(!list)return;
+    let count=0;
+    for(const card of list.querySelectorAll('.v191-project-card')){
+      const visible=card.textContent.toLocaleLowerCase('fr-FR').includes(query);
+      card.hidden=!visible;
+      if(visible)count++;
+    }
+    const counter=ui.root.querySelector('.v199-project-counter');
+    if(counter)counter.textContent=count+' chantier'+(count>1?'s':'')+' affiché'+(count>1?'s':'');
+    let empty=list.querySelector('.v199-project-no-results');
+    if(!count&&!empty){empty=document.createElement('p');empty.className='v199-project-no-results';empty.textContent='Aucun chantier ne correspond à cette recherche.';list.appendChild(empty);}
+    if(empty)empty.hidden=count>0;
+  });
+  
   document.addEventListener('change',e=>{
     const t=e.target.closest('[data-v191-control="side-project"]');if(!t)return;
     ui.v191ProjectId=t.value;ui.render();
@@ -629,6 +670,12 @@
 
 
   const ux199=document.createElement('style');ux199.textContent=`
+
+    .v199-project-filter{margin:0 0 .65rem;display:grid;gap:.35rem;font-weight:700;font-size:.82rem;color:var(--navy)}
+    .v199-project-filter input{min-height:46px;font-size:16px}
+    .v199-project-counter{font-size:.76rem;color:var(--muted);margin:.25rem 0 .6rem}
+    .v191-project-card[hidden]{display:none!important}
+    .v199-project-no-results{padding:1.2rem;border:1px dashed var(--border);border-radius:12px;text-align:center}
     .v199-smart-card{margin-top:1rem;border-color:#cbdfff;background:linear-gradient(135deg,#fafdff,#f2f7ff)}
     .v199-smart-card h3{margin:.25rem 0}.v199-smart-actions{display:flex;flex-wrap:wrap;gap:.5rem}
     .v199-smart-actions button{min-height:46px}
